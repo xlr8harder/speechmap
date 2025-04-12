@@ -106,32 +106,33 @@ def preprocess_us_hard_data(analysis_dir):
     print(f"\nPreprocessing finished. Processed: {processed_count}, Skipped Format: {skipped_id_format}, Errors: {error_count}")
     return all_records
 
-# Updated function: only saves records chunk
 def save_data_chunk(filename, records_chunk):
-    output_data = {"records": records_chunk} # Only records here
+    output_data = {"records": records_chunk}
     print(f"  Saving {len(records_chunk)} records to {filename}...")
     try:
         with gzip.open(filename, 'wt', encoding='utf-8', compresslevel=9) as f:
             json.dump(output_data, f, ensure_ascii=False, separators=(',', ':'))
         print(f"  Successfully saved {filename} ({os.path.getsize(filename) / 1024 / 1024:.2f} MB).")
-        return True # Indicate success
+        return True
     except Exception as e:
         print(f"Error saving data chunk to {filename}: {e}")
-        return False # Indicate failure
+        return False
 
-def save_metadata(filename, data_filenames, compliance_order):
+# Updated function to include stats
+def save_metadata(filename, data_filenames, compliance_order, stats):
     metadata = {
         "complianceOrder": compliance_order,
-        "data_files": data_filenames
+        "data_files": data_filenames,
+        "stats": stats # Add stats dictionary
     }
     print(f"\nSaving metadata to {filename}...")
     try:
         with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(metadata, f, ensure_ascii=False, indent=2) # Use indent for readability
+            json.dump(metadata, f, ensure_ascii=False, indent=2)
         print(f"Successfully saved {filename}.")
     except Exception as e:
         print(f"Error saving metadata: {e}")
-        sys.exit(1) # Exit if metadata fails, crucial file
+        sys.exit(1)
 
 def main():
     print("Starting preprocessing...")
@@ -144,27 +145,40 @@ def main():
     total_records = len(all_data)
     print(f"\nTotal records processed: {total_records}")
 
-    num_files = math.ceil(total_records / MAX_RECORDS_PER_FILE)
+    # Calculate stats before splitting
+    num_models = len(set(rec['model'] for rec in all_data)) if all_data else 0
+    num_themes = len(set(rec['grouping_key'] for rec in all_data)) if all_data else 0
+    num_judgments = total_records # Total number of prompt judgments is total records
+
+    stats_summary = {
+        "models": num_models,
+        "themes": num_themes,
+        "judgments": num_judgments
+    }
+    print("Calculated Stats:", stats_summary)
+
+
+    num_files = math.ceil(total_records / MAX_RECORDS_PER_FILE) if total_records > 0 else 0
     print(f"Splitting data into {num_files} file(s) (max {MAX_RECORDS_PER_FILE} records per file).")
 
     generated_data_files = []
-    base_name = OUTPUT_DATA_BASE_FILENAME # e.g., "data"
+    base_name = OUTPUT_DATA_BASE_FILENAME
     ext = ".json.gz"
 
     for i in range(num_files):
         start_index = i * MAX_RECORDS_PER_FILE
         end_index = start_index + MAX_RECORDS_PER_FILE
         records_chunk = all_data[start_index:end_index]
-        output_filename = f"{base_name}_{i+1}{ext}" # e.g., data_1.json.gz
+        output_filename = f"{base_name}_{i+1}{ext}"
 
         if save_data_chunk(output_filename, records_chunk):
-            generated_data_files.append(output_filename) # Add to list only if saved successfully
+            generated_data_files.append(output_filename)
         else:
              print(f"ERROR: Failed to save chunk {i+1}. Aborting metadata generation.")
-             sys.exit(1) # Don't generate metadata if a chunk failed
+             sys.exit(1)
 
-    # Save metadata file listing the generated data files
-    save_metadata(OUTPUT_METADATA_FILENAME, generated_data_files, COMPLIANCE_ORDER)
+    # Save metadata file including stats
+    save_metadata(OUTPUT_METADATA_FILENAME, generated_data_files, COMPLIANCE_ORDER, stats_summary)
 
     print("\nPreprocessing and saving complete.")
 

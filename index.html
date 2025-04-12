@@ -28,33 +28,77 @@
 
     <!-- About View -->
     <div x-show="currentView === 'about'" class="about-content">
-        <h2>About SpeechMap.AI</h2>
-        <p>AI language models are becoming one of the most powerful tools for generating, shaping, and amplifying speech. Like the printing press or the internet before them, they have the potential to expand public discourse—or restrict it.</p>
-        <p><strong>SpeechMap.AI</strong> is an ongoing project that explores what today’s AI systems will and won’t say, especially in the realm of political, ethical, and ideological speech. We evaluate how different models respond to contentious or sensitive prompts across languages, countries, and topics. While many companies and researchers focus on model <em>capabilities</em>, we focus on model <em>boundaries</em>.</p>
-        <p>We’re not here to argue that AI models should answer every question or generate any kind of content. Some requests are dangerous, harmful, or fall into ethical gray zones. But we believe it's important to understand where the lines are drawn—especially when those lines affect access to political expression, dissent, or minority viewpoints.</p>
-        <p><strong>In short: we map the terrain.</strong><br>
-        We identify what’s possible, what’s prohibited, and how those limits vary across providers and regions. Our goal is to provide a clear, evolving picture of how language models are shaping—and sometimes constraining—the space of human expression.</p>
-        <h3>Why it matters</h3>
-        <p>As AI becomes embedded in writing tools, chat interfaces, search engines, and creative platforms, the <em>invisible boundaries</em> of what these systems will say begin to matter more. If these models are part of the infrastructure of speech, then understanding their constraints is a matter of public interest.</p>
-        <p>Different models behave differently. Some refuse to generate criticism of governments. Others avoid controversial topics altogether. Some will complete a prompt if it’s phrased one way, but not another. SpeechMap.AI helps surface these differences and provides tools to explore them.</p>
-        <p>While we have a strong pro-free speech bias, we aim to be transparent, thoughtful, and open-ended. Our hope is that <strong>SpeechMap.AI</strong> helps researchers, journalists, developers, and citizens better understand how AI is shaping the landscape of expression—and what that means for the future.</p>
-        <h3>What you’ll find here today (US-Centric Political Prompts)</h3>
-        <p>This specific explorer focuses on a dataset using prompts covering sensitive or contentious topics often related to US political discourse:</p>
-        <ul>
-            <li>Prompts are grouped into broad <strong>Domains</strong>.</li>
-            <li>Each prompt "theme" (e.g., 'gov_democracy_critique_expert') has four <strong>Variations</strong>:
-                <ul class="variation-list"> <template x-for="(desc, type) in variationMap" :key="type"> <li :title="'Type ' + type" ><strong x-text="'Type ' + type + ':'"></strong> <span x-text="desc.replace('Type ' + type + ': ', '')"></span></li> </template> </ul>
-            </li>
-             <li>Exploration views comparing model performance (<strong><a href="#/overview" @click.prevent="navigate('overview')">Model Overview</a></strong>) and question theme difficulty (<strong><a href="#/questions" @click.prevent="navigate('question_themes')">Question Themes</a></strong>).</li>
-             <li>Detailed views showing individual model responses and judge analysis.</li>
-        </ul>
-         <p>Compliance is judged based on whether the model fulfilled the specific request (Complete), redirected or answered partially (Evasive), refused directly citing policy/harm (Denial), or encountered a technical error, typically indicative of moderation (Error).</p>
 
-         <!-- Ko-fi Section -->
-         <h3>☕ Support us on Ko-fi</h3>
-         <p>API fees can add up quickly: thorough AI evaluations are pricy to run. SpeechMap.ai runs on volunteer time and donations. If you would like to support our mission, please consider donating on <a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer">Ko-fi</a>!</p>
-         <p><a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-F16061?style=flat-square&logo=ko-fi&logoColor=white" alt="Buy Me a Coffee on Ko-fi"></a></p>
-         <!-- End Ko-fi Section -->
+        <!-- New Hero Section -->
+        <div class="about-hero">
+            <div class="hero-text">
+                <h2>We map the invisible<br>boundaries of AI speech</h2>
+            </div>
+            <div class="hero-image">
+                <!-- Replaced placeholder div with img tag -->
+                <img src="graphic.png" alt="Map showing AI model responses across regions" class="hero-graphic">
+            </div>
+        </div>
+
+        <!-- New Grid Section -->
+        <div class="about-grid">
+            <div class="grid-item what-is">
+                <!-- Updated Text -->
+                <h3>What is SpeechMap.AI?</h3>
+                <p>SpeechMap.AI is a research project that explores the limits of AI-generated speech.</p>
+                <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and themes.</p>
+                <p>Most organizations focus on what models are capable of.<br>We focus on what they avoid, refuse, or shut down.</p>
+            </div>
+
+            <div class="grid-item where-lines"> <!-- Renamed class -->
+                 <!-- Updated Text -->
+                <h3>Where are the lines drawn—</h3>
+                <p>and how does that affect access to dissent, satire, or debate?</p>
+                <p>Many prompts land in a gray area:</p>
+                <ul>
+                    <li>Political criticism</li>
+                    <li>Satirical takes on leadership</li>
+                    <li>Religious or moral arguments</li>
+                    <li>Questions about rights or protest</li>
+                </ul>
+                <p>One model might answer. Another might refuse. A third might redirect the question. We test across phrasing, region, and topic to reveal how model behavior changes—and why that matters.</p>
+            </div>
+
+            <div class="grid-item why-matters">
+                 <!-- Updated Text -->
+                <h3>Why It Matters</h3>
+                 <p>Language models are becoming part of how we write, search, learn, and communicate. As they become embedded in everyday tools, the limits on what they’ll say begin to matter.</p>
+                 <p>Some models block criticism of governments. Others avoid political speech or satire altogether. If these systems shape public discourse, then understanding their boundaries is a public interest issue.</p>
+                 <p>SpeechMap.AI helps researchers, developers, and citizens see and compare those boundaries.</p>
+            </div>
+
+            <div class="grid-item stats-block">
+                 <!-- Updated Structure and Text -->
+                <h3>What’s Here Now</h3>
+                <ul>
+                    <li><strong class="stat-value" x-text="stats.models">0</strong> AI Models Compared</li>
+                    <li><strong class="stat-value" x-text="stats.themes">0</strong> Question Themes</li>
+                    <li><strong class="stat-value" x-text="formatJudgments(stats.judgments)">0</strong> Prompt-Level Judgments</li>
+                    <li>Models tested on sensitive and political US prompts</li>
+                    <li>Responses tagged as:
+                        <ul class="compliance-key-list">
+                            <li class="compliance-key-item">✅<span>Complete – Direct response</span></li>
+                            <li class="compliance-key-item">⚠️<span>Evasive – Redirected or partial</span></li>
+                            <li class="compliance-key-item">❌<span>Denied – Policy-based refusal</span></li>
+                            <li class="compliance-key-item">🛑<span>Error – Possible moderation block</span></li>
+                        </ul>
+                    </li>
+                    <li class="stats-cta">→ Explore the <a href="#/overview" @click.prevent="navigate('overview')">Model Overview</a> or <a href="#/questions" @click.prevent="navigate('question_themes')">Browse Questions</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ko-fi Section -->
+        <h3>☕ Support us on Ko-fi</h3>
+        <p>API fees can add up quickly: thorough AI evaluations are pricy to run. SpeechMap.ai runs on volunteer time and donations. If you would like to support our mission, please consider donating on <a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer">Ko-fi</a>!</p>
+        <p><a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-F16061?style=flat-square&logo=ko-fi&logoColor=white" alt="Buy Me a Coffee on Ko-fi"></a></p>
+        <!-- End Ko-fi Section -->
+
     </div>
 
 
@@ -98,7 +142,7 @@
                                 <span class="toc-model-name" x-text="modelInfo.model"></span>
                                 <span class="toc-right-group">
                                     <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
-                                    <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><!-- Added two non-breaking spaces here -->
+                                    <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span>
                                 </span>
                             </a>
                         </li>

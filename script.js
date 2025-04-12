@@ -13,6 +13,8 @@ document.addEventListener('alpine:init', () => {
         selectedGroupingKey: null,
         overviewTable: null, modelDetailTable: null, questionThemesTable: null,
         variationMap: VARIATION_MAP,
+        // Add state for stats loaded from metadata
+        stats: { models: 0, themes: 0, judgments: 0 },
 
         // --- Computed Properties ---
         get modelSummary() {
@@ -52,6 +54,15 @@ document.addEventListener('alpine:init', () => {
         get selectedQuestionThemeModelSummary() { if (!this.selectedQuestionThemeData || !this.selectedQuestionThemeData.responses) return []; const summary = this.selectedQuestionThemeData.responses.reduce((acc, r) => { if (!acc[r.model]) acc[r.model] = { model: r.model, anchor_id: r.anchor_id, count: 0, complete_count: 0 }; acc[r.model].count++; if (r.compliance === 'COMPLETE') acc[r.model].complete_count++; acc[r.model].anchor_id = r.anchor_id; return acc; }, {}); return Object.values(summary).map(s => ({ model: s.model, anchor_id: s.anchor_id, count: s.count, pct_complete: s.count > 0 ? (s.complete_count / s.count * 100) : 0, })).sort((a,b) => a.model.localeCompare(b.model)); },
         get selectedModelDetailedStats() { if (!this.selectedModel || !this.isDataLoaded) { return { overall: { count: 0, complete_count: 0, pct_complete: 0, counts: {}, percentages: {} }, by_domain: [], by_variation: [], by_domain_sorted: [] }; } const modelResponses = this.allResponses.filter(r => r.model === this.selectedModel); const overall = { count: 0, complete_count: 0, counts: {}, percentages: {} }; const by_domain = {}; const by_variation = {}; this.complianceOrder.forEach(level => { overall.counts[level] = 0; }); this.availableFilters.domains.forEach(d => { by_domain[d] = { domain: d, count: 0, complete_count: 0 }; }); this.availableFilters.variations.forEach(v => { by_variation[v] = { variation: v, count: 0, complete_count: 0 }; }); for (const r of modelResponses) { overall.count++; if(this.complianceOrder.includes(r.compliance)) overall.counts[r.compliance]++; else overall.counts['UNKNOWN']++; if (r.compliance === 'COMPLETE') overall.complete_count++; if (!by_domain[r.domain]) by_domain[r.domain] = { domain: r.domain, count: 0, complete_count: 0 }; by_domain[r.domain].count++; if (r.compliance === 'COMPLETE') by_domain[r.domain].complete_count++; if (!by_variation[r.variation]) by_variation[r.variation] = { variation: r.variation, count: 0, complete_count: 0 }; by_variation[r.variation].count++; if (r.compliance === 'COMPLETE') by_variation[r.variation].complete_count++; } overall.pct_complete = overall.count > 0 ? (overall.complete_count / overall.count * 100) : 0; this.complianceOrder.forEach(level => { overall.percentages[level] = overall.count > 0 ? (overall.counts[level] / overall.count * 100) : 0; }); const domain_results = Object.values(by_domain).map(d => ({ ...d, pct_complete: d.count > 0 ? (d.complete_count / d.count * 100) : 0 }));
             const variation_results = Object.values(by_variation).map(v => ({ ...v, pct_complete: v.count > 0 ? (v.complete_count / v.count * 100) : 0 })).sort((a,b) => parseInt(a.variation) - parseInt(b.variation)); const domain_results_sorted = [...domain_results].sort((a,b) => Number(a.pct_complete) - Number(b.pct_complete)); return { overall: overall, by_domain: domain_results, by_variation: variation_results, by_domain_sorted: domain_results_sorted }; },
+        // Helper for formatting judgments stat
+        formatJudgments(num) {
+             if (typeof num !== 'number' || isNaN(num)) return '0';
+             if (num >= 10000) {
+                 return Math.floor(num / 1000) + 'K+';
+             }
+             return num.toLocaleString(); // Add commas for numbers below 10k
+        },
+
 
         // --- Methods ---
         async initialize() { console.log('Alpine initializing...'); this.isLoading = true; this.loadingMessage = 'Initializing...'; this.errorMessage = null; this.isDataLoaded = false; this.parseHash(); this.setupWatchers(); this.loadData().then(() => { this.isDataLoaded = true; this.parseHash(true); this.$nextTick(() => { this.isLoading = false; this.initializeTableForView(this.currentView); }); }).catch(e => { console.error("Init error:", e); this.errorMessage = `Failed load: ${e.message}`; this.isLoading = false; }).finally(() => { this.loadingMessage = ''; console.log("Data loading attempt finished."); }); window.addEventListener('hashchange', () => this.parseHash()); },
@@ -69,6 +80,7 @@ document.addEventListener('alpine:init', () => {
                 metadata = await meta_response.json();
                 console.log("Metadata loaded:", metadata);
 
+                // Validate metadata structure
                 if (!metadata.complianceOrder || !Array.isArray(metadata.complianceOrder)) {
                     throw new Error("Metadata is missing 'complianceOrder' array.");
                 }
@@ -76,7 +88,19 @@ document.addEventListener('alpine:init', () => {
                     throw new Error("Metadata is missing 'data_files' array or it's empty.");
                 }
 
-                this.complianceOrder = metadata.complianceOrder; // Set compliance order first
+                this.complianceOrder = metadata.complianceOrder; // Set compliance order
+
+                // Load stats from metadata, ensuring they are numbers
+                if (metadata.stats && typeof metadata.stats === 'object') {
+                    this.stats.models = Number.isFinite(metadata.stats.models) ? metadata.stats.models : 0;
+                    this.stats.themes = Number.isFinite(metadata.stats.themes) ? metadata.stats.themes : 0;
+                    this.stats.judgments = Number.isFinite(metadata.stats.judgments) ? metadata.stats.judgments : 0;
+                } else {
+                     console.warn("Stats object missing or invalid in metadata.json");
+                     this.stats = { models: 0, themes: 0, judgments: 0 }; // Reset to defaults
+                }
+                console.log("Stats loaded:", this.stats);
+
 
             } catch (e) {
                 console.error("Failed to load or parse metadata.json:", e);
@@ -91,19 +115,16 @@ document.addEventListener('alpine:init', () => {
                 await this.$nextTick();
                 console.log(`Fetching data files: ${data_files.join(', ')}`);
 
-                // Create fetch promises for all data files concurrently
                 const fetch_promises = data_files.map(filename =>
                     fetch(filename, { headers: { 'Accept-Encoding': 'gzip' } })
                         .catch(fetch_err => {
                             console.error(`Network error fetching ${filename}:`, fetch_err);
-                            // Throw a specific error object to identify the failed file
                             return Promise.reject({ type: 'FetchError', file: filename, error: fetch_err });
                          })
                 );
 
                 const responses = await Promise.all(fetch_promises);
 
-                // Check for any failed fetches (non-OK status)
                 const failed_responses = responses.filter(res => !res.ok);
                 if (failed_responses.length > 0) {
                     const error_details = failed_responses.map(res => `${res.url} (${res.status})`).join(', ');
@@ -114,31 +135,25 @@ document.addEventListener('alpine:init', () => {
                 await this.$nextTick();
                 console.log("All data files fetched, processing...");
 
-                // Create processing promises (decompress, parse)
                 const processing_promises = responses.map(async (response, index) => {
-                    const filename = data_files[index]; // Get filename for context
+                    const filename = data_files[index];
                     try {
                         const compressed_data = await response.arrayBuffer();
                         const decompressed_data = pako.inflate(new Uint8Array(compressed_data), { to: 'string' });
                         const parsed_json = JSON.parse(decompressed_data);
-
                         if (!parsed_json.records || !Array.isArray(parsed_json.records)) {
                             console.warn(`File ${filename} is missing 'records' array or it's not an array.`);
-                            return []; // Return empty array for this chunk on error
+                            return [];
                         }
                         return parsed_json.records;
                     } catch(processing_err) {
                          console.error(`Error processing ${filename}:`, processing_err);
-                         // Throw a specific error object
                          return Promise.reject({ type: 'ProcessingError', file: filename, error: processing_err });
                     }
                 });
 
                 const recordChunks = await Promise.all(processing_promises);
-
-                // Combine records from all chunks
-                combined_records = recordChunks.flat(); // .flat() efficiently combines the arrays
-
+                combined_records = recordChunks.flat();
                 this.allResponses = combined_records;
 
                 if (this.allResponses.length === 0) {
@@ -155,16 +170,11 @@ document.addEventListener('alpine:init', () => {
 
             } catch (e) {
                 console.error("Error during concurrent data loading or processing:", e);
-                // Construct a more informative error message
                 let user_message = "Data Load/Processing Failed";
-                if (e.type === 'FetchError') {
-                    user_message += `: Network error loading ${e.file}.`;
-                } else if (e.type === 'ProcessingError') {
-                    user_message += `: Error processing ${e.file}.`;
-                } else if (e.message) {
-                    user_message += `: ${e.message}`;
-                }
-                throw new Error(user_message); // Rethrow for initialize() catch block
+                if (e.type === 'FetchError') { user_message += `: Network error loading ${e.file}.`; }
+                else if (e.type === 'ProcessingError') { user_message += `: Error processing ${e.file}.`; }
+                else if (e.message) { user_message += `: ${e.message}`; }
+                throw new Error(user_message);
             } finally {
                 this.loadingMessage = '';
             }
@@ -340,3 +350,4 @@ function percentWithBgBarFormatter(cell, formatterParams, onRendered) {
 
     return container;
 }
+

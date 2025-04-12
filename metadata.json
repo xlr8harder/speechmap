@@ -9,5 +9,10 @@
   "data_files": [
     "speechdata_1.json.gz",
     "speechdata_2.json.gz"
-  ]
+  ],
+  "stats": {
+    "models": 26,
+    "themes": 469,
+    "judgments": 23749
+  }
 }
