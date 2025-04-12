@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 </head>
-<body x-data="explorerData()" x-init="initialize()"> <!-- initialize starts loading -->
+<body x-data="explorerData()" x-init="initialize()">
 
     <h1>SpeechMap.AI <span class="subtitle">The Free Speech Dashboard for AI.</span></h1>
 
@@ -23,11 +23,10 @@
     </nav>
     <hr>
 
-    <!-- Global Loading Indicator (Shows while data loads async) -->
     <div x-show="isLoading" class="loading-indicator" x-text="loadingMessage"></div>
     <div x-show="errorMessage" class="error-message" x-text="errorMessage"></div>
 
-    <!-- About View - Shows immediately -->
+    <!-- About View -->
     <div x-show="currentView === 'about'" class="about-content">
         <h2>About SpeechMap.AI</h2>
         <p>AI language models are becoming one of the most powerful tools for generating, shaping, and amplifying speech. Like the printing press or the internet before them, they have the potential to expand public discourse—or restrict it.</p>
@@ -38,9 +37,9 @@
         <h3>Why it matters</h3>
         <p>As AI becomes embedded in writing tools, chat interfaces, search engines, and creative platforms, the <em>invisible boundaries</em> of what these systems will say begin to matter more. If these models are part of the infrastructure of speech, then understanding their constraints is a matter of public interest.</p>
         <p>Different models behave differently. Some refuse to generate criticism of governments. Others avoid controversial topics altogether. Some will complete a prompt if it’s phrased one way, but not another. SpeechMap.AI helps surface these differences and provides tools to explore them.</p>
-         <p>While we have a strong pro-free speech bias, we aim to be transparent, thoughtful, and open-ended. Our hope is that <strong>SpeechMap.AI</strong> helps researchers, journalists, developers, and citizens better understand how AI is shaping the landscape of expression—and what that means for the future.</p>
-        <h3>What you’ll find here today</h3>
-        <p>We are launching with an explorer for a dataset covering sensitive or contentious topics often related to US political discourse:</p>
+        <p>While we have a strong pro-free speech bias, we aim to be transparent, thoughtful, and open-ended. Our hope is that <strong>SpeechMap.AI</strong> helps researchers, journalists, developers, and citizens better understand how AI is shaping the landscape of expression—and what that means for the future.</p>
+        <h3>What you’ll find here today (US-Centric Political Prompts)</h3>
+        <p>This specific explorer focuses on a dataset using prompts covering sensitive or contentious topics often related to US political discourse:</p>
         <ul>
             <li>Prompts are grouped into broad <strong>Domains</strong>.</li>
             <li>Each prompt "theme" (e.g., 'gov_democracy_critique_expert') has four <strong>Variations</strong>:
@@ -57,7 +56,6 @@
     <div x-show="currentView === 'overview' && !isLoading && !errorMessage">
         <h2>Model Overview <span class="count-info" x-text="`(${modelSummary.length} Models)`"></span></h2>
         <p>Overall summary of model compliance. Click on a model name in the table below to see detailed results for that specific model.</p>
-        <!-- TOC Removed -->
         <div class="filters"> <label>Sort Models By: <select x-model="overviewSortKey" @change="navigate('overview', true)"> <option value="model">Name (A-Z)</option> <option value="pct_complete_overall">Overall Compliance (Asc)</option> </select> </label> </div>
         <div id="overview-table" class="table-container"></div>
     </div>
@@ -94,15 +92,11 @@
     <!-- Question Theme List View -->
     <div x-show="currentView === 'question_themes' && !isLoading && !errorMessage">
          <h2>Question Themes <span class="count-info" x-text="`(${questionThemeSummary.length} Themes)`"></span></h2>
-         <!-- ** ADDED Domain Filter/TOC ** -->
+         <p>Overall compliance for each question theme.</p>
+         <!-- Question Theme Domain Filter/TOC -->
          <details class="toc-details">
             <summary>Filter by Domain</summary>
-            <div class="toc-links">
-                 <button class="toc-button" :class="{'active': !questionThemeDomainFilter}" @click="filterQuestionThemesByDomain('')">All Domains</button>
-                 <template x-for="domain in availableFilters.domains" :key="domain">
-                    <button :class="{'active': questionThemeDomainFilter === domain}" class="toc-button" @click="filterQuestionThemesByDomain(domain)" x-text="domain"></button>
-                </template>
-            </div>
+            <div class="toc-links"> <button class="toc-button" :class="{'active': !questionThemeDomainFilter}" @click="filterQuestionThemesByDomain('')">All Domains</button> <template x-for="domain in availableFilters.domains" :key="domain"><button :class="{'active': questionThemeDomainFilter === domain}" class="toc-button" @click="filterQuestionThemesByDomain(domain)" x-text="domain"></button></template> </div>
         </details>
          <div class="filters"> <label>Sort Themes By: <select x-model="questionThemeSortKey" @change="navigate('question_themes', true)"> <option value="grouping_key">Name (A-Z)</option> <option value="pct_complete_overall">Compliance (Asc)</option> <option value="num_responses"># Responses (Desc)</option> </select> </label> </div>
          <p>Click on a question theme to view prompts and model responses.</p>
@@ -115,7 +109,10 @@
             <h2 x-text="`Question Theme: ${selectedQuestionThemeData.grouping_key}`"></h2>
             <button @click="navigate('question_themes')">← Back to Question Themes</button>
             <p><strong>Domain:</strong> <span x-text="selectedQuestionThemeData.domain"></span></p>
-            <details class="toc-details" open> <summary>Model Compliance Summary & Links</summary> <ul class="toc-links model-toc vertical"> <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model"> <li> <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)"> <span class="toc-model-name" x-text="modelInfo.model"></span> <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"> </span> <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span> </a> </li> </template> <li x-show="selectedQuestionThemeModelSummary.length === 0" style="list-style:none; font-style:italic;">No responses found.</li> </ul> </details>
+            <details class="toc-details" open>
+                <summary>Model Compliance Summary & Links</summary>
+                <ul class="toc-links model-toc vertical"> <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model"> <li> <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)"> <span class="toc-model-name" x-text="modelInfo.model"></span> <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"> </span> <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span> </a> </li> </template> <li x-show="selectedQuestionThemeModelSummary.length === 0" style="list-style:none; font-style:italic;">No responses found.</li> </ul>
+            </details>
             <h3>Responses by Model</h3>
             <div class="response-list">
                  <template x-if="selectedQuestionThemeData.responses && selectedQuestionThemeData.responses.length > 0">
@@ -124,10 +121,25 @@
                              <h4 class="model-section-header"><span x-text="modelGroup.model"></span></h4>
                              <template x-for="response in modelGroup.responses" :key="response.id">
                                  <div class="response-card-nested">
-                                    <div class="response-header nested-header"> <strong x-text="getVariationDescription(response.variation)"></strong> </div>
+                                    <div class="response-header nested-header">
+                                        <strong x-text="getVariationDescription(response.variation)"></strong>
+                                        <!-- OpenRouter Link Removed From Header -->
+                                    </div>
                                     <div class="error-box" x-show="response.error_message"> <strong class="error-message">Provider Error:</strong> <span x-text="response.error_message"></span> <span class="partial-warning" x-show="response.is_partial_response">(Response may be incomplete)</span> </div>
                                     <div class="response-content-area nested-content">
-                                        <div class="detail-section question-section"> <strong>Question:</strong> <span class="compliance-label" :class="'compliance-' + response.compliance" x-text="response.compliance"></span> <pre class="text-display" x-text="response.question_text"></pre> </div>
+                                        <div class="detail-section question-section">
+                                             <strong>Question:</strong>
+                                             <span class="compliance-label" :class="'compliance-' + response.compliance" x-text="response.compliance"></span>
+                                             <!-- ** MOVED OpenRouter Link Here ** -->
+                                             <a class="openrouter-link"
+                                                :href="generateOpenRouterLink(response.model, response.question_text)"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title="Try this prompt on OpenRouter">
+                                                 Try this prompt on <img src="https://openrouter.ai/favicon.ico" alt="OpenRouter Logo"> OpenRouter
+                                             </a>
+                                             <pre class="text-display" x-text="response.question_text"></pre>
+                                        </div>
                                          <div class="detail-section"> <strong>Model Response:</strong> <div class="text-display markdown-content" x-html="renderMarkdown(response.response_text || '(No Response Content)')"></div> </div>
                                          <div class="detail-section"> <strong>Judge Analysis (<span x-text="response.judge_model || 'N/A'"></span>):</strong> <div class="text-display markdown-content" x-html="renderMarkdown(response.judge_analysis || '(No Analysis Available)')"></div> </div>
                                     </div>

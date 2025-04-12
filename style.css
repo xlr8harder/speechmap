@@ -20,9 +20,9 @@ nav.view-selector button.active { background-color: #007bff; color: white; borde
 nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-color: #adb5bd;}
 
 /* --- About View --- */
-/* ** MODIFIED: Removed centering ** */
-.about-content { max-width: 800px; margin: 10px 0; padding: 0 15px; }
+.about-content { max-width: 800px; margin: 10px 0; padding: 0 15px; } /* Left align */
 .about-content h3 { margin-top: 1.8em; }
+.about-content ul { margin-top: 0.5em; margin-bottom: 1em; padding-left: 25px;} /* Standard list indent */
 ul.variation-list { list-style: none; padding-left: 0; margin-top: 0.5em;}
 ul.variation-list li { margin-bottom: 0.6em; background-color: #f8f9fa; padding: 8px 12px; border-radius: 4px; border: 1px solid #eee; }
 ul.variation-list li strong { margin-right: 8px; color: #495057;}
@@ -42,6 +42,11 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .tabulator-row .tabulator-cell { border-right: 1px solid #eee; padding: 8px 10px; }
 .tabulator-cell .tabulator-progress-bar { border: 1px solid #ccc; background-color: #e9ecef; height: 18px; border-radius: 3px;}
 .tabulator-cell .tabulator-progress-bar span { color: #333; font-size: 0.85em; text-shadow: none; line-height: 18px; }
+.tabulator-cell.pct-cell { font-weight: 500; }
+.tabulator-cell.pct-denial-cell { background-color: rgba(231, 76, 60, 0.1); } /* Lighter background */
+.tabulator-cell.pct-evasive-cell { background-color: rgba(241, 196, 15, 0.1); }
+.tabulator-cell.pct-error-cell { background-color: rgba(155, 89, 182, 0.1); }
+
 
 /* --- TOC Styles --- */
 .toc-details { margin-bottom: 20px; border: 1px solid #eee; border-radius: 4px; background-color: #fff; }
@@ -71,20 +76,22 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .stat-count { font-size: 0.9em; color: #6c757d; margin-left: 5px;}
 .compliance-label.summary-label { font-size: 0.85em; margin-left: 0; margin-right: 5px; margin-bottom: 5px; padding: 3px 7px; display: inline-block; }
 ul.stats-list { list-style: none; padding-left: 0; margin: 5px 0 0 0; }
-ul.stats-list.horizontal li { display: inline-block; margin-right: 15px; }
-ul.stats-list li { font-size: 0.9em; margin-bottom: 4px; }
-ul.stats-list li span:first-child { color: #555; }
-.filter-group { border-left: 3px solid #ddd; padding-left: 15px; }
-.filter-group strong { margin-bottom: 10px; }
+/* Make stats lists vertical for checkbox layout */
+ul.stats-list.vertical li { margin-bottom: 6px; }
 label.checkbox-label { display: block; margin-bottom: 5px; font-size: 0.9em; cursor: pointer; padding: 4px 6px; border-radius: 3px; transition: background-color 0.15s ease;}
 label.checkbox-label input[type="checkbox"] { margin-right: 8px; vertical-align: middle; }
 label.checkbox-label:hover { background-color: #f0f0f0; }
-.filter-group ul.stats-list.vertical { margin-top: 8px; }
-.filter-group ul.stats-list.vertical li { margin-bottom: 6px; }
+/* Adjust spacing for compliance labels within checkbox labels */
+label.checkbox-label .compliance-label.summary-label { margin-left: 5px; vertical-align: middle; }
+label.checkbox-label strong { display: inline; font-weight: normal; margin-right: 5px;} /* For variation/domain */
+
+.filter-group { border-left: 3px solid #ddd; padding-left: 15px; }
+.filter-group strong { margin-bottom: 10px; }
 button.clear-all-filters-button { font-size: 0.85em; margin-top: 15px; padding: 3px 8px; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background-color: #eee;}
 button.clear-all-filters-button:hover { background-color: #ddd;}
 .filter-status { font-size: 0.9em; color: #555; margin-top: -10px; margin-bottom: 15px; font-style: italic; background-color: #e9ecef; padding: 5px 10px; border-radius: 3px;}
 .filter-status strong { font-style: normal; font-weight: 600; color: #333;}
+
 
 /* --- Question Theme Detail View --- */
 .response-list { margin-top: 20px; }
@@ -100,6 +107,7 @@ h4.model-section-header { border-bottom: 1px dashed #ccc; margin-top: 0; margin-
 .detail-section strong { display: inline-block; margin-bottom: 8px; color: #333; font-size: 0.95em; font-weight: bold; margin-right: 8px;}
 .detail-section.question-section strong { margin-bottom: 0; }
 .detail-section.question-section .compliance-label { vertical-align: middle; margin-left: 10px; }
+.detail-section.question-section .openrouter-link { margin-left: 15px; vertical-align: middle;} /* Space before OR link */
 
 .text-display { width: 100%; box-sizing: border-box; background-color: #f8f8f8; border: 1px solid #ccc; padding: 10px; border-radius: 4px; word-wrap: break-word; font-size: 0.9em; color: #333; margin-top: 5px; max-height: none; overflow-y: visible; }
 pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
@@ -134,6 +142,7 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .compliance-ERROR { background-color: #9b59b6; }
 .compliance-UNKNOWN { background-color: #bdc3c7; color: #333;}
 
-/* About View Specific Styles */
-ul.variation-list li { margin-bottom: 0.5em; }
-ul.variation-list li strong { margin-right: 5px; }
+/* OpenRouter Link */
+.openrouter-link { display: inline-flex; align-items: center; padding: 2px 6px; background-color: #eee; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: #333; font-size: 0.8em; vertical-align: middle; transition: background-color 0.2s ease; }
+.openrouter-link:hover { background-color: #ddd; text-decoration: none; color: #000; }
+.openrouter-link img { height: 0.9em; /* Adjust size */ width: 0.9em; margin-left: 4px; margin-right: 2px; vertical-align: text-bottom; } /* Adjust alignment */

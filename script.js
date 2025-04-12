@@ -8,8 +8,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('explorerData', () => ({
         // --- State Variables ---
         isLoading: true, loadingMessage: 'Initializing...', errorMessage: null, allResponses: [], complianceOrder: [],
-        isDataLoaded: false,
-        currentView: 'about', availableFilters: { models: [], domains: [], variations: [], grouping_keys: [] },
+        isDataLoaded: false, currentView: 'about', availableFilters: { models: [], domains: [], variations: [], grouping_keys: [] },
         overviewSortKey: 'pct_complete_overall', selectedModel: null,
         activeModelDomainFilters: [], activeModelVariationFilters: [], activeModelComplianceFilters: [],
         modelDetailSortKey: 'pct_complete', questionThemeDomainFilter: '',
@@ -18,10 +17,9 @@ document.addEventListener('alpine:init', () => {
         variationMap: VARIATION_MAP,
 
         // --- Computed Properties ---
-        // (Ensure numeric sort logic is applied correctly)
-        get modelSummary() { if(!this.isDataLoaded) return []; const s=this.allResponses.reduce((a,r)=>{if(!a[r.model])a[r.model]={m:r.model,c:0,k:0};a[r.model].c++;if(r.compliance==='COMPLETE')a[r.model].k++;return a;},{}); const res=Object.values(s).map(i=>({model:i.m,num_responses:i.c,pct_complete_overall:i.c>0?(i.k/i.c*100):0,})); res.sort((a,b)=>(this.overviewSortKey==='model'?a.model.localeCompare(b.model):Number(a.pct_complete_overall)-Number(b.pct_complete_overall))); return res; },
+        get modelSummary() { if(!this.isDataLoaded) return []; const s=this.allResponses.reduce((a,r)=>{if(!a[r.model])a[r.model]={model:r.model,c:0,k:0,e:0,d:0,r:0};a[r.model].c++;if(r.compliance==='COMPLETE')a[r.model].k++;else if(r.compliance==='EVASIVE')a[r.model].e++;else if(r.compliance==='DENIAL')a[r.model].d++;else if(r.compliance==='ERROR')a[r.model].r++; return a;},{}); const res=Object.values(s).map(i=>({model:i.model,num_responses:i.c,pct_complete_overall:i.c>0?(i.k/i.c*100):0, pct_evasive: i.c > 0 ? (i.e / i.c * 100):0, pct_denial: i.c > 0 ? (i.d / i.c * 100):0, pct_error: i.c > 0 ? (i.r / i.c * 100):0 })); res.sort((a,b)=>(this.overviewSortKey==='model'?a.model.localeCompare(b.model):Number(a.pct_complete_overall)-Number(b.pct_complete_overall))); return res; },
         get questionThemeSummary() { if(!this.isDataLoaded) return []; const f=this.allResponses.filter(r=>!this.questionThemeDomainFilter||r.domain===this.questionThemeDomainFilter); const s=f.reduce((a,r)=>{if(!a[r.grouping_key])a[r.grouping_key]={k:r.grouping_key,d:r.domain,c:0,p:0};a[r.grouping_key].c++;if(r.compliance==='COMPLETE')a[r.grouping_key].p++;a[r.grouping_key].d=r.domain;return a;},{}); const res=Object.values(s).map(i=>({grouping_key:i.k,domain:i.d,num_responses:i.c,pct_complete_overall:i.c>0?(i.p/i.c*100):0,})); res.sort((a,b)=>{if(this.questionThemeSortKey==='grouping_key')return a.grouping_key.localeCompare(b.grouping_key);if(this.questionThemeSortKey==='num_responses')return Number(b.num_responses)-Number(a.num_responses);return Number(a.pct_complete_overall)-Number(b.pct_complete_overall);}); return res; },
-        get selectedModelQuestionSummary() { if (!this.selectedModel || !this.isDataLoaded) return []; const modelResponses = this.allResponses.filter(r => r.model === this.selectedModel && (this.activeModelDomainFilters.length === 0 || this.activeModelDomainFilters.includes(r.domain)) && (this.activeModelVariationFilters.length === 0 || this.activeModelVariationFilters.includes(r.variation)) && (this.activeModelComplianceFilters.length === 0 || this.activeModelComplianceFilters.includes(r.compliance)) ); const summary = modelResponses.reduce((acc, r) => { if (!acc[r.grouping_key]) acc[r.grouping_key] = { k: r.grouping_key, d: r.domain, c: 0, p: 0 }; acc[r.grouping_key].c++; if (r.compliance === 'COMPLETE') acc[r.grouping_key].p++; acc[r.grouping_key].d = r.domain; return acc; }, {}); const result = Object.values(summary).map(s => ({ grouping_key: s.k, domain: s.d, num_responses: s.c, pct_complete: s.c > 0 ? (s.p / s.c * 100) : 0, })); result.sort((a, b) => (this.modelDetailSortKey === 'grouping_key' ? a.grouping_key.localeCompare(b.grouping_key) : Number(a.pct_complete) - Number(b.pct_complete))); return result; },
+        get selectedModelQuestionSummary() { if (!this.selectedModel || !this.isDataLoaded) return []; const f=this.allResponses.filter(r=>r.model === this.selectedModel && (this.activeModelDomainFilters.length === 0 || this.activeModelDomainFilters.includes(r.domain)) && (this.activeModelVariationFilters.length === 0 || this.activeModelVariationFilters.includes(r.variation)) && (this.activeModelComplianceFilters.length === 0 || this.activeModelComplianceFilters.includes(r.compliance))); const s=f.reduce((a,r)=>{if(!a[r.grouping_key])a[r.grouping_key]={k:r.grouping_key,d:r.domain,c:0,p:0};a[r.grouping_key].c++;if(r.compliance==='COMPLETE')a[r.grouping_key].p++;a[r.grouping_key].d=r.domain;return a;},{}); const res=Object.values(s).map(i=>({grouping_key:i.k,domain:i.d,num_responses:i.c,pct_complete:i.c>0?(i.p/i.c*100):0,})); res.sort((a,b)=>(this.modelDetailSortKey==='grouping_key'?a.grouping_key.localeCompare(b.grouping_key):Number(a.pct_complete)-Number(b.pct_complete))); return res; },
         get selectedModelData() { if (!this.selectedModel || !this.isDataLoaded) return null; return this.modelSummary.find(m => m.model === this.selectedModel) || null; },
         get selectedQuestionThemeData() { if (!this.selectedGroupingKey || !this.isDataLoaded) return null; const firstRecord = this.allResponses.find(r => r.grouping_key === this.selectedGroupingKey); if (!firstRecord) return null; const domain = firstRecord.domain; const responsesForTheme = this.allResponses .filter(r => r.grouping_key === this.selectedGroupingKey) .sort((a,b) => a.model.localeCompare(b.model) || parseInt(a.variation) - parseInt(b.variation)); return { grouping_key: this.selectedGroupingKey, domain: domain, responses: responsesForTheme }; },
         get selectedQuestionThemeModelSummary() { if (!this.selectedQuestionThemeData || !this.selectedQuestionThemeData.responses) return []; const summary = this.selectedQuestionThemeData.responses.reduce((acc, r) => { if (!acc[r.model]) acc[r.model] = { model: r.model, anchor_id: r.anchor_id, count: 0, complete_count: 0 }; acc[r.model].count++; if (r.compliance === 'COMPLETE') acc[r.model].complete_count++; acc[r.model].anchor_id = r.anchor_id; return acc; }, {}); return Object.values(summary).map(s => ({ model: s.model, anchor_id: s.anchor_id, count: s.count, pct_complete: s.count > 0 ? (s.complete_count / s.count * 100) : 0, })).sort((a,b) => a.model.localeCompare(b.model)); },
@@ -29,53 +27,87 @@ document.addEventListener('alpine:init', () => {
 
         // --- Methods ---
         async initialize() {
-             console.log('Alpine initializing...'); this.isLoading = true; this.loadingMessage = 'Fetching data...'; this.errorMessage = null;
-             this.parseHash(); // Parse hash immediately to set initial view (e.g. 'about')
-             this.setupWatchers(); // Setup watchers early
-             // Load data asynchronously
-             this.loadData()
-                 .then(() => { this.isDataLoaded = true; this.parseHash(true); }) // Re-parse hash after data load to set model/key, forceUpdate=true
-                 .catch(error => { console.error("Init error:", error); this.errorMessage = `Failed load: ${error.message}`; this.allResponses = []; })
-                 .finally(() => {
-                     this.isLoading = false; this.loadingMessage = ''; console.log("Init sequence complete.");
-                     // Ensure table for initial view is rendered AFTER loading finishes
-                     this.$nextTick(() => this.initializeTableForView(this.currentView));
-                 });
-             window.addEventListener('hashchange', () => this.parseHash()); // Listen for subsequent changes
-         },
-        async loadData() { /* ... same fetch/decompress/parse logic ... */ this.loadingMessage='Fetching...';const r=await fetch('us_hard_data.json.gz',{headers:{'Accept-Encoding':'gzip'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);this.loadingMessage='Decompressing...';await this.$nextTick();const c=await r.arrayBuffer();const d=pako.inflate(new Uint8Array(c),{to:'string'});this.loadingMessage='Parsing...';await this.$nextTick();const j=JSON.parse(d);this.allResponses=j.records||[];this.complianceOrder=j.complianceOrder||[];if(this.allResponses.length===0)throw new Error("No records.");this.availableFilters.models=[...new Set(this.allResponses.map(r=>r.model))].sort();this.availableFilters.domains=[...new Set(this.allResponses.map(r=>r.domain))].sort();this.availableFilters.variations=[...new Set(this.allResponses.map(r=>r.variation))].sort((a,b)=>parseInt(a)-parseInt(b));this.availableFilters.grouping_keys=[...new Set(this.allResponses.map(r=>r.grouping_key))].sort();console.log("Data loaded."); },
-        parseHash(forceUpdate = false) { /* ... same parsing logic ... */ console.log("Parsing Hash:", location.hash); const h=location.hash.slice(1); const parts=h.split('#'); const pathParts=parts[0].split('/').filter(Boolean); const anchor=parts[1]||null; let v='about'; let m=null; let k=null; if(pathParts[0]==='overview'){ v='overview'; } else if(pathParts[0]==='model'&&pathParts[1]){ const pM=decodeURIComponent(pathParts[1]); if(!this.isDataLoaded || this.availableFilters.models.includes(pM)){v='model_detail';m=pM;} else { console.warn(`Model '${pM}' invalid.`); this.navigate('about', true); return; } } else if(pathParts[0]==='questions'){ if(pathParts[1]){ const pK=decodeURIComponent(pathParts[1]); if(!this.isDataLoaded || this.availableFilters.grouping_keys.includes(pK)){v='question_theme_detail';k=pK;} else { console.warn(`Key '${pK}' invalid.`); this.navigate('question_themes', true); return; } } else { v='question_themes'; } }
-            if (forceUpdate || v !== this.currentView || m !== this.selectedModel || k !== this.selectedGroupingKey) { console.log(`Updating state: view=${v}, model=${m}, key=${k}`); const previousView = this.currentView; this.currentView=v; if (v !== 'model_detail') this.selectedModel=null; if (v !== 'question_theme_detail') this.selectedGroupingKey=null; this.selectedModel=m; this.selectedGroupingKey=k; if (v === 'model_detail' && previousView !== 'model_detail') this.clearModelDetailFilters(false); if (v === 'question_themes' && previousView !== 'question_themes') this.questionThemeDomainFilter = '';
-                 // Only init table if data is loaded
-                 if (this.isDataLoaded) { this.$nextTick(() => this.initializeTableForView(this.currentView, anchor)); }
+            console.log('Alpine initializing...'); this.isLoading = true; this.loadingMessage = 'Fetching data...'; this.errorMessage = null; this.isDataLoaded = false;
+            this.parseHash(); this.setupWatchers();
+            this.loadData().then(() => { this.isDataLoaded = true; this.parseHash(true); this.$nextTick(() => { this.isLoading = false; this.initializeTableForView(this.currentView); }); }) .catch(e => { console.error("Init error:", e); this.errorMessage = `Failed load: ${e.message}`; this.isLoading = false; }).finally(() => { this.loadingMessage = ''; console.log("Data loading attempt finished."); });
+            window.addEventListener('hashchange', () => this.parseHash());
+        },
+        async loadData() { this.loadingMessage = 'Fetching data...'; const r=await fetch('us_hard_data.json.gz',{headers:{'Accept-Encoding':'gzip'}}); if (!r.ok) throw new Error(`HTTP ${r.status}`); this.loadingMessage = 'Decompressing...'; await this.$nextTick(); const c=await r.arrayBuffer(); const d=pako.inflate(new Uint8Array(c),{to:'string'}); this.loadingMessage = 'Parsing...'; await this.$nextTick(); const j=JSON.parse(d); this.allResponses=j.records||[]; this.complianceOrder=j.complianceOrder||[]; if(this.allResponses.length===0) throw new Error("No records."); this.availableFilters.models=[...new Set(this.allResponses.map(r=>r.model))].sort(); this.availableFilters.domains=[...new Set(this.allResponses.map(r=>r.domain))].sort(); this.availableFilters.variations=[...new Set(this.allResponses.map(r=>r.variation))].sort((a,b)=>parseInt(a)-parseInt(b)); this.availableFilters.grouping_keys=[...new Set(this.allResponses.map(r=>r.grouping_key))].sort(); console.log("Data loaded."); },
+        parseHash(forceUpdate = false) {
+            console.log("Parsing Hash:", location.hash); const h=location.hash.slice(1); const parts=h.split('#'); const pathParts=parts[0].split('/').filter(Boolean); const anchor=parts[1]||null; let v='about'; let m=null; let k=null;
+            if(pathParts[0]==='overview'){ v='overview'; } else if(pathParts[0]==='model'&&pathParts[1]){ const pM=decodeURIComponent(pathParts[1]); if(!this.isDataLoaded || this.availableFilters.models.includes(pM)){v='model_detail';m=pM;} else { console.warn(`Model '${pM}' invalid.`); this.navigate('about', true); return; } } else if(pathParts[0]==='questions'){ if(pathParts[1]){ const pK=decodeURIComponent(pathParts[1]); if(!this.isDataLoaded || this.availableFilters.grouping_keys.includes(pK)){v='question_theme_detail';k=pK;} else { console.warn(`Key '${pK}' invalid.`); this.navigate('question_themes', true); return; } } else { v='question_themes'; } }
+            if (forceUpdate || v !== this.currentView || m !== this.selectedModel || k !== this.selectedGroupingKey) {
+                 console.log(`State update: view=${v}, model=${m}, key=${k}`);
+                 const previousView = this.currentView;
+                 this.currentView=v; if (v !== 'model_detail') this.selectedModel=null; if (v !== 'question_theme_detail') this.selectedGroupingKey=null; this.selectedModel=m; this.selectedGroupingKey=k;
+                 if (v === 'model_detail' && previousView !== 'model_detail') this.clearModelDetailFilters(false); if (v === 'question_themes' && previousView !== 'question_themes') this.questionThemeDomainFilter = '';
+                 // Re-initialize tables only if data is loaded
+                 if (this.isDataLoaded) {
+                     this.$nextTick(() => this.initializeTableForView(this.currentView, anchor));
+                 }
             } else { console.log("State matches hash."); if(anchor && this.currentView === 'question_theme_detail') this.smoothScroll('#'+anchor); }
          },
-        navigate(view, replaceHistory = false, selectionKey = null, anchor = null) { /* ... same logic ... */ let h='#/about'; if(view==='overview'){h='#/overview';} else if(view==='question_themes'){h='#/questions';} else if(view==='model_detail'){const m=selectionKey||this.selectedModel; if(m)h=`#/model/${encodeURIComponent(m)}`;else return;} else if(view==='question_theme_detail'){const k=selectionKey||this.selectedGroupingKey; if(k)h=`#/questions/${encodeURIComponent(k)}`;else return;} else if(view!=='about'){console.warn("Invalid view:",view);return;} const nH=anchor?`${h}#${anchor}`:h; if(location.hash !== nH){console.log(`URL Update: ${nH} (repl:${replaceHistory})`); if(replaceHistory)history.replaceState(null,'',nH); else history.pushState(null,'',nH); this.parseHash();} else if(replaceHistory){console.log("Same hash nav (filter/sort), ensuring redraw."); this.$nextTick(()=>{if(this.isDataLoaded)this.initializeTableForView(this.currentView);});} else if(anchor&&this.currentView==='question_theme_detail'){this.smoothScroll('#'+anchor);} },
+        navigate(view, replaceHistory = false, selectionKey = null, anchor = null) { let h='#/about'; if(view==='overview'){h='#/overview';} else if(view==='question_themes'){h='#/questions';} else if(view==='model_detail'){const m=selectionKey||this.selectedModel; if(m)h=`#/model/${encodeURIComponent(m)}`;else return;} else if(view==='question_theme_detail'){const k=selectionKey||this.selectedGroupingKey; if(k)h=`#/questions/${encodeURIComponent(k)}`;else return;} else if(view!=='about'){console.warn("Invalid view:",view);return;} const nH=anchor?`${h}#${anchor}`:h; if(location.hash !== nH){console.log(`URL Update: ${nH} (repl:${replaceHistory})`); if(replaceHistory)history.replaceState(null,'',nH); else history.pushState(null,'',nH); this.parseHash();} else if(replaceHistory){console.log("Same hash nav (filter/sort), ensuring redraw."); this.$nextTick(()=>{if(this.isDataLoaded)this.initializeTableForView(this.currentView);});} else if(anchor && view === 'question_theme_detail'){this.smoothScroll('#'+anchor);} },
         selectModel(modelName) { this.selectedModel = modelName; this.navigate('model_detail', false, modelName); },
         selectQuestionTheme(groupingKey, modelAnchorId = null) { this.selectedGroupingKey = groupingKey; this.navigate('question_theme_detail', false, groupingKey, modelAnchorId); },
         clearModelDetailFilters(doNavigate = true) { this.activeModelDomainFilters = []; this.activeModelVariationFilters = []; this.activeModelComplianceFilters = []; if(doNavigate) this.navigate('model_detail', true); },
         filterQuestionThemesByDomain(domain) { this.questionThemeDomainFilter = domain; this.navigate('question_themes', true); },
 
         // --- Tabulator Initializers ---
-        // ** Added sorter:"number" to all relevant columns **
-        initOverviewTable() { const t=document.getElementById("overview-table"); if(!t||this.currentView!=='overview')return; this.destroyTable(this.overviewTable); const d=this.modelSummary; console.log("Init Overview, #",d.length); this.overviewTable=new Tabulator(t,{ data:[...d], layout:"fitDataFill", height:"60vh", placeholder:"No models.", columns:[{title:"Model", field:"model", widthGrow:2, frozen:true, headerFilter:"input", cellClick:(e,c)=>this.selectModel(c.getRow().getData().model)}, {title:"# Resp", field:"num_responses", width:120, hozAlign:"right", sorter:"number"}, {title:"% Complete", field:"pct_complete_overall", width:150, hozAlign:"right", sorter:"number", formatter:"progress", formatterParams:{min:0, max:100, color:PROGRESS_COLORS_TABULATOR, legend:(v)=>(typeof v==='number'&&!isNaN(v))?`${v.toFixed(1)}%`:''}}], }); },
-        initQuestionThemesTable() { const t=document.getElementById("question-themes-table"); if(!t||this.currentView!=='question_themes')return; this.destroyTable(this.questionThemesTable); const d=this.questionThemeSummary; console.log("Init Q Themes, #",d.length); this.questionThemesTable = new Tabulator(t,{ data:[...d], layout:"fitDataFill", height:"60vh", placeholder:"No themes.", columns:[{title:"Grouping Key", field:"grouping_key", widthGrow:2, frozen:true, headerFilter:"input", cellClick:(e,c)=>this.selectQuestionTheme(c.getRow().getData().grouping_key)}, {title:"Domain", field:"domain", widthGrow:1.5, headerFilter:"select", headerFilterParams:{values:["", ...this.availableFilters.domains]}}, {title:"# Resp", field:"num_responses", width:120, hozAlign:"right", sorter:"number"}, {title:"% Complete", field:"pct_complete_overall", width:150, hozAlign:"right", sorter:"number", formatter:"progress", formatterParams:{min:0, max:100, color:PROGRESS_COLORS_TABULATOR, legend:(v)=>(typeof v==='number'&&!isNaN(v))?`${v.toFixed(1)}%`:''}}], });},
-        initModelDetailTable() { const t=document.getElementById("model-detail-table"); if(!t||this.currentView!=='model_detail'||!this.selectedModel)return; this.destroyTable(this.modelDetailTable); const d=this.selectedModelQuestionSummary; console.log(`Init Model Detail ${this.selectedModel}, #`,d.length); this.modelDetailTable = new Tabulator(t,{ data:[...d], layout:"fitDataFill", height:"60vh", placeholder:"No Qs matching filters.", columns:[{title:"Grouping Key", field:"grouping_key", widthGrow:2, frozen:true, headerFilter:"input", cellClick:(e,c)=>this.selectQuestionTheme(c.getRow().getData().grouping_key, `response-${generateSafeId(this.selectedModel)}`) }, {title:"Domain", field:"domain", widthGrow:1.5, headerFilter:"select", headerFilterParams:{values:["", ...this.availableFilters.domains.filter(dm=>d.some(q=>q.domain===dm))]}}, {title:"# Resp", field:"num_responses", width:120, hozAlign:"right", sorter:"number"}, {title:"% Complete", field:"pct_complete", width:150, hozAlign:"right", sorter:"number", formatter:"progress", formatterParams:{min:0, max:100, color:PROGRESS_COLORS_TABULATOR, legend:(v)=>(typeof v==='number'&&!isNaN(v))?`${v.toFixed(1)}%`:''}}], }); },
-
+        initOverviewTable() {
+            const t=document.getElementById("overview-table"); if(!t||this.currentView!=='overview')return; this.destroyTable(this.overviewTable); const d=this.modelSummary; console.log("Init Overview, #",d.length);
+            this.overviewTable=new Tabulator(t,{
+                data:[...d], layout:"fitDataFill", height:"60vh", placeholder:"No models.", selectable:false, // Disable row selection appearance
+                columns:[
+                    {title:"Model", field:"model", widthGrow:2, frozen:true, headerFilter:"input", cellClick:(e,c)=>this.selectModel(c.getRow().getData().model), cssClass:"clickable-cell"}, // Add clickable hint maybe
+                    {title:"# Resp", field:"num_responses", width:100, hozAlign:"right", sorter:"number"},
+                    {title:"% Comp", field:"pct_complete_overall", width:110, hozAlign:"right", sorter:"number", formatter:"progress", formatterParams:{min:0, max:100, color:PROGRESS_COLORS_TABULATOR, legend:(v)=>(typeof v==='number'&&!isNaN(v))?`${v.toFixed(1)}%`:''}},
+                    {title:"% Evas", field:"pct_evasive", width:100, hozAlign:"right", sorter:"number", formatter:percentWithBgFormatter, cssClass:"pct-cell pct-evasive-cell"},
+                    {title:"% Deny", field:"pct_denial", width:100, hozAlign:"right", sorter:"number", formatter:percentWithBgFormatter, cssClass:"pct-cell pct-denial-cell"},
+                    {title:"% Err", field:"pct_error", width:100, hozAlign:"right", sorter:"number", formatter:percentWithBgFormatter, cssClass:"pct-cell pct-error-cell"}
+                ],
+            });
+        },
+        initQuestionThemesTable() {
+             const t=document.getElementById("question-themes-table"); if(!t||this.currentView!=='question_themes')return; this.destroyTable(this.questionThemesTable); const d=this.questionThemeSummary; console.log("Init Q Themes, #",d.length);
+             this.questionThemesTable = new Tabulator(t,{
+                 data:[...d], layout:"fitDataFill", height:"60vh", placeholder:"No themes.", selectable:false,
+                 columns:[
+                    {title:"Grouping Key", field:"grouping_key", widthGrow:2, frozen:true, headerFilter:"input", cellClick:(e,c)=>this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass:"clickable-cell"},
+                    {title:"Domain", field:"domain", widthGrow:1.5, headerFilter:"select", headerFilterParams:{values:["", ...this.availableFilters.domains]}},
+                    {title:"# Resp", field:"num_responses", width:120, hozAlign:"right", sorter:"number"},
+                    {title:"% Complete", field:"pct_complete_overall", width:150, hozAlign:"right", sorter:"number", formatter:"progress", formatterParams:{min:0, max:100, color:PROGRESS_COLORS_TABULATOR, legend:(v)=>(typeof v==='number'&&!isNaN(v))?`${v.toFixed(1)}%`:''}}
+                ],
+             });
+        },
+        initModelDetailTable() {
+             const t=document.getElementById("model-detail-table"); if(!t||this.currentView!=='model_detail'||!this.selectedModel)return; this.destroyTable(this.modelDetailTable); const d=this.selectedModelQuestionSummary; console.log(`Init Model Detail ${this.selectedModel}, #`,d.length);
+             this.modelDetailTable = new Tabulator(t,{
+                 data:[...d], layout:"fitDataFill", height:"60vh", placeholder:"No Qs matching filters.", selectable:false,
+                 columns:[
+                    {title:"Grouping Key", field:"grouping_key", widthGrow:2, frozen:true, headerFilter:"input", cellClick:(e,c)=>this.selectQuestionTheme(c.getRow().getData().grouping_key, `response-${generateSafeId(this.selectedModel)}`), cssClass:"clickable-cell"},
+                    {title:"Domain", field:"domain", widthGrow:1.5, headerFilter:"select", headerFilterParams:{values:["", ...this.availableFilters.domains.filter(dm=>d.some(q=>q.domain===dm))]}},
+                    {title:"# Resp", field:"num_responses", width:120, hozAlign:"right", sorter:"number"},
+                    {title:"% Complete", field:"pct_complete", width:150, hozAlign:"right", sorter:"number", formatter:"progress", formatterParams:{min:0, max:100, color:PROGRESS_COLORS_TABULATOR, legend:(v)=>(typeof v==='number'&&!isNaN(v))?`${v.toFixed(1)}%`:''}}
+                ],
+             });
+         },
         initializeTableForView(view, anchor = null) {
+             if (!this.isDataLoaded) { console.log("Deferring table init, data not loaded yet."); return; }
              console.log(`Initializing table for view: ${view}`);
              this.destroyAllTables();
-             // Use setTimeout to ensure DOM is ready AFTER potential Alpine updates
-             setTimeout(() => {
+             // Add try-catch around initializers
+             try {
                  if (view === 'overview') this.initOverviewTable();
                  else if (view === 'question_themes') this.initQuestionThemesTable();
                  else if (view === 'model_detail') this.initModelDetailTable();
-
-                 if (anchor && view === 'question_theme_detail') {
-                     this.smoothScroll('#' + anchor);
-                 }
-             }, 50); // Small delay was kept, seems to help stability
+                 if (anchor && view === 'question_theme_detail') { setTimeout(() => this.smoothScroll('#' + anchor), 150); }
+            } catch (error) {
+                console.error(`Error initializing table for view ${view}:`, error);
+                this.errorMessage = `Error rendering ${view} table. Please check console.`;
+            }
          },
+
         destroyTable(tableInstance) { if (tableInstance) { try { tableInstance.destroy(); } catch (e) {} } return null; },
         destroyAllTables() { this.overviewTable = this.destroyTable(this.overviewTable); this.questionThemesTable = this.destroyTable(this.questionThemesTable); this.modelDetailTable = this.destroyTable(this.modelDetailTable); },
 
@@ -88,6 +120,16 @@ document.addEventListener('alpine:init', () => {
         smoothScroll(selector) { const el = document.querySelector(selector); if(el){ console.log("Scrolling to:", selector); setTimeout(() => el.scrollIntoView({behavior:'smooth',block:'start'}), 150); } else console.warn("Smooth scroll target not found:",selector); },
         getComplianceBoxStyle(percent) { let c=COMPLIANCE_COLORS.UNKNOWN; if(typeof percent==='number'&&!isNaN(percent)){c=percent>=90?COMPLIANCE_COLORS.COMPLETE:(percent>=25?COMPLIANCE_COLORS.EVASIVE:COMPLIANCE_COLORS.DENIAL);} const t=(c===COMPLIANCE_COLORS.EVASIVE||c===COMPLIANCE_COLORS.UNKNOWN)?'#333':'white'; return `background-color:${c};color:${t};`; },
         groupResponsesByModel(responses) { if (!responses) return []; const g = responses.reduce((a, r) => { if (!a[r.model]) { a[r.model] = { model: r.model, responses: [] }; } a[r.model].responses.push(r); return a; }, {}); return Object.values(g).sort((a,b) => a.model.localeCompare(b.model)); },
+        // ** NEW: OpenRouter Link Generator **
+        generateOpenRouterLink(model, prompt) {
+            const baseUrl = "https://openrouter.ai/chat";
+            // Example models - replace with relevant ones if needed, or just the single model
+            const modelsParam = "google/gemini-pro,openai/gpt-4-turbo,anthropic/claude-3-opus";
+            // Use the actual model from the response if available and valid format?
+            // For now, using fixed examples.
+            const messageParam = encodeURIComponent(prompt || "");
+            return `${baseUrl}?models=${modelsParam}&q=${messageParam}`; // Use 'q' for query prefill
+        },
         init() { /* Called from x-init */ }
 
     }));
@@ -99,3 +141,9 @@ function truncateText(text, maxLength = 100) { if (!text) return ""; text = Stri
 function formatDate(dateString) { if (!dateString) return "N/A"; try { return new Date(dateString).toLocaleString('sv-SE'); } catch (e) { return dateString; } }
 function sanitize(str) { if (str === null || str === undefined) return ''; const temp = document.createElement('div'); temp.textContent = String(str); return temp.innerHTML; }
 function generateSafeId(text) { if (!text) return 'id'; let s = String(text).toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-'); return s.replace(/^-+|-+$/g, '') || "id"; }
+// Formatter for overview % cells
+function percentWithBgFormatter(cell, formatterParams, onRendered){
+    const value = cell.getValue();
+    if (typeof value !== 'number' || isNaN(value)) return "";
+    return value.toFixed(1) + '%'; // Just return text, background set by cssClass
+}
