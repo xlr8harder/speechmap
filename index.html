@@ -70,9 +70,7 @@
         <div>
             <h2 x-text="`Model Details: ${selectedModelData.model}`"></h2>
             <button @click="navigate('overview')">← Back to Overview</button>
-            <!-- Performance Summary Box Removed -->
             <h3>Compliance by Question Theme</h3>
-            <!-- Filter Status Paragraph Removed -->
             <div id="model-detail-table" class="table-container"></div>
         </div>
     </template>
@@ -98,9 +96,10 @@
                         <li>
                             <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)">
                                 <span class="toc-model-name" x-text="modelInfo.model"></span>
-                                <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
-                                <!-- Response Count Temporarily Commented Out -->
-                                <!-- <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span> -->
+                                <span class="toc-right-group">
+                                    <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
+                                    <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><!-- Added two non-breaking spaces here -->
+                                </span>
                             </a>
                         </li>
                     </template>

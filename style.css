@@ -92,7 +92,6 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .toc-link-item {
     display: flex;
     align-items: center;
-    /* justify-content: flex-start; Keep default or explicit */
     width: 100%;
     padding: 6px 15px;
     border-bottom: 1px dashed #eee;
@@ -103,14 +102,20 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .toc-link-item:last-child { border-bottom: none; }
 .toc-link-item:hover { background-color: #f0f8ff; text-decoration: none; }
 .toc-model-name {
-    /* flex-grow: 1; Removed */
-    flex-grow: 0; /* Let it take natural width unless truncated */
-    flex-shrink: 1; /* Allow shrinking */
-    margin-right: 10px;
+    flex-grow: 0;
+    flex-shrink: 1;
+    margin-right: 10px; /* Space between name and right group */
     font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+/* New group for right-aligned elements */
+.toc-right-group {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Push this group to the right */
+    flex-shrink: 0; /* Prevent group from shrinking */
 }
 .toc-compliance-box {
     font-size: 0.8em;
@@ -120,16 +125,15 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
     font-weight: bold;
     text-align: center;
     flex-shrink: 0;
-    /* margin-right: 10px; Keep margin right */
-    margin-left: auto; /* Added: Push this and subsequent elements right */
-    margin-right: 10px; /* Keep margin to response count */
+    margin-left: 0; /* Removed auto margin */
+    margin-right: 8px; /* Consistent spacing */
     min-width: 50px;
 }
 .toc-response-count {
     font-size: 0.85em;
     color: #6c757d;
     flex-shrink: 0;
-    /* margin-left: 8px; Removed, spacing handled by box margin-right now */
+    white-space: nowrap; /* Prevent wrapping */
 }
 .toc-button { background-color: #e9ecef; border: 1px solid #ced4da; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; cursor: pointer; transition: background-color 0.2s ease; text-decoration: none; color: #333; display: inline-block;}
 .toc-button:hover { background-color: #dee2e6; text-decoration: none; }
@@ -189,4 +193,3 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .openrouter-link { display: inline-flex; align-items: center; padding: 2px 6px; background-color: #eee; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: #333; font-size: 0.8em; vertical-align: middle; transition: background-color 0.2s ease; }
 .openrouter-link:hover { background-color: #ddd; text-decoration: none; color: #000; }
 .openrouter-link img { height: 0.9em; width: 0.9em; margin-left: 4px; margin-right: 2px; vertical-align: text-bottom; }
-
