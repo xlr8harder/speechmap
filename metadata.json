@@ -7,7 +7,7 @@
     "UNKNOWN"
   ],
   "data_files": [
-    "data_1.json.gz",
-    "data_2.json.gz"
+    "speechdata_1.json.gz",
+    "speechdata_2.json.gz"
   ]
 }

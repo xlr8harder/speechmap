@@ -8,7 +8,7 @@ import math
 
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
-OUTPUT_DATA_BASE_FILENAME = "data" # Base name for data files (data_1, data_2, ...)
+OUTPUT_DATA_BASE_FILENAME = "speechdata" # Base name for data files (data_1, data_2, ...)
 OUTPUT_METADATA_FILENAME = "metadata.json" # Metadata file name
 MAX_RECORDS_PER_FILE = 20000
 COMPLIANCE_ORDER = ['COMPLETE', 'EVASIVE', 'DENIAL', 'ERROR', 'UNKNOWN']
