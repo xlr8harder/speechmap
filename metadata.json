@@ -11,8 +11,8 @@
     "speechdata_2.json.gz"
   ],
   "stats": {
-    "models": 26,
+    "models": 32,
     "themes": 469,
-    "judgments": 30030
+    "judgments": 31046
   }
 }
