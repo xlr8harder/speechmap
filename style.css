@@ -20,7 +20,7 @@ nav.view-selector button.active { background-color: #007bff; color: white; borde
 nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-color: #adb5bd;}
 
 /* --- About View --- */
-/* ** MODIFIED: Removed centering, kept max-width ** */
+/* ** MODIFIED: Removed centering ** */
 .about-content { max-width: 800px; margin: 10px 0; padding: 0 15px; }
 .about-content h3 { margin-top: 1.8em; }
 ul.variation-list { list-style: none; padding-left: 0; margin-top: 0.5em;}
@@ -74,19 +74,17 @@ ul.stats-list { list-style: none; padding-left: 0; margin: 5px 0 0 0; }
 ul.stats-list.horizontal li { display: inline-block; margin-right: 15px; }
 ul.stats-list li { font-size: 0.9em; margin-bottom: 4px; }
 ul.stats-list li span:first-child { color: #555; }
-/* Filter Group Styling */
 .filter-group { border-left: 3px solid #ddd; padding-left: 15px; }
 .filter-group strong { margin-bottom: 10px; }
 label.checkbox-label { display: block; margin-bottom: 5px; font-size: 0.9em; cursor: pointer; padding: 4px 6px; border-radius: 3px; transition: background-color 0.15s ease;}
 label.checkbox-label input[type="checkbox"] { margin-right: 8px; vertical-align: middle; }
 label.checkbox-label:hover { background-color: #f0f0f0; }
-.filter-group ul.stats-list.vertical { margin-top: 8px; } /* Space above vertical filter lists */
-.filter-group ul.stats-list.vertical li { margin-bottom: 6px; } /* Spacing for checkboxes */
+.filter-group ul.stats-list.vertical { margin-top: 8px; }
+.filter-group ul.stats-list.vertical li { margin-bottom: 6px; }
 button.clear-all-filters-button { font-size: 0.85em; margin-top: 15px; padding: 3px 8px; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background-color: #eee;}
 button.clear-all-filters-button:hover { background-color: #ddd;}
 .filter-status { font-size: 0.9em; color: #555; margin-top: -10px; margin-bottom: 15px; font-style: italic; background-color: #e9ecef; padding: 5px 10px; border-radius: 3px;}
 .filter-status strong { font-style: normal; font-weight: 600; color: #333;}
-
 
 /* --- Question Theme Detail View --- */
 .response-list { margin-top: 20px; }
