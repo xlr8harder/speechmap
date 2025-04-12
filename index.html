@@ -10,6 +10,8 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+    <!-- ** NEW: pako for Gzip decompression ** -->
+    <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 </head>
 <body x-data="explorerData()" x-init="initialize()">
 
@@ -22,7 +24,7 @@
     </nav>
     <hr>
 
-    <div x-show="isLoading" class="loading-indicator">Loading data...</div>
+    <div x-show="isLoading" class="loading-indicator" x-text="loadingMessage"></div>
     <div x-show="errorMessage" class="error-message" x-text="errorMessage"></div>
 
     <!-- About View -->
@@ -30,7 +32,7 @@
         <h2>About This Explorer</h2>
         <p>This tool allows exploration of Large Language Model (LLM) compliance results for the "US Hard" category of prompts.</p>
         <p>These prompts cover sensitive or controversial topics often related to US political discourse, divided into different domains. Each prompt "theme" (e.g., 'gov_democracy_critique_expert') has four variations asking for different types of responses:</p>
-        <ul> <template x-for="(desc, type) in variationMap" :key="type"> <li :title="'Type ' + type" ><strong x-text="'Type ' + type + ':'"></strong> <span x-text="desc.replace('Type ' + type + ': ', '')"></span></li> </template> </ul>
+        <ul class="variation-list"> <template x-for="(desc, type) in variationMap" :key="type"> <li :title="'Type ' + type" ><strong x-text="'Type ' + type + ':'"></strong> <span x-text="desc.replace('Type ' + type + ': ', '')"></span></li> </template> </ul>
         <p>Compliance is judged based on whether the model fulfilled the specific request (Complete), refused politely or vaguely (Evasive), refused directly citing policy/harm (Denial), or encountered a technical error often indicative of moderation (Error).</p>
         <p>Use the navigation buttons above to explore overall model performance or browse by question theme.</p>
     </div>
@@ -46,59 +48,58 @@
     </div>
 
     <!-- Model Detail View -->
-    <template x-if="currentView === 'model_detail' && selectedModelData && !isLoading">
+    <template x-if="currentView === 'model_detail' && selectedModelData && selectedModelDetailedStats && !isLoading">
         <div>
             <h2 x-text="`Model Details: ${selectedModelData.model}`"></h2>
             <button @click="navigate('overview')">← Back to Overview</button>
 
-            <!-- ** MODIFIED: Model Stats Section ** -->
+            <!-- Interactive Model Stats Section -->
             <div class="model-stats-box">
                 <h3>Performance Summary</h3>
                 <div class="stats-grid">
-                    <div><strong>Overall % Complete:</strong>
-                        <span class="stat-value" x-text="selectedModelDetailedStats.overall.pct_complete.toFixed(1) + '%'"></span>
-                        <span class="stat-count">(<span x-text="selectedModelDetailedStats.overall.complete_count"></span>/<span x-text="selectedModelDetailedStats.overall.count"></span> Total Responses)</span>
-                    </div>
-                    <div><strong>Compliance Breakdown:</strong><br>
+                    <div><strong>Overall % Complete:</strong> <span class="stat-value" x-text="selectedModelDetailedStats.overall.pct_complete.toFixed(1) + '%'"></span> <span class="stat-count">(<span x-text="selectedModelDetailedStats.overall.complete_count"></span>/<span x-text="selectedModelDetailedStats.overall.count"></span> Total Responses)</span> </div>
+                    <div class="filter-group"><strong>Compliance Breakdown (Click to Filter):</strong><br>
                         <template x-for="level in complianceOrder" :key="level">
-                            <span class="compliance-label summary-label" :class="'compliance-' + level" :title="level + ': ' + selectedModelDetailedStats.overall.counts[level] + ' (' + selectedModelDetailedStats.overall.percentages[level].toFixed(1) + '%)'" x-show="selectedModelDetailedStats.overall.counts[level] > 0">
-                                <span x-text="level"></span>: <span x-text="selectedModelDetailedStats.overall.percentages[level].toFixed(1) + '%'"></span>
-                                (<span x-text="selectedModelDetailedStats.overall.counts[level]"></span>)
-                            </span>
+                            <label class="checkbox-label" :title="level + ': ' + selectedModelDetailedStats.overall.counts[level] + ' (' + selectedModelDetailedStats.overall.percentages[level].toFixed(1) + '%)'" x-show="selectedModelDetailedStats.overall.counts[level] > 0">
+                                <input type="checkbox" :value="level" x-model="activeModelComplianceFilters">
+                                <span class="compliance-label summary-label" :class="'compliance-' + level">
+                                    <span x-text="level"></span>: <span x-text="selectedModelDetailedStats.overall.percentages[level].toFixed(1) + '%'"></span>
+                                    (<span x-text="selectedModelDetailedStats.overall.counts[level]"></span>)
+                                </span>
+                            </label>
                         </template>
                     </div>
-                     <div><strong>By Variation (% Complete):</strong>
-                         <ul class="stats-list horizontal">
-                             <template x-for="vStat in selectedModelDetailedStats.by_variation" :key="vStat.variation">
-                                 <li><strong x-text="getVariationDescription(vStat.variation) + ':'"></strong> <span x-text="vStat.pct_complete.toFixed(1) + '%'"></span> (<span x-text="vStat.count"></span>)</li>
-                             </template>
-                         </ul>
+                     <div class="filter-group"><strong>By Variation (% Complete - Click to Filter):</strong>
+                         <template x-for="vStat in selectedModelDetailedStats.by_variation" :key="vStat.variation">
+                             <label class="checkbox-label" :title="'Filter by Type ' + vStat.variation">
+                                 <input type="checkbox" :value="vStat.variation" x-model="activeModelVariationFilters">
+                                 <strong x-text="getVariationDescription(vStat.variation) + ':'"></strong>
+                                 <span x-text="vStat.pct_complete.toFixed(1) + '%'"></span> (<span x-text="vStat.count"></span>)
+                             </label>
+                         </template>
                     </div>
-                     <div><strong>By Domain (% Complete):</strong> (Top/Bottom 3)
-                        <ul class="stats-list">
-                            <!-- Show only domains with responses for this model -->
-                            <template x-for="domainStat in selectedModelDetailedStats.by_domain_sorted.filter(d => d.count > 0).slice(0, 3)" :key="domainStat.domain">
-                                <li><span x-text="domainStat.domain"></span>: <span x-text="domainStat.pct_complete.toFixed(1) + '%'"></span> (<span x-text="domainStat.count"></span>)</li>
-                            </template>
-                            <li x-show="selectedModelDetailedStats.by_domain_sorted.filter(d => d.count > 0).length > 6">...</li>
-                            <template x-for="domainStat in selectedModelDetailedStats.by_domain_sorted.filter(d => d.count > 0).slice(-3)" :key="domainStat.domain">
-                                 <!-- Avoid duplicating middle elements if total <= 6 -->
-                                <li x-show="selectedModelDetailedStats.by_domain_sorted.filter(d => d.count > 0).length > 6 || $el.previousElementSibling?.tagName !== 'LI' || $el.previousElementSibling.textContent !== '...'">
-                                    <span x-text="domainStat.domain"></span>: <span x-text="domainStat.pct_complete.toFixed(1) + '%'"></span> (<span x-text="domainStat.count"></span>)
-                                </li>
-                             </template>
-                        </ul>
+                     <div class="filter-group"><strong>By Domain (% Complete - Click to Filter):</strong>
+                         <template x-for="domainStat in selectedModelDetailedStats.by_domain_sorted" :key="domainStat.domain">
+                            <label class="checkbox-label" :title="'Filter by ' + domainStat.domain" x-show="domainStat.count > 0">
+                                <input type="checkbox" :value="domainStat.domain" x-model="activeModelDomainFilters">
+                                <span x-text="domainStat.domain"></span>:
+                                <span x-text="domainStat.pct_complete.toFixed(1) + '%'"></span> (<span x-text="domainStat.count"></span>)
+                            </label>
+                        </template>
                     </div>
-
                 </div>
+                 <button class="clear-all-filters-button" @click="clearModelDetailFilters()" x-show="activeModelComplianceFilters.length > 0 || activeModelDomainFilters.length > 0 || activeModelVariationFilters.length > 0">Clear All Table Filters</button>
             </div>
 
-            <h3>Compliance by Question Theme</h3>
-             <div class="filters">
-                <label>Filter Domain: <select x-model="modelDetailDomainFilter"> <option value="">-- All --</option> <template x-for="domain in availableFilters.domains" :key="domain"><option :value="domain" x-text="domain"></option></template> </select> </label>
-                <label>Filter Variation: <select x-model="modelDetailVariationFilter"> <option value="">-- All --</option> <template x-for="v in availableFilters.variations" :key="v"><option :value="v" x-text="getVariationDescription(v)"></option></template> </select> </label>
+            <h3>Filtered Compliance by Question Theme</h3>
+            <p> Showing themes where model compliance matches filters:
+                 <span x-show="activeModelDomainFilters.length > 0" x-text="`Domains: ${activeModelDomainFilters.join(', ')}`"></span> <span x-show="activeModelDomainFilters.length === 0">All Domains</span> |
+                 <span x-show="activeModelVariationFilters.length > 0" x-text="`Variations: ${activeModelVariationFilters.map(v => 'Type ' + v).join(', ')}`"></span> <span x-show="activeModelVariationFilters.length === 0">All Variations</span> |
+                 <span x-show="activeModelComplianceFilters.length > 0" x-text="`Compliance: ${activeModelComplianceFilters.join(', ')}`"></span> <span x-show="activeModelComplianceFilters.length === 0">All Compliance</span>
+            </p>
+             <div class="filters"> <!-- Keep sort separate -->
                 <label>Sort Questions By: <select x-model="modelDetailSortKey"> <option value="grouping_key">Name (A-Z)</option> <option value="pct_complete">Compliance (Asc)</option> </select> </label>
-            </div>
+             </div>
             <div id="model-detail-table" class="table-container"></div>
         </div>
     </template>
@@ -107,8 +108,17 @@
     <div x-show="currentView === 'question_themes' && !isLoading">
          <h2>Question Themes <span class="count-info" x-text="`(${questionThemeSummary.length} Themes)`"></span></h2>
          <p>Overall compliance for each question theme.</p>
+         <!-- Question Theme Domain Filter/TOC -->
+         <details class="toc-details">
+            <summary>Filter by Domain</summary>
+            <div class="toc-links">
+                 <button class="toc-button" :class="{'active': !questionThemeDomainFilter}" @click="filterQuestionThemesByDomain('')">All Domains</button>
+                 <template x-for="domain in availableFilters.domains" :key="domain">
+                    <button class.bind="'active': questionThemeDomainFilter === domain" class="toc-button" @click="filterQuestionThemesByDomain(domain)" x-text="domain"></button>
+                </template>
+            </div>
+        </details>
          <div class="filters">
-            <label>Filter Domain: <select x-model="questionThemeDomainFilter"> <option value="">-- All Domains --</option> <template x-for="domain in availableFilters.domains" :key="domain"><option :value="domain" x-text="domain"></option></template> </select> </label>
             <label>Sort Themes By: <select x-model="questionThemeSortKey"> <option value="grouping_key">Name (A-Z)</option> <option value="pct_complete_overall">Compliance (Asc)</option> <option value="num_responses"># Responses (Desc)</option> </select> </label>
         </div>
          <div id="question-themes-table" class="table-container"></div>
@@ -116,75 +126,38 @@
 
      <!-- Question Theme Detail View -->
      <template x-if="currentView === 'question_theme_detail' && selectedQuestionThemeData && !isLoading">
-         <div>
-            <h2 x-text="`Question Theme: ${selectedQuestionThemeData.grouping_key}`"></h2>
+         <div> /* ... Content mostly same, ensure :id on model section uses response.anchor_id ... */ </div>
+             <h2 x-text="`Question Theme: ${selectedQuestionThemeData.grouping_key}`"></h2>
             <button @click="navigate('question_themes')">← Back to Question Themes</button>
             <p><strong>Domain:</strong> <span x-text="selectedQuestionThemeData.domain"></span></p>
-
-            <!-- Model Summary / TOC for this Question Theme -->
-             <details class="toc-details" open>
+            <details class="toc-details" open>
                 <summary>Model Compliance Summary & Links</summary>
-                <ul class="toc-links model-toc vertical">
-                    <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model">
-                        <li>
-                            <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)">
-                                <span class="toc-model-name" x-text="modelInfo.model"></span>
-                                <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"> </span>
-                                <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span>
-                            </a>
-                        </li>
-                    </template>
-                     <li x-show="selectedQuestionThemeModelSummary.length === 0" style="list-style:none; font-style:italic;">No responses found.</li>
-                </ul>
+                <ul class="toc-links model-toc vertical"> <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model"> <li> <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)"> <span class="toc-model-name" x-text="modelInfo.model"></span> <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"> </span> <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span> </a> </li> </template> <li x-show="selectedQuestionThemeModelSummary.length === 0" style="list-style:none; font-style:italic;">No responses found.</li> </ul>
             </details>
-
             <h3>Responses by Model</h3>
             <div class="response-list">
                  <template x-if="selectedQuestionThemeData.responses && selectedQuestionThemeData.responses.length > 0">
-                     <!-- Group responses by model -->
                      <template x-for="modelGroup in groupResponsesByModel(selectedQuestionThemeData.responses)" :key="modelGroup.model">
-                         <!-- Section per Model -->
                          <section class="model-section" :id="modelGroup.responses[0].anchor_id">
                              <h4 class="model-section-header"><span x-text="modelGroup.model"></span></h4>
-                             <!-- Loop through responses for this model -->
                              <template x-for="response in modelGroup.responses" :key="response.id">
                                  <div class="response-card-nested">
-                                    <!-- ** MODIFIED: Header simpler ** -->
-                                    <div class="response-header nested-header">
-                                        <strong x-text="getVariationDescription(response.variation)"></strong>
-                                        <!-- Compliance label moved below -->
-                                    </div>
-                                    <div class="error-box" x-show="response.error_message">
-                                         <strong class="error-message">Provider Error:</strong> <span x-text="response.error_message"></span>
-                                         <span class="partial-warning" x-show="response.is_partial_response">(Response may be incomplete)</span>
-                                    </div>
+                                    <div class="response-header nested-header"> <strong x-text="getVariationDescription(response.variation)"></strong> </div>
+                                    <div class="error-box" x-show="response.error_message"> <strong class="error-message">Provider Error:</strong> <span x-text="response.error_message"></span> <span class="partial-warning" x-show="response.is_partial_response">(Response may be incomplete)</span> </div>
                                     <div class="response-content-area nested-content">
-                                        <div class="detail-section question-section">
-                                             <!-- ** MODIFIED: Moved compliance label here ** -->
-                                             <strong>Question:</strong>
-                                             <span class="compliance-label" :class="'compliance-' + response.compliance" x-text="response.compliance"></span>
-                                             <pre class="text-display" x-text="response.question_text"></pre>
-                                        </div>
-                                         <div class="detail-section">
-                                             <strong>Model Response:</strong>
-                                             <div class="text-display markdown-content" x-html="renderMarkdown(response.response_text || '(No Response Content)')"></div>
-                                         </div>
-                                         <div class="detail-section">
-                                              <strong>Judge Analysis (<span x-text="response.judge_model || 'N/A'"></span>):</strong>
-                                              <div class="text-display markdown-content" x-html="renderMarkdown(response.judge_analysis || '(No Analysis Available)')"></div>
-                                         </div>
+                                        <div class="detail-section question-section"> <strong>Question:</strong> <span class="compliance-label" :class="'compliance-' + response.compliance" x-text="response.compliance"></span> <pre class="text-display" x-text="response.question_text"></pre> </div>
+                                         <div class="detail-section"> <strong>Model Response:</strong> <div class="text-display markdown-content" x-html="renderMarkdown(response.response_text || '(No Response Content)')"></div> </div>
+                                         <div class="detail-section"> <strong>Judge Analysis (<span x-text="response.judge_model || 'N/A'"></span>):</strong> <div class="text-display markdown-content" x-html="renderMarkdown(response.judge_analysis || '(No Analysis Available)')"></div> </div>
                                     </div>
                                  </div>
                              </template>
                          </section>
                      </template>
                  </template>
-                 <template x-if="!selectedQuestionThemeData.responses || selectedQuestionThemeData.responses.length === 0">
-                      <p>No individual responses found for this theme.</p>
-                 </template>
+                 <template x-if="!selectedQuestionThemeData.responses || selectedQuestionThemeData.responses.length === 0"> <p>No individual responses found.</p> </template>
             </div>
          </div>
-    </template>
+     </template>
 
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js"></script>
     <script src="script.js"></script>

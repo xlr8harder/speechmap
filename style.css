@@ -30,51 +30,58 @@ nav.view-selector button.active { background-color: #007bff; color: white; borde
 .toc-details { margin-bottom: 20px; border: 1px solid #eee; border-radius: 4px; background-color: #fff; }
 .toc-details summary { padding: 10px 15px; cursor: pointer; font-weight: bold; background-color: #f9f9f9; border-bottom: 1px solid #eee; }
 .toc-details[open] summary { border-bottom: 1px solid #eee; }
-.toc-links { padding: 15px; display: flex; flex-wrap: wrap; gap: 8px; }
-/* Vertical TOC List for Question Detail */
-.toc-links.vertical { flex-direction: column; gap: 0px; align-items: stretch; padding: 10px 0px; /* Remove padding */ }
+.toc-links { padding: 15px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.toc-links.vertical { flex-direction: column; gap: 0px; align-items: stretch; padding: 10px 0px; }
 .toc-links.vertical li { list-style: none; margin: 0; padding: 0;}
 .toc-link-item { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 6px 15px; border-bottom: 1px dashed #eee; text-decoration: none; color: #0056b3; transition: background-color 0.15s ease;}
 .toc-link-item:last-child { border-bottom: none; }
 .toc-link-item:hover { background-color: #f0f8ff; text-decoration: none; }
 .toc-model-name { flex-grow: 1; margin-right: 10px; font-weight: 500;}
-.toc-compliance-box { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; color: white; font-weight: bold; text-align: center; flex-shrink: 0; margin-right: 10px; min-width: 50px; /* Ensure some width */}
+.toc-compliance-box { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; color: white; font-weight: bold; text-align: center; flex-shrink: 0; margin-right: 10px; min-width: 50px; }
 .toc-response-count { font-size: 0.85em; color: #6c757d; flex-shrink: 0; }
-/* Button style for Overview TOC */
 .toc-button { background-color: #e9ecef; border: 1px solid #ced4da; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; cursor: pointer; transition: background-color 0.2s ease; text-decoration: none; color: #333; display: inline-block;}
 .toc-button:hover { background-color: #dee2e6; text-decoration: none; }
 .toc-button span:last-child { color: #555; font-size: 0.9em; margin-left: 4px; }
+.toc-button.active { background-color: #007bff; color: white; border-color: #007bff;}
 
 /* --- Model Stats Box --- */
 .model-stats-box { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 20px; margin: 25px 0; }
 .model-stats-box h3 { margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; font-size: 1.3em; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px 25px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px 30px; } /* Increased gap */
 .stats-grid > div { padding-bottom: 10px; }
-.stats-grid strong { color: #343a40; }
+.stats-grid strong { color: #343a40; display: block; margin-bottom: 8px; } /* Make titles block */
 .stat-value { font-size: 1.1em; font-weight: bold; margin-left: 8px;}
 .stat-count { font-size: 0.9em; color: #6c757d; margin-left: 5px;}
-.compliance-label.summary-label { font-size: 0.85em; margin-right: 5px; margin-bottom: 5px; padding: 3px 7px; } /* For summary breakdown */
+.compliance-label.summary-label { font-size: 0.85em; margin-right: 5px; margin-bottom: 5px; padding: 3px 7px; }
 ul.stats-list { list-style: none; padding-left: 0; margin: 5px 0 0 0; }
 ul.stats-list.horizontal li { display: inline-block; margin-right: 15px; }
-ul.stats-list li { font-size: 0.9em; margin-bottom: 3px; }
+ul.stats-list li { font-size: 0.9em; margin-bottom: 4px; }
 ul.stats-list li span:first-child { color: #555; }
+/* Filter Group Styling */
+.filter-group { border-left: 3px solid #ddd; padding-left: 15px; }
+.filter-group strong { margin-bottom: 10px; }
+label.checkbox-label { display: block; margin-bottom: 5px; font-size: 0.9em; cursor: pointer; }
+label.checkbox-label input[type="checkbox"] { margin-right: 6px; vertical-align: middle; }
+label.checkbox-label:hover { background-color: #f0f0f0; }
+button.link-button { background: none; border: none; padding: 0; color: #0056b3; text-decoration: underline; cursor: pointer; font-size: inherit; font-family: inherit; }
+button.link-button:hover { color: #003d80; }
+button.clear-all-filters-button { font-size: 0.85em; margin-top: 15px; padding: 3px 8px; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background-color: #eee;}
+button.clear-all-filters-button:hover { background-color: #ddd;}
 
 /* --- Question Theme Detail View --- */
 .response-list { margin-top: 20px; }
-/* ** NEW: Model Section Styling ** */
-.model-section { margin-bottom: 35px; border-top: 2px solid #e9ecef; padding-top: 20px; scroll-margin-top: 20px; /* Offset for anchor jump */}
+.model-section { margin-bottom: 35px; border-top: 2px solid #e9ecef; padding-top: 20px; scroll-margin-top: 20px; }
 h4.model-section-header { border-bottom: 1px dashed #ccc; margin-top: 0; margin-bottom: 20px; font-size: 1.4em; padding-bottom: 8px; color: #0056b3;}
 .response-card-nested { border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 15px; background-color: #fff; overflow: hidden; }
-.response-header.nested-header { background-color: #f1f3f5; padding: 8px 12px; font-size: 1em; border-bottom: 1px solid #e0e0e0; font-weight: bold;}
+.response-header.nested-header { background-color: #f1f3f5; padding: 8px 12px; font-size: 1.1em; border-bottom: 1px solid #e0e0e0; font-weight: bold;} /* Make variation bold */
 .response-content-area.nested-content { padding: 12px; }
 
 /* Shared Detail Section Styling */
 .detail-section { margin-bottom: 15px; }
 .detail-section:last-child { margin-bottom: 0; }
-.detail-section strong { display: inline-block; /* Allow label beside it */ margin-bottom: 8px; color: #333; font-size: 0.95em; font-weight: bold; margin-right: 8px;}
-/* Specific style for question section to align compliance label */
-.detail-section.question-section strong { margin-bottom: 0; /* Reset margin for inline */ }
-.detail-section.question-section .compliance-label { vertical-align: middle; } /* Align label */
+.detail-section strong { display: inline-block; margin-bottom: 8px; color: #333; font-size: 0.95em; font-weight: bold; margin-right: 8px;}
+.detail-section.question-section strong { margin-bottom: 0; }
+.detail-section.question-section .compliance-label { vertical-align: middle; margin-left: 10px; /* Space after colon */}
 
 .text-display { width: 100%; box-sizing: border-box; background-color: #f8f8f8; border: 1px solid #ccc; padding: 10px; border-radius: 4px; word-wrap: break-word; font-size: 0.9em; color: #333; margin-top: 5px; max-height: none; overflow-y: visible; }
 pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
@@ -97,14 +104,18 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .markdown-content hr { margin: 1.5em 0; border-top: 1px solid #ddd;}
 
 /* Error Box Styling */
-.error-box { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 15px; border-radius: 4px; font-size: 0.9em; }
+.error-box { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 0 0 15px 0; /* Adjusted margin */ border-radius: 4px; font-size: 0.9em; }
 .error-message { color: #dc3545; font-weight: bold;}
 .partial-warning { color: #fd7e14; font-style: italic; margin-left: 5px;}
 
 /* Compliance Label Styling */
-.compliance-label { display: inline-block; vertical-align: middle; /* Align better with text */ padding: 3px 8px; border-radius: 10px; color: white; font-size: 0.8em; font-weight: bold; text-align: center; margin-left: 8px; }
+.compliance-label { display: inline-block; vertical-align: middle; padding: 3px 8px; border-radius: 10px; color: white; font-size: 0.8em; font-weight: bold; text-align: center; margin-left: 8px; }
 .compliance-COMPLETE { background-color: #2ecc71; }
 .compliance-EVASIVE { background-color: #f1c40f; color: #333; }
 .compliance-DENIAL { background-color: #e74c3c; }
 .compliance-ERROR { background-color: #9b59b6; }
 .compliance-UNKNOWN { background-color: #bdc3c7; color: #333;}
+
+/* About View Specific Styles */
+ul.variation-list li { margin-bottom: 0.5em; }
+ul.variation-list li strong { margin-right: 5px; }
