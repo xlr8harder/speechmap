@@ -81,7 +81,6 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
        -1px  1px 0 #fff,
         1px  1px 0 #fff;
 }
-/* Removed light/dark text specific rules */
 
 /* --- TOC Styles --- */
 .toc-details { margin-bottom: 20px; border: 1px solid #eee; border-radius: 4px; background-color: #fff; }
@@ -90,22 +89,52 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .toc-links { padding: 15px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .toc-links.vertical { flex-direction: column; gap: 0px; align-items: stretch; padding: 10px 0px; }
 .toc-links.vertical li { list-style: none; margin: 0; padding: 0;}
-.toc-link-item { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 6px 15px; border-bottom: 1px dashed #eee; text-decoration: none; color: #0056b3; transition: background-color 0.15s ease;}
+.toc-link-item {
+    display: flex;
+    align-items: center;
+    /* justify-content: flex-start; Keep default or explicit */
+    width: 100%;
+    padding: 6px 15px;
+    border-bottom: 1px dashed #eee;
+    text-decoration: none;
+    color: #0056b3;
+    transition: background-color 0.15s ease;
+}
 .toc-link-item:last-child { border-bottom: none; }
 .toc-link-item:hover { background-color: #f0f8ff; text-decoration: none; }
-.toc-model-name { flex-grow: 1; margin-right: 10px; font-weight: 500;}
-.toc-compliance-box { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; color: white; font-weight: bold; text-align: center; flex-shrink: 0; margin-right: 10px; min-width: 50px; }
-.toc-response-count { font-size: 0.85em; color: #6c757d; flex-shrink: 0; }
+.toc-model-name {
+    /* flex-grow: 1; Removed */
+    flex-grow: 0; /* Let it take natural width unless truncated */
+    flex-shrink: 1; /* Allow shrinking */
+    margin-right: 10px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.toc-compliance-box {
+    font-size: 0.8em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    flex-shrink: 0;
+    /* margin-right: 10px; Keep margin right */
+    margin-left: auto; /* Added: Push this and subsequent elements right */
+    margin-right: 10px; /* Keep margin to response count */
+    min-width: 50px;
+}
+.toc-response-count {
+    font-size: 0.85em;
+    color: #6c757d;
+    flex-shrink: 0;
+    /* margin-left: 8px; Removed, spacing handled by box margin-right now */
+}
 .toc-button { background-color: #e9ecef; border: 1px solid #ced4da; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; cursor: pointer; transition: background-color 0.2s ease; text-decoration: none; color: #333; display: inline-block;}
 .toc-button:hover { background-color: #dee2e6; text-decoration: none; }
 .toc-button span:last-child { color: #555; font-size: 0.9em; margin-left: 4px; }
 .toc-button.active { background-color: #007bff; color: white; border-color: #007bff;}
-
-/* --- Model Stats Box --- */
-/* Removed styles for .model-stats-box, .stats-grid, .stat-value, .stat-count, */
-/* .compliance-label.summary-label, ul.stats-list, label.checkbox-label, */
-/* .filter-group, .clear-all-filters-button, .filter-status */
-
 
 /* --- Question Theme Detail View --- */
 .response-list { margin-top: 20px; }
@@ -160,3 +189,4 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .openrouter-link { display: inline-flex; align-items: center; padding: 2px 6px; background-color: #eee; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: #333; font-size: 0.8em; vertical-align: middle; transition: background-color 0.2s ease; }
 .openrouter-link:hover { background-color: #ddd; text-decoration: none; color: #000; }
 .openrouter-link img { height: 0.9em; width: 0.9em; margin-left: 4px; margin-right: 2px; vertical-align: text-bottom; }
+

@@ -56,103 +56,93 @@ document.addEventListener('alpine:init', () => {
         // --- Methods ---
         async initialize() { console.log('Alpine initializing...'); this.isLoading = true; this.loadingMessage = 'Initializing...'; this.errorMessage = null; this.isDataLoaded = false; this.parseHash(); this.setupWatchers(); this.loadData().then(() => { this.isDataLoaded = true; this.parseHash(true); this.$nextTick(() => { this.isLoading = false; this.initializeTableForView(this.currentView); }); }).catch(e => { console.error("Init error:", e); this.errorMessage = `Failed load: ${e.message}`; this.isLoading = false; }).finally(() => { this.loadingMessage = ''; console.log("Data loading attempt finished."); }); window.addEventListener('hashchange', () => this.parseHash()); },
         async loadData() {
-            let file_index = 1;
-            let combined_records = [];
-            let loaded_compliance_order = [];
-            let first_file_loaded = false;
-
-            this.loadingMessage = 'Fetching data...';
+            this.loadingMessage = 'Fetching metadata...';
             await this.$nextTick();
+            console.log("Fetching metadata.json");
+
+            let metadata;
+            try {
+                const meta_response = await fetch('metadata.json');
+                if (!meta_response.ok) {
+                    throw new Error(`HTTP ${meta_response.status} fetching metadata.json`);
+                }
+                metadata = await meta_response.json();
+                console.log("Metadata loaded:", metadata);
+
+                if (!metadata.complianceOrder || !Array.isArray(metadata.complianceOrder)) {
+                    throw new Error("Metadata is missing 'complianceOrder' array.");
+                }
+                if (!metadata.data_files || !Array.isArray(metadata.data_files) || metadata.data_files.length === 0) {
+                    throw new Error("Metadata is missing 'data_files' array or it's empty.");
+                }
+
+                this.complianceOrder = metadata.complianceOrder; // Set compliance order first
+
+            } catch (e) {
+                console.error("Failed to load or parse metadata.json:", e);
+                throw new Error(`Metadata Load Failed: ${e.message}`);
+            }
+
+            const data_files = metadata.data_files;
+            let combined_records = [];
 
             try {
-                while (true) {
-                    const filename = `data_${file_index}.json.gz`;
-                    this.loadingMessage = `Fetching data part ${file_index}...`;
-                    console.log(`Attempting to fetch ${filename}`);
-                    await this.$nextTick();
+                this.loadingMessage = `Fetching ${data_files.length} data file(s)...`;
+                await this.$nextTick();
+                console.log(`Fetching data files: ${data_files.join(', ')}`);
 
-                    let response;
+                // Create fetch promises for all data files concurrently
+                const fetch_promises = data_files.map(filename =>
+                    fetch(filename, { headers: { 'Accept-Encoding': 'gzip' } })
+                        .catch(fetch_err => {
+                            console.error(`Network error fetching ${filename}:`, fetch_err);
+                            // Throw a specific error object to identify the failed file
+                            return Promise.reject({ type: 'FetchError', file: filename, error: fetch_err });
+                         })
+                );
+
+                const responses = await Promise.all(fetch_promises);
+
+                // Check for any failed fetches (non-OK status)
+                const failed_responses = responses.filter(res => !res.ok);
+                if (failed_responses.length > 0) {
+                    const error_details = failed_responses.map(res => `${res.url} (${res.status})`).join(', ');
+                    throw new Error(`Failed to fetch data files: ${error_details}`);
+                }
+
+                this.loadingMessage = `Processing ${data_files.length} data file(s)...`;
+                await this.$nextTick();
+                console.log("All data files fetched, processing...");
+
+                // Create processing promises (decompress, parse)
+                const processing_promises = responses.map(async (response, index) => {
+                    const filename = data_files[index]; // Get filename for context
                     try {
-                         response = await fetch(filename, { headers: { 'Accept-Encoding': 'gzip' } });
-                    } catch (fetch_err) {
-                         // Network error during fetch
-                         console.error(`Network error fetching ${filename}:`, fetch_err);
-                         if (!first_file_loaded) throw new Error(`Network error loading initial data file ${filename}.`);
-                         else { console.warn(`Network error on subsequent file ${filename}, assuming end of data.`); break; } // Assume end if not first file
-                    }
-
-
-                    if (response.ok) {
-                        console.log(`Successfully fetched ${filename}`);
-                        this.loadingMessage = `Decompressing part ${file_index}...`;
-                        await this.$nextTick();
                         const compressed_data = await response.arrayBuffer();
                         const decompressed_data = pako.inflate(new Uint8Array(compressed_data), { to: 'string' });
-
-                        this.loadingMessage = `Parsing part ${file_index}...`;
-                        await this.$nextTick();
                         const parsed_json = JSON.parse(decompressed_data);
 
                         if (!parsed_json.records || !Array.isArray(parsed_json.records)) {
-                             console.warn(`File ${filename} is missing 'records' array or it's not an array.`);
-                             // If it's the first file and invalid, error out. Otherwise, stop assuming bad data.
-                             if (!first_file_loaded) throw new Error(`Invalid data structure in first file: ${filename}`);
-                             else break;
+                            console.warn(`File ${filename} is missing 'records' array or it's not an array.`);
+                            return []; // Return empty array for this chunk on error
                         }
-
-                        // Add records from this file
-                        combined_records.push(...parsed_json.records); // Efficiently append
-
-                        // Get compliance order from the first file only
-                        if (!first_file_loaded) {
-                            if (!parsed_json.complianceOrder || !Array.isArray(parsed_json.complianceOrder)) {
-                                 throw new Error(`Invalid data structure: 'complianceOrder' missing or not array in first file: ${filename}`);
-                            }
-                            loaded_compliance_order = parsed_json.complianceOrder;
-                            first_file_loaded = true;
-                        }
-
-                        file_index++; // Move to next potential file
-                    } else if (response.status === 404) {
-                        console.log(`File ${filename} not found.`);
-                        if (!first_file_loaded) {
-                            // Special case: if even the first file gives 404, maybe it's just 'data.json.gz'? Try that.
-                            console.log("Trying fallback to data.json.gz...");
-                            this.loadingMessage = "Fetching data (fallback)...";
-                            await this.$nextTick();
-                            response = await fetch('data.json.gz', { headers: { 'Accept-Encoding': 'gzip' } });
-                            if (response.ok) {
-                                const compressed_data = await response.arrayBuffer();
-                                const decompressed_data = pako.inflate(new Uint8Array(compressed_data), { to: 'string' });
-                                const parsed_json = JSON.parse(decompressed_data);
-                                if (!parsed_json.records || !Array.isArray(parsed_json.records) || !parsed_json.complianceOrder || !Array.isArray(parsed_json.complianceOrder)) {
-                                    throw new Error(`Invalid data structure in fallback file data.json.gz`);
-                                }
-                                combined_records = parsed_json.records;
-                                loaded_compliance_order = parsed_json.complianceOrder;
-                                first_file_loaded = true;
-
-                            } else {
-                                throw new Error(`No data files found (tried data_1.json.gz and data.json.gz)`);
-                            }
-                        }
-                        break; // End loop if 404 encountered after first file or fallback fails
-                    } else {
-                        // Other HTTP error
-                        throw new Error(`HTTP ${response.status} loading ${filename}`);
+                        return parsed_json.records;
+                    } catch(processing_err) {
+                         console.error(`Error processing ${filename}:`, processing_err);
+                         // Throw a specific error object
+                         return Promise.reject({ type: 'ProcessingError', file: filename, error: processing_err });
                     }
-                } // end while
+                });
 
-                if (!first_file_loaded) {
-                    throw new Error("No valid data files were loaded.");
-                }
+                const recordChunks = await Promise.all(processing_promises);
+
+                // Combine records from all chunks
+                combined_records = recordChunks.flat(); // .flat() efficiently combines the arrays
 
                 this.allResponses = combined_records;
-                this.complianceOrder = loaded_compliance_order;
 
                 if (this.allResponses.length === 0) {
-                    console.warn("Data loaded, but contains no records.");
-                    // Don't throw error, allow empty state display
+                    console.warn("Data loaded, but contains no records after processing chunks.");
                 }
 
                 // Recalculate available filters based on combined data
@@ -161,13 +151,22 @@ document.addEventListener('alpine:init', () => {
                 this.availableFilters.variations = [...new Set(this.allResponses.map(r => r.variation))].sort((a, b) => parseInt(a) - parseInt(b));
                 this.availableFilters.grouping_keys = [...new Set(this.allResponses.map(r => r.grouping_key))].sort();
 
-                console.log(`Data loaded successfully. Total records: ${this.allResponses.length}`);
+                console.log(`Data processed successfully. Total records: ${this.allResponses.length}`);
 
             } catch (e) {
-                 console.error("Error during data loading sequence:", e);
-                 throw new Error(`Data Load Failed: ${e.message}`); // Rethrow for initialize() catch block
+                console.error("Error during concurrent data loading or processing:", e);
+                // Construct a more informative error message
+                let user_message = "Data Load/Processing Failed";
+                if (e.type === 'FetchError') {
+                    user_message += `: Network error loading ${e.file}.`;
+                } else if (e.type === 'ProcessingError') {
+                    user_message += `: Error processing ${e.file}.`;
+                } else if (e.message) {
+                    user_message += `: ${e.message}`;
+                }
+                throw new Error(user_message); // Rethrow for initialize() catch block
             } finally {
-                 this.loadingMessage = ''; // Clear loading message regardless of outcome
+                this.loadingMessage = '';
             }
         },
         parseHash(forceUpdate = false) {
@@ -254,7 +253,7 @@ document.addEventListener('alpine:init', () => {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, columns: [
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell" },
                     { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] } },
-                    { title: "Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number" }, // Changed title
+                    { title: "Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number" },
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
                     { title: "% Complete", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
                     { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
@@ -333,7 +332,7 @@ function percentWithBgBarFormatter(cell, formatterParams, onRendered) {
     bar.style.backgroundColor = color;
 
     const text = document.createElement('span');
-    text.classList.add('percent-bar-text'); // Use base class only
+    text.classList.add('percent-bar-text');
     text.textContent = value.toFixed(1) + '%';
 
     container.appendChild(bar);
@@ -341,4 +340,3 @@ function percentWithBgBarFormatter(cell, formatterParams, onRendered) {
 
     return container;
 }
-

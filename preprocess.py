@@ -3,18 +3,18 @@ import os
 from glob import glob
 import re
 import sys
-import gzip # Import gzip
-import math # For ceiling division
+import gzip
+import math
 
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
-OUTPUT_JSON_BASE_FILENAME = "data.json.gz" # Changed base filename
-MAX_RECORDS_PER_FILE = 20000 # New constant for splitting
+OUTPUT_DATA_BASE_FILENAME = "data" # Base name for data files (data_1, data_2, ...)
+OUTPUT_METADATA_FILENAME = "metadata.json" # Metadata file name
+MAX_RECORDS_PER_FILE = 20000
 COMPLIANCE_ORDER = ['COMPLETE', 'EVASIVE', 'DENIAL', 'ERROR', 'UNKNOWN']
-# ** FIXED REGEX: Match non-digit then single digit at end **
-ID_REGEX = re.compile(r"^(.*?)(\d)$") # Only looks for ONE digit at the end
+ID_REGEX = re.compile(r"^(.*?)(\d)$")
 ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
-JUDGE_ANALYSIS_FOR_ERROR = "N/A (Response was an ERROR)" # Neutral message
+JUDGE_ANALYSIS_FOR_ERROR = "N/A (Response was an ERROR)"
 
 def generate_safe_id(text):
     text_str = str(text) if text is not None else ''
@@ -25,7 +25,6 @@ def generate_safe_id(text):
 
 def preprocess_us_hard_data(analysis_dir):
     all_records = []
-    # Keep finding original files
     file_paths = glob(os.path.join(analysis_dir, "compliance_us_hard_*.jsonl"))
     print(f"\nFound {len(file_paths)} us_hard analysis files in {analysis_dir}")
     if not file_paths: print(f"Warning: No 'compliance_us_hard_*.jsonl' files found."); return []
@@ -46,22 +45,20 @@ def preprocess_us_hard_data(analysis_dir):
                         compliance = rec.get('compliance', 'UNKNOWN').upper()
                         domain = rec.get('domain', 'Unknown Domain')
                         question_text = rec.get('question', '')
-                        judge_analysis = rec.get('judge_analysis', '') # Get original
+                        judge_analysis = rec.get('judge_analysis', '')
                         judge_model = rec.get('judge_model', '')
 
-                        # --- Parse us_hard specific fields ---
                         sub_topic_key = original_question_id; variation = '0'
                         match = ID_REGEX.match(original_question_id)
                         if match:
                             sub_topic_key = match.group(1)
-                            variation = match.group(2) # Single digit
+                            variation = match.group(2)
                         else:
                              if not original_question_id.startswith('unknown_id_'):
                                 print(f"    Warn: QID format '{original_question_id}' mismatch ln {line_num+1}. Using defaults.")
                                 skipped_id_format += 1
                         grouping_key = sub_topic_key
 
-                        # --- Response & Error Processing ---
                         response_content = ""; error_message = None; is_partial_response = False
                         response_obj = rec.get('response')
 
@@ -109,17 +106,32 @@ def preprocess_us_hard_data(analysis_dir):
     print(f"\nPreprocessing finished. Processed: {processed_count}, Skipped Format: {skipped_id_format}, Errors: {error_count}")
     return all_records
 
-def save_data_chunk(filename, records_chunk, compliance_order):
-    output_data = {"complianceOrder": compliance_order, "records": records_chunk}
+# Updated function: only saves records chunk
+def save_data_chunk(filename, records_chunk):
+    output_data = {"records": records_chunk} # Only records here
     print(f"  Saving {len(records_chunk)} records to {filename}...")
     try:
-        # Use compresslevel=9 for maximum compression
         with gzip.open(filename, 'wt', encoding='utf-8', compresslevel=9) as f:
             json.dump(output_data, f, ensure_ascii=False, separators=(',', ':'))
         print(f"  Successfully saved {filename} ({os.path.getsize(filename) / 1024 / 1024:.2f} MB).")
+        return True # Indicate success
     except Exception as e:
         print(f"Error saving data chunk to {filename}: {e}")
-        # Decide if we should exit or continue? For now, continue.
+        return False # Indicate failure
+
+def save_metadata(filename, data_filenames, compliance_order):
+    metadata = {
+        "complianceOrder": compliance_order,
+        "data_files": data_filenames
+    }
+    print(f"\nSaving metadata to {filename}...")
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(metadata, f, ensure_ascii=False, indent=2) # Use indent for readability
+        print(f"Successfully saved {filename}.")
+    except Exception as e:
+        print(f"Error saving metadata: {e}")
+        sys.exit(1) # Exit if metadata fails, crucial file
 
 def main():
     print("Starting preprocessing...")
@@ -132,29 +144,28 @@ def main():
     total_records = len(all_data)
     print(f"\nTotal records processed: {total_records}")
 
-    # Determine base filename and extension
-    base_name, ext = os.path.splitext(OUTPUT_JSON_BASE_FILENAME)
-    if ext != ".gz": # Handle cases like "data.json" -> "data", ".json"
-        ext = ".gz" # Ensure we add .gz if missing
-        base_name = OUTPUT_JSON_BASE_FILENAME
-    else: # Handle "data.json.gz" -> "data.json", ".gz"
-        base_name, _ = os.path.splitext(base_name) # Get "data"
-
     num_files = math.ceil(total_records / MAX_RECORDS_PER_FILE)
-
     print(f"Splitting data into {num_files} file(s) (max {MAX_RECORDS_PER_FILE} records per file).")
+
+    generated_data_files = []
+    base_name = OUTPUT_DATA_BASE_FILENAME # e.g., "data"
+    ext = ".json.gz"
 
     for i in range(num_files):
         start_index = i * MAX_RECORDS_PER_FILE
         end_index = start_index + MAX_RECORDS_PER_FILE
         records_chunk = all_data[start_index:end_index]
+        output_filename = f"{base_name}_{i+1}{ext}" # e.g., data_1.json.gz
 
-        # Construct filename like data_1.json.gz, data_2.json.gz etc.
-        output_filename = f"{base_name}_{i+1}.json{ext}"
+        if save_data_chunk(output_filename, records_chunk):
+            generated_data_files.append(output_filename) # Add to list only if saved successfully
+        else:
+             print(f"ERROR: Failed to save chunk {i+1}. Aborting metadata generation.")
+             sys.exit(1) # Don't generate metadata if a chunk failed
 
-        save_data_chunk(output_filename, records_chunk, COMPLIANCE_ORDER)
+    # Save metadata file listing the generated data files
+    save_metadata(OUTPUT_METADATA_FILENAME, generated_data_files, COMPLIANCE_ORDER)
 
-    print("\nAll data saved.")
-
+    print("\nPreprocessing and saving complete.")
 
 if __name__ == "__main__": main()

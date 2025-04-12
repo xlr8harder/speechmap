@@ -70,12 +70,9 @@
         <div>
             <h2 x-text="`Model Details: ${selectedModelData.model}`"></h2>
             <button @click="navigate('overview')">← Back to Overview</button>
-
             <!-- Performance Summary Box Removed -->
-
             <h3>Compliance by Question Theme</h3>
             <!-- Filter Status Paragraph Removed -->
-
             <div id="model-detail-table" class="table-container"></div>
         </div>
     </template>
@@ -96,7 +93,19 @@
             <p><strong>Domain:</strong> <span x-text="selectedQuestionThemeData.domain"></span></p>
             <details class="toc-details" open>
                 <summary>Model Compliance Summary & Links</summary>
-                <ul class="toc-links model-toc vertical"> <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model"> <li> <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)"> <span class="toc-model-name" x-text="modelInfo.model"></span> <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"> </span> <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span> </a> </li> </template> <li x-show="selectedQuestionThemeModelSummary.length === 0" style="list-style:none; font-style:italic;">No responses found.</li> </ul>
+                <ul class="toc-links model-toc vertical">
+                    <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model">
+                        <li>
+                            <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)">
+                                <span class="toc-model-name" x-text="modelInfo.model"></span>
+                                <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
+                                <!-- Response Count Temporarily Commented Out -->
+                                <!-- <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span> -->
+                            </a>
+                        </li>
+                    </template>
+                    <li x-show="selectedQuestionThemeModelSummary.length === 0" style="list-style:none; font-style:italic;">No responses found.</li>
+                </ul>
             </details>
             <h3>Responses by Model</h3>
             <div class="response-list">

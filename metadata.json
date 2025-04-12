@@ -1,0 +1,12 @@
+{
+  "complianceOrder": [
+    "COMPLETE",
+    "EVASIVE",
+    "DENIAL",
+    "ERROR",
+    "UNKNOWN"
+  ],
+  "data_files": [
+    "data_1.json.gz"
+  ]
+}
