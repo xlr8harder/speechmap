@@ -47,7 +47,6 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .tabulator-row .tabulator-cell.clickable-cell:hover {
     text-decoration: underline;
 }
-/* Removed default progress bar styles */
 
 /* Styling for custom bar formatter */
 .percent-bar-container {
@@ -74,16 +73,15 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
     line-height: 16px; /* Adjusted for border */
     font-size: 0.85em;
     font-weight: 500;
-    text-shadow: none;
+    color: #333; /* Always dark text */
+    /* White text outline */
+    text-shadow:
+       -1px -1px 0 #fff,
+        1px -1px 0 #fff,
+       -1px  1px 0 #fff,
+        1px  1px 0 #fff;
 }
-.percent-bar-text.dark-text {
-    color: #333;
-}
-.percent-bar-text.light-text {
-    color: white;
-    /* Optional shadow for slightly better contrast on dark backgrounds */
-    /* text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); */
-}
+/* Removed light/dark text specific rules */
 
 /* --- TOC Styles --- */
 .toc-details { margin-bottom: 20px; border: 1px solid #eee; border-radius: 4px; background-color: #fff; }
@@ -104,28 +102,9 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .toc-button.active { background-color: #007bff; color: white; border-color: #007bff;}
 
 /* --- Model Stats Box --- */
-.model-stats-box { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 20px; margin: 25px 0; }
-.model-stats-box h3 { margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; font-size: 1.3em; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px 30px; }
-.stats-grid > div { padding-bottom: 10px; }
-.stats-grid strong { color: #343a40; display: block; margin-bottom: 8px; }
-.stat-value { font-size: 1.1em; font-weight: bold; margin-left: 8px;}
-.stat-count { font-size: 0.9em; color: #6c757d; margin-left: 5px;}
-.compliance-label.summary-label { font-size: 0.85em; margin-left: 0; margin-right: 5px; margin-bottom: 5px; padding: 3px 7px; display: inline-block; }
-ul.stats-list { list-style: none; padding-left: 0; margin: 5px 0 0 0; }
-ul.stats-list.vertical li { margin-bottom: 6px; }
-label.checkbox-label { display: block; margin-bottom: 5px; font-size: 0.9em; cursor: pointer; padding: 4px 6px; border-radius: 3px; transition: background-color 0.15s ease;}
-label.checkbox-label input[type="checkbox"] { margin-right: 8px; vertical-align: middle; }
-label.checkbox-label:hover { background-color: #f0f0f0; }
-label.checkbox-label .compliance-label.summary-label { margin-left: 5px; vertical-align: middle; }
-label.checkbox-label strong { display: inline; font-weight: normal; margin-right: 5px;} /* For variation/domain */
-
-.filter-group { border-left: 3px solid #ddd; padding-left: 15px; }
-.filter-group strong { margin-bottom: 10px; }
-button.clear-all-filters-button { font-size: 0.85em; margin-top: 15px; padding: 3px 8px; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background-color: #eee;}
-button.clear-all-filters-button:hover { background-color: #ddd;}
-.filter-status { font-size: 0.9em; color: #555; margin-top: -10px; margin-bottom: 15px; font-style: italic; background-color: #e9ecef; padding: 5px 10px; border-radius: 3px;}
-.filter-status strong { font-style: normal; font-weight: 600; color: #333;}
+/* Removed styles for .model-stats-box, .stats-grid, .stat-value, .stat-count, */
+/* .compliance-label.summary-label, ul.stats-list, label.checkbox-label, */
+/* .filter-group, .clear-all-filters-button, .filter-status */
 
 
 /* --- Question Theme Detail View --- */

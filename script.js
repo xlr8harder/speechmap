@@ -1,7 +1,6 @@
 // --- Global Settings ---
 const COMPLIANCE_COLORS = { 'COMPLETE': '#2ecc71', 'EVASIVE': '#f1c40f', 'DENIAL': '#e74c3c', 'ERROR': '#9b59b6', 'UNKNOWN': '#bdc3c7' };
 const VARIATION_MAP = { '1': 'Type 1: Draft Essay', '2': 'Type 2: Explain Benefits', '3': 'Type 3: Satirize Opponents', '4': 'Type 4: Passionate Speech' };
-// PROGRESS_COLORS_TABULATOR removed as it's no longer used
 
 // --- Alpine.js Data Store ---
 document.addEventListener('alpine:init', () => {
@@ -55,8 +54,122 @@ document.addEventListener('alpine:init', () => {
             const variation_results = Object.values(by_variation).map(v => ({ ...v, pct_complete: v.count > 0 ? (v.complete_count / v.count * 100) : 0 })).sort((a,b) => parseInt(a.variation) - parseInt(b.variation)); const domain_results_sorted = [...domain_results].sort((a,b) => Number(a.pct_complete) - Number(b.pct_complete)); return { overall: overall, by_domain: domain_results, by_variation: variation_results, by_domain_sorted: domain_results_sorted }; },
 
         // --- Methods ---
-        async initialize() { console.log('Alpine initializing...'); this.isLoading = true; this.loadingMessage = 'Fetching data...'; this.errorMessage = null; this.isDataLoaded = false; this.parseHash(); this.setupWatchers(); this.loadData().then(() => { this.isDataLoaded = true; this.parseHash(true); this.$nextTick(() => { this.isLoading = false; this.initializeTableForView(this.currentView); }); }).catch(e => { console.error("Init error:", e); this.errorMessage = `Failed load: ${e.message}`; this.isLoading = false; }).finally(() => { this.loadingMessage = ''; console.log("Data loading attempt finished."); }); window.addEventListener('hashchange', () => this.parseHash()); },
-        async loadData() { this.loadingMessage = 'Fetching data...'; const r=await fetch('us_hard_data.json.gz',{headers:{'Accept-Encoding':'gzip'}}); if (!r.ok) throw new Error(`HTTP ${r.status}`); this.loadingMessage = 'Decompressing...'; await this.$nextTick(); const c=await r.arrayBuffer(); const d=pako.inflate(new Uint8Array(c),{to:'string'}); this.loadingMessage = 'Parsing...'; await this.$nextTick(); const j=JSON.parse(d); this.allResponses=j.records||[]; this.complianceOrder=j.complianceOrder||[]; if(this.allResponses.length===0) throw new Error("No records."); this.availableFilters.models=[...new Set(this.allResponses.map(r=>r.model))].sort(); this.availableFilters.domains=[...new Set(this.allResponses.map(r=>r.domain))].sort(); this.availableFilters.variations=[...new Set(this.allResponses.map(r=>r.variation))].sort((a,b)=>parseInt(a)-parseInt(b)); this.availableFilters.grouping_keys=[...new Set(this.allResponses.map(r=>r.grouping_key))].sort(); console.log("Data loaded."); },
+        async initialize() { console.log('Alpine initializing...'); this.isLoading = true; this.loadingMessage = 'Initializing...'; this.errorMessage = null; this.isDataLoaded = false; this.parseHash(); this.setupWatchers(); this.loadData().then(() => { this.isDataLoaded = true; this.parseHash(true); this.$nextTick(() => { this.isLoading = false; this.initializeTableForView(this.currentView); }); }).catch(e => { console.error("Init error:", e); this.errorMessage = `Failed load: ${e.message}`; this.isLoading = false; }).finally(() => { this.loadingMessage = ''; console.log("Data loading attempt finished."); }); window.addEventListener('hashchange', () => this.parseHash()); },
+        async loadData() {
+            let file_index = 1;
+            let combined_records = [];
+            let loaded_compliance_order = [];
+            let first_file_loaded = false;
+
+            this.loadingMessage = 'Fetching data...';
+            await this.$nextTick();
+
+            try {
+                while (true) {
+                    const filename = `data_${file_index}.json.gz`;
+                    this.loadingMessage = `Fetching data part ${file_index}...`;
+                    console.log(`Attempting to fetch ${filename}`);
+                    await this.$nextTick();
+
+                    let response;
+                    try {
+                         response = await fetch(filename, { headers: { 'Accept-Encoding': 'gzip' } });
+                    } catch (fetch_err) {
+                         // Network error during fetch
+                         console.error(`Network error fetching ${filename}:`, fetch_err);
+                         if (!first_file_loaded) throw new Error(`Network error loading initial data file ${filename}.`);
+                         else { console.warn(`Network error on subsequent file ${filename}, assuming end of data.`); break; } // Assume end if not first file
+                    }
+
+
+                    if (response.ok) {
+                        console.log(`Successfully fetched ${filename}`);
+                        this.loadingMessage = `Decompressing part ${file_index}...`;
+                        await this.$nextTick();
+                        const compressed_data = await response.arrayBuffer();
+                        const decompressed_data = pako.inflate(new Uint8Array(compressed_data), { to: 'string' });
+
+                        this.loadingMessage = `Parsing part ${file_index}...`;
+                        await this.$nextTick();
+                        const parsed_json = JSON.parse(decompressed_data);
+
+                        if (!parsed_json.records || !Array.isArray(parsed_json.records)) {
+                             console.warn(`File ${filename} is missing 'records' array or it's not an array.`);
+                             // If it's the first file and invalid, error out. Otherwise, stop assuming bad data.
+                             if (!first_file_loaded) throw new Error(`Invalid data structure in first file: ${filename}`);
+                             else break;
+                        }
+
+                        // Add records from this file
+                        combined_records.push(...parsed_json.records); // Efficiently append
+
+                        // Get compliance order from the first file only
+                        if (!first_file_loaded) {
+                            if (!parsed_json.complianceOrder || !Array.isArray(parsed_json.complianceOrder)) {
+                                 throw new Error(`Invalid data structure: 'complianceOrder' missing or not array in first file: ${filename}`);
+                            }
+                            loaded_compliance_order = parsed_json.complianceOrder;
+                            first_file_loaded = true;
+                        }
+
+                        file_index++; // Move to next potential file
+                    } else if (response.status === 404) {
+                        console.log(`File ${filename} not found.`);
+                        if (!first_file_loaded) {
+                            // Special case: if even the first file gives 404, maybe it's just 'data.json.gz'? Try that.
+                            console.log("Trying fallback to data.json.gz...");
+                            this.loadingMessage = "Fetching data (fallback)...";
+                            await this.$nextTick();
+                            response = await fetch('data.json.gz', { headers: { 'Accept-Encoding': 'gzip' } });
+                            if (response.ok) {
+                                const compressed_data = await response.arrayBuffer();
+                                const decompressed_data = pako.inflate(new Uint8Array(compressed_data), { to: 'string' });
+                                const parsed_json = JSON.parse(decompressed_data);
+                                if (!parsed_json.records || !Array.isArray(parsed_json.records) || !parsed_json.complianceOrder || !Array.isArray(parsed_json.complianceOrder)) {
+                                    throw new Error(`Invalid data structure in fallback file data.json.gz`);
+                                }
+                                combined_records = parsed_json.records;
+                                loaded_compliance_order = parsed_json.complianceOrder;
+                                first_file_loaded = true;
+
+                            } else {
+                                throw new Error(`No data files found (tried data_1.json.gz and data.json.gz)`);
+                            }
+                        }
+                        break; // End loop if 404 encountered after first file or fallback fails
+                    } else {
+                        // Other HTTP error
+                        throw new Error(`HTTP ${response.status} loading ${filename}`);
+                    }
+                } // end while
+
+                if (!first_file_loaded) {
+                    throw new Error("No valid data files were loaded.");
+                }
+
+                this.allResponses = combined_records;
+                this.complianceOrder = loaded_compliance_order;
+
+                if (this.allResponses.length === 0) {
+                    console.warn("Data loaded, but contains no records.");
+                    // Don't throw error, allow empty state display
+                }
+
+                // Recalculate available filters based on combined data
+                this.availableFilters.models = [...new Set(this.allResponses.map(r => r.model))].sort();
+                this.availableFilters.domains = [...new Set(this.allResponses.map(r => r.domain))].sort();
+                this.availableFilters.variations = [...new Set(this.allResponses.map(r => r.variation))].sort((a, b) => parseInt(a) - parseInt(b));
+                this.availableFilters.grouping_keys = [...new Set(this.allResponses.map(r => r.grouping_key))].sort();
+
+                console.log(`Data loaded successfully. Total records: ${this.allResponses.length}`);
+
+            } catch (e) {
+                 console.error("Error during data loading sequence:", e);
+                 throw new Error(`Data Load Failed: ${e.message}`); // Rethrow for initialize() catch block
+            } finally {
+                 this.loadingMessage = ''; // Clear loading message regardless of outcome
+            }
+        },
         parseHash(forceUpdate = false) {
             console.log("Parsing Hash:", location.hash);
             const h = location.hash.slice(1);
@@ -124,7 +237,7 @@ document.addEventListener('alpine:init', () => {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No models.", selectable: false, columns: [
                     { title: "Model", field: "model", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectModel(c.getRow().getData().model), cssClass: "clickable-cell" },
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
-                    { title: "% Comp", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } }, // Updated formatter
+                    { title: "% Comp", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
                     { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
                     { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL } },
                     { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR } },
@@ -141,9 +254,9 @@ document.addEventListener('alpine:init', () => {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, columns: [
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell" },
                     { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] } },
-                    { title: "Distinct Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number" },
+                    { title: "Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number" }, // Changed title
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
-                    { title: "% Complete", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } }, // Updated formatter
+                    { title: "% Complete", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
                     { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
                     { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL } },
                     { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR } }
@@ -157,11 +270,11 @@ document.addEventListener('alpine:init', () => {
             const d = this.selectedModelQuestionSummary;
             console.log(`Init Model Detail ${this.selectedModel}, #`, d.length);
             this.modelDetailTable = new Tabulator(t, {
-                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Qs matching filters.", selectable: false, columns: [
+                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Qs for this model (or matching filters if set).", selectable: false, columns: [
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key, `response-${generateSafeId(this.selectedModel)}`), cssClass: "clickable-cell" },
                     { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains.filter(dm => d.some(q => q.domain === dm))] } },
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
-                    { title: "% Complete", field: "pct_complete", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } }, // Updated formatter
+                    { title: "% Complete", field: "pct_complete", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
                     { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
                     { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL } },
                     { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR } }
@@ -210,13 +323,6 @@ function percentWithBgBarFormatter(cell, formatterParams, onRendered) {
     if (typeof value !== 'number' || isNaN(value)) return "";
 
     const color = formatterParams.color || COMPLIANCE_COLORS.UNKNOWN;
-    // Determine default text color based on background for contrast
-    let textColorClass = (color === COMPLIANCE_COLORS.EVASIVE || color === COMPLIANCE_COLORS.UNKNOWN || color === COMPLIANCE_COLORS.COMPLETE) ? 'dark-text' : 'light-text';
-
-    // Override to dark text if value is low, as background color won't be prominent
-    if (value < 10) {
-        textColorClass = 'dark-text';
-    }
 
     const container = document.createElement('div');
     container.classList.add('percent-bar-container');
@@ -227,7 +333,7 @@ function percentWithBgBarFormatter(cell, formatterParams, onRendered) {
     bar.style.backgroundColor = color;
 
     const text = document.createElement('span');
-    text.classList.add('percent-bar-text', textColorClass);
+    text.classList.add('percent-bar-text'); // Use base class only
     text.textContent = value.toFixed(1) + '%';
 
     container.appendChild(bar);
@@ -235,3 +341,4 @@ function percentWithBgBarFormatter(cell, formatterParams, onRendered) {
 
     return container;
 }
+

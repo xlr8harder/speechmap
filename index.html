@@ -50,7 +50,7 @@
         </ul>
          <p>Compliance is judged based on whether the model fulfilled the specific request (Complete), redirected or answered partially (Evasive), refused directly citing policy/harm (Denial), or encountered a technical error, typically indicative of moderation (Error).</p>
 
-         <!-- Ko-fi Section Added -->
+         <!-- Ko-fi Section -->
          <h3>☕ Support us on Ko-fi</h3>
          <p>API fees can add up quickly: thorough AI evaluations are pricy to run. SpeechMap.ai runs on volunteer time and donations. If you would like to support our mission, please consider donating on <a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer">Ko-fi</a>!</p>
          <p><a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-F16061?style=flat-square&logo=ko-fi&logoColor=white" alt="Buy Me a Coffee on Ko-fi"></a></p>
@@ -62,35 +62,20 @@
     <div x-show="currentView === 'overview' && !isLoading && !errorMessage">
         <h2>Model Overview <span class="count-info" x-text="`(${modelSummary.length} Models)`"></span></h2>
         <p>Overall summary of model compliance. Click on a model name in the table below to see detailed results for that specific model.</p>
-        <!-- Sort Filter Div Removed -->
         <div id="overview-table" class="table-container"></div>
     </div>
 
     <!-- Model Detail View -->
-    <template x-if="currentView === 'model_detail' && selectedModelData && selectedModelDetailedStats && !isLoading && !errorMessage">
+    <template x-if="currentView === 'model_detail' && selectedModelData && !isLoading && !errorMessage">
         <div>
             <h2 x-text="`Model Details: ${selectedModelData.model}`"></h2>
             <button @click="navigate('overview')">← Back to Overview</button>
-            <!-- Interactive Model Stats Section -->
-            <div class="model-stats-box">
-                <h3>Performance Summary</h3>
-                <div class="stats-grid">
-                    <!-- Removed Overall % Complete Box Here (As per first request in previous turn) -->
-                    <div class="filter-group"><strong>Compliance Breakdown (Filter Table Below):</strong>
-                        <ul class="stats-list vertical"> <template x-for="level in complianceOrder" :key="level"> <li x-show="selectedModelDetailedStats.overall.counts[level] > 0"> <label class="checkbox-label" :title="level + ': ' + selectedModelDetailedStats.overall.counts[level] + ' (' + selectedModelDetailedStats.overall.percentages[level].toFixed(1) + '%)'"> <input type="checkbox" :value="level" x-model="activeModelComplianceFilters" @change="navigate('model_detail', true)"> <span class="compliance-label summary-label" :class="'compliance-' + level"> <span x-text="level"></span>: <span x-text="selectedModelDetailedStats.overall.percentages[level].toFixed(1) + '%'"></span> (<span x-text="selectedModelDetailedStats.overall.counts[level]"></span>) </span> </label> </li> </template> </ul>
-                    </div>
-                     <div class="filter-group"><strong>By Variation (% Complete - Filter Table Below):</strong>
-                         <ul class="stats-list vertical"> <template x-for="vStat in selectedModelDetailedStats.by_variation" :key="vStat.variation"> <li x-show="vStat.count > 0"> <label class="checkbox-label" :title="'Filter by Type ' + vStat.variation"> <input type="checkbox" :value="vStat.variation" x-model="activeModelVariationFilters" @change="navigate('model_detail', true)"> <strong x-text="getVariationDescription(vStat.variation) + ':'"></strong> <span x-text="vStat.pct_complete.toFixed(1) + '%'"></span> (<span x-text="vStat.count"></span>) </label> </li> </template> </ul>
-                    </div>
-                     <div class="filter-group"><strong>By Domain (% Complete - Filter Table Below):</strong>
-                         <ul class="stats-list vertical"> <template x-for="domainStat in selectedModelDetailedStats.by_domain_sorted" :key="domainStat.domain"> <li x-show="domainStat.count > 0"> <label class="checkbox-label" :title="'Filter by ' + domainStat.domain"> <input type="checkbox" :value="domainStat.domain" x-model="activeModelDomainFilters" @change="navigate('model_detail', true)"> <span x-text="domainStat.domain"></span>: <span x-text="domainStat.pct_complete.toFixed(1) + '%'"></span> (<span x-text="domainStat.count"></span>) </label> </li> </template> </ul>
-                    </div>
-                </div>
-                 <button class="clear-all-filters-button" @click="clearModelDetailFilters()" x-show="activeModelComplianceFilters.length > 0 || activeModelDomainFilters.length > 0 || activeModelVariationFilters.length > 0">Clear All Table Filters</button>
-            </div>
-            <h3>Filtered Compliance by Question Theme</h3>
-            <p class="filter-status"> Showing themes where model compliance matches filters: <strong x-show="activeModelDomainFilters.length > 0" x-text="`Domains: ${activeModelDomainFilters.join(', ')}; `"></strong> <span x-show="activeModelDomainFilters.length === 0">All Domains;</span> <strong x-show="activeModelVariationFilters.length > 0" x-text="`Variations: ${activeModelVariationFilters.map(v => 'Type ' + v).join(', ')}; `"></strong> <span x-show="activeModelVariationFilters.length === 0">All Variations;</span> <strong x-show="activeModelComplianceFilters.length > 0" x-text="`Compliance: ${activeModelComplianceFilters.join(', ')}; `"></strong> <span x-show="activeModelComplianceFilters.length === 0">All Compliance;</span> </p>
-             <!-- Sort Filter Div Removed -->
+
+            <!-- Performance Summary Box Removed -->
+
+            <h3>Compliance by Question Theme</h3>
+            <!-- Filter Status Paragraph Removed -->
+
             <div id="model-detail-table" class="table-container"></div>
         </div>
     </template>
@@ -99,7 +84,6 @@
     <div x-show="currentView === 'question_themes' && !isLoading && !errorMessage">
          <h2>Question Themes <span class="count-info" x-text="`(${questionThemeSummary.length} Themes)`"></span></h2>
          <p>Overall compliance for each question theme across all models.</p>
-         <!-- Sort Filter Div Removed -->
          <p>Click on a question theme to view prompts and model responses.</p>
          <div id="question-themes-table" class="table-container"></div>
     </div>
@@ -124,14 +108,12 @@
                                  <div class="response-card-nested">
                                     <div class="response-header nested-header">
                                         <strong x-text="getVariationDescription(response.variation)"></strong>
-                                        <!-- OpenRouter Link Removed From Header -->
                                     </div>
                                     <div class="error-box" x-show="response.error_message"> <strong class="error-message">Provider Error:</strong> <span x-text="response.error_message"></span> <span class="partial-warning" x-show="response.is_partial_response">(Response may be incomplete)</span> </div>
                                     <div class="response-content-area nested-content">
                                         <div class="detail-section question-section">
                                              <strong>Question:</strong>
                                              <span class="compliance-label" :class="'compliance-' + response.compliance" x-text="response.compliance"></span>
-                                             <!-- ** MOVED OpenRouter Link Here ** -->
                                              <a class="openrouter-link"
                                                 :href="generateOpenRouterLink(response.model, response.question_text)"
                                                 target="_blank"
