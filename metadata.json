@@ -8,11 +8,12 @@
   ],
   "data_files": [
     "speechdata_1.json.gz",
-    "speechdata_2.json.gz"
+    "speechdata_2.json.gz",
+    "speechdata_3.json.gz"
   ],
   "stats": {
-    "models": 32,
+    "models": 34,
     "themes": 469,
-    "judgments": 33314
+    "judgments": 42165
   }
 }
