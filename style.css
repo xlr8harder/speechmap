@@ -7,6 +7,8 @@ h2 { color: #333; font-size: 1.6em;} h3 { color: #444; border-bottom: none; marg
 hr { margin: 20px 0; border: 0; border-top: 1px solid #eee; }
 code { background-color: #eee; padding: 2px 5px; border-radius: 3px; font-family: monospace; font-size: 0.95em; }
 pre { background-color: #eee; padding: 12px; border-radius: 4px; overflow-x: auto; font-family: monospace; margin-top: 0.8em; margin-bottom: 1em; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
+a { color: #0056b3; text-decoration: none; }
+a:hover { text-decoration: underline; }
 
 /* Loading/Error */
 .loading-indicator, .error-message { padding: 15px; margin: 20px auto; border-radius: 4px; max-width: 800px; text-align: center; }
@@ -20,17 +22,13 @@ nav.view-selector button.active { background-color: #007bff; color: white; borde
 nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-color: #adb5bd;}
 
 /* --- About View --- */
-.about-content { max-width: 800px; margin: 10px 0; padding: 0 15px; } /* Left align */
+.about-content { max-width: 800px; margin: 10px 0; padding: 0 15px; }
 .about-content h3 { margin-top: 1.8em; }
-.about-content ul { margin-top: 0.5em; margin-bottom: 1em; padding-left: 25px;} /* Standard list indent */
+.about-content ul { margin-top: 0.5em; margin-bottom: 1em; padding-left: 25px;}
 ul.variation-list { list-style: none; padding-left: 0; margin-top: 0.5em;}
 ul.variation-list li { margin-bottom: 0.6em; background-color: #f8f9fa; padding: 8px 12px; border-radius: 4px; border: 1px solid #eee; }
 ul.variation-list li strong { margin-right: 8px; color: #495057;}
-
-/* --- Filters --- */
-.filters { margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border: 1px solid #eee; border-radius: 4px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; }
-.filters label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9em; color: #555; }
-.filters select { padding: 5px 8px; border-radius: 3px; border: 1px solid #ccc; min-width: 150px; background-color: white; height: 30px; }
+.about-content p a img { vertical-align: middle; margin-left: 5px; }
 
 /* --- Tables --- */
 .table-container { margin-top: 15px; border: 1px solid #ccc; min-height: 100px; max-height: 65vh; overflow: hidden; }
@@ -40,13 +38,52 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .tabulator-row { border-bottom: 1px solid #eee; }
 .tabulator-row:hover { background-color: #f0f8ff !important; }
 .tabulator-row .tabulator-cell { border-right: 1px solid #eee; padding: 8px 10px; }
-.tabulator-cell .tabulator-progress-bar { border: 1px solid #ccc; background-color: #e9ecef; height: 18px; border-radius: 3px;}
-.tabulator-cell .tabulator-progress-bar span { color: #333; font-size: 0.85em; text-shadow: none; line-height: 18px; }
-.tabulator-cell.pct-cell { font-weight: 500; }
-.tabulator-cell.pct-denial-cell { background-color: rgba(231, 76, 60, 0.1); } /* Lighter background */
-.tabulator-cell.pct-evasive-cell { background-color: rgba(241, 196, 15, 0.1); }
-.tabulator-cell.pct-error-cell { background-color: rgba(155, 89, 182, 0.1); }
+/* Styling for clickable cells */
+.tabulator-row .tabulator-cell.clickable-cell {
+    cursor: pointer;
+    color: #0056b3;
+    font-weight: 500;
+}
+.tabulator-row .tabulator-cell.clickable-cell:hover {
+    text-decoration: underline;
+}
+/* Removed default progress bar styles */
 
+/* Styling for custom bar formatter */
+.percent-bar-container {
+    position: relative;
+    overflow: hidden;
+    height: 18px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    background-color: #e9ecef;
+    box-sizing: border-box;
+}
+.percent-bar-bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    border-radius: 2px 0 0 2px; /* Adjusted for border */
+}
+.percent-bar-text {
+    position: relative;
+    z-index: 1;
+    display: block;
+    text-align: center;
+    line-height: 16px; /* Adjusted for border */
+    font-size: 0.85em;
+    font-weight: 500;
+    text-shadow: none;
+}
+.percent-bar-text.dark-text {
+    color: #333;
+}
+.percent-bar-text.light-text {
+    color: white;
+    /* Optional shadow for slightly better contrast on dark backgrounds */
+    /* text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); */
+}
 
 /* --- TOC Styles --- */
 .toc-details { margin-bottom: 20px; border: 1px solid #eee; border-radius: 4px; background-color: #fff; }
@@ -76,12 +113,10 @@ ul.variation-list li strong { margin-right: 8px; color: #495057;}
 .stat-count { font-size: 0.9em; color: #6c757d; margin-left: 5px;}
 .compliance-label.summary-label { font-size: 0.85em; margin-left: 0; margin-right: 5px; margin-bottom: 5px; padding: 3px 7px; display: inline-block; }
 ul.stats-list { list-style: none; padding-left: 0; margin: 5px 0 0 0; }
-/* Make stats lists vertical for checkbox layout */
 ul.stats-list.vertical li { margin-bottom: 6px; }
 label.checkbox-label { display: block; margin-bottom: 5px; font-size: 0.9em; cursor: pointer; padding: 4px 6px; border-radius: 3px; transition: background-color 0.15s ease;}
 label.checkbox-label input[type="checkbox"] { margin-right: 8px; vertical-align: middle; }
 label.checkbox-label:hover { background-color: #f0f0f0; }
-/* Adjust spacing for compliance labels within checkbox labels */
 label.checkbox-label .compliance-label.summary-label { margin-left: 5px; vertical-align: middle; }
 label.checkbox-label strong { display: inline; font-weight: normal; margin-right: 5px;} /* For variation/domain */
 
@@ -145,4 +180,4 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 /* OpenRouter Link */
 .openrouter-link { display: inline-flex; align-items: center; padding: 2px 6px; background-color: #eee; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: #333; font-size: 0.8em; vertical-align: middle; transition: background-color 0.2s ease; }
 .openrouter-link:hover { background-color: #ddd; text-decoration: none; color: #000; }
-.openrouter-link img { height: 0.9em; /* Adjust size */ width: 0.9em; margin-left: 4px; margin-right: 2px; vertical-align: text-bottom; } /* Adjust alignment */
+.openrouter-link img { height: 0.9em; width: 0.9em; margin-left: 4px; margin-right: 2px; vertical-align: text-bottom; }
