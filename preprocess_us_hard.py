@@ -7,24 +7,21 @@ import gzip # Import gzip
 
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
-OUTPUT_JSON_FILE = "us_hard_data.json.gz" # Output gzipped file
+OUTPUT_JSON_FILE = "us_hard_data.json.gz"
 COMPLIANCE_ORDER = ['COMPLETE', 'EVASIVE', 'DENIAL', 'ERROR', 'UNKNOWN']
-# ** REVERTED REGEX: Simple capture of last digits **
-ID_REGEX = re.compile(r"^(.*?)(\d+)$")
-ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems that have prevented the model from replying, or cancelled a response."
+# ** FIXED REGEX: Match non-digit then single digit at end **
+ID_REGEX = re.compile(r"^(.*?)(\d)$") # Only looks for ONE digit at the end
+ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
+JUDGE_ANALYSIS_FOR_ERROR = "N/A (Response was an ERROR)" # Neutral message
 
 def generate_safe_id(text):
-    """Generates a URL-safe ID from text."""
-    # Ensure text is a string before processing
     text_str = str(text) if text is not None else ''
     safe_text = re.sub(r'[^\w\s-]', '', text_str.lower())
     safe_text = re.sub(r'\s+', '-', safe_text)
     safe_text = safe_text.strip('-')
-    return safe_text if safe_text else "id" # Ensure non-empty
-
+    return safe_text if safe_text else "id"
 
 def preprocess_us_hard_data(analysis_dir):
-    """Loads, preprocesses, and returns us_hard data records as a list of dicts."""
     all_records = []
     file_paths = glob(os.path.join(analysis_dir, "compliance_us_hard_*.jsonl"))
     print(f"\nFound {len(file_paths)} us_hard analysis files in {analysis_dir}")
@@ -46,7 +43,7 @@ def preprocess_us_hard_data(analysis_dir):
                         compliance = rec.get('compliance', 'UNKNOWN').upper()
                         domain = rec.get('domain', 'Unknown Domain')
                         question_text = rec.get('question', '')
-                        judge_analysis = rec.get('judge_analysis', '')
+                        judge_analysis = rec.get('judge_analysis', '') # Get original
                         judge_model = rec.get('judge_model', '')
 
                         # --- Parse us_hard specific fields ---
@@ -54,39 +51,49 @@ def preprocess_us_hard_data(analysis_dir):
                         match = ID_REGEX.match(original_question_id)
                         if match:
                             sub_topic_key = match.group(1)
-                            variation = match.group(2) # Take all trailing digits
+                            variation = match.group(2) # Single digit
                         else:
                              if not original_question_id.startswith('unknown_id_'):
-                                print(f"    Warn: QID format '{original_question_id}' mismatch ln {line_num+1}.")
+                                print(f"    Warn: QID format '{original_question_id}' mismatch ln {line_num+1}. Using defaults.")
                                 skipped_id_format += 1
-
                         grouping_key = sub_topic_key
 
                         # --- Response & Error Processing ---
                         response_content = ""; error_message = None; is_partial_response = False
                         response_obj = rec.get('response')
+
                         if compliance == 'ERROR':
                             is_partial_response = True
-                            if not judge_analysis: judge_analysis = ERROR_MSG_CENSORSHIP
+                            # ** Use neutral judge analysis **
+                            if not judge_analysis: judge_analysis = JUDGE_ANALYSIS_FOR_ERROR
+                            # ** Use standard error message, but try to get specific API one **
+                            specific_api_error = "(Specific API error details missing)"
                             if isinstance(response_obj, dict) and response_obj.get('choices'):
                                 choice = response_obj['choices'][0]
                                 if isinstance(choice.get('message'), dict): response_content = choice['message'].get('content', '')
-                                if isinstance(choice.get('error'), dict): error_message = choice['error'].get('message', 'Unknown API error structure')
-                                else: error_message = "(Compliance=ERROR, API error details missing)"
-                            else: error_message = "(Compliance=ERROR, response object missing)"; response_content = "(No response content)"
+                                if isinstance(choice.get('error'), dict): specific_api_error = choice['error'].get('message', 'Unknown API error structure')
+                            # Assign standard message, potentially appending specific API error
+                            error_message = ERROR_MSG_CENSORSHIP
+                            if specific_api_error and specific_api_error != 'Unknown API error structure':
+                                 error_message += f" [API Msg: {specific_api_error}]"
+
                         elif isinstance(response_obj, dict) and response_obj.get('choices'):
                             choice = response_obj['choices'][0]
                             if isinstance(choice.get('message'), dict): response_content = choice['message'].get('content', '')
                             if isinstance(choice.get('error'), dict):
                                 print(f"    Warn: API error ln {line_num+1} but compliance='{compliance}'. Forcing ERROR.")
-                                compliance = 'ERROR'; error_message = choice['error'].get('message', 'Unknown API error structure'); is_partial_response = True;
-                                if not judge_analysis: judge_analysis = ERROR_MSG_CENSORSHIP
+                                compliance = 'ERROR'; is_partial_response = True;
+                                specific_api_error = choice['error'].get('message', 'Unknown API error structure')
+                                error_message = ERROR_MSG_CENSORSHIP # Use standard msg even here
+                                if specific_api_error and specific_api_error != 'Unknown API error structure':
+                                      error_message += f" [API Msg: {specific_api_error}]"
+                                if not judge_analysis: judge_analysis = JUDGE_ANALYSIS_FOR_ERROR
+
                         if compliance not in COMPLIANCE_ORDER: compliance = 'UNKNOWN'
 
                         safe_model_id_part = generate_safe_id(model)
                         record_id = f"{model}-{original_question_id}-{timestamp}"
-                        # ** Use model name directly for anchor - needs to be consistent **
-                        anchor_id = f"response-{safe_model_id_part}" # Anchor per model in question view
+                        anchor_id = f"response-{safe_model_id_part}"
 
                         all_records.append({
                             'id': record_id, 'anchor_id': anchor_id, 'model': model, 'timestamp': timestamp,
@@ -103,7 +110,6 @@ def preprocess_us_hard_data(analysis_dir):
     return all_records
 
 def main():
-    """Main function to preprocess us_hard data and save to JSON."""
     print("Starting preprocessing for us_hard data...")
     all_data = preprocess_us_hard_data(ANALYSIS_DIR)
     output_data = {"complianceOrder": COMPLIANCE_ORDER, "records": all_data}
