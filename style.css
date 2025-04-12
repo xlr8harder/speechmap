@@ -24,11 +24,14 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 /* --- About View --- */
 .about-content {
     padding: 0 20px 20px 20px;
+    max-width: 1200px; /* Added max-width */
+    margin-left: auto;  /* Added for centering */
+    margin-right: auto; /* Added for centering */
 }
 .about-content h3 {
-    margin-top: 0; /* Reset for grid items */
+    margin-top: 0;
     margin-bottom: 0.6em;
-    font-size: 1.15em; /* Slightly larger */
+    font-size: 1.15em;
     color: #0056b3;
     font-weight: 600;
     border-bottom: none;
@@ -65,8 +68,8 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
     flex: 1;
     min-width: 250px;
 }
-.hero-graphic { /* Style for the actual image */
-    display: block; /* Prevents extra space below */
+.hero-graphic {
+    display: block;
     max-width: 100%;
     height: auto;
     border-radius: 8px;
@@ -86,7 +89,7 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 /* Grid Section */
 .about-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
     gap: 30px 40px;
     margin-bottom: 40px;
 }
@@ -94,10 +97,10 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
     padding: 0;
 }
 .grid-item h3 {
-     margin-bottom: 1em; /* More space after heading */
+     margin-bottom: 1em;
 }
 /* Specific styling for grey box */
-.grid-item.where-lines { /* Renamed class */
+.grid-item.where-lines {
     background-color: #f8f9fa;
     padding: 20px;
     border-radius: 6px;
@@ -126,7 +129,7 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 }
 .compliance-key-list {
     list-style: none;
-    padding-left: 1em; /* Indent the key */
+    padding-left: 1em;
     margin-top: 0.5em;
     font-size: 0.9em;
 }
@@ -134,7 +137,7 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
     margin-bottom: 0.3em;
 }
 .compliance-key-item span {
-    margin-left: 5px; /* Space after icon */
+    margin-left: 5px;
 }
 .stats-cta {
     margin-top: 1.5em;
@@ -226,7 +229,6 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-/* New group for right-aligned elements */
 .toc-right-group {
     display: flex;
     align-items: center;
