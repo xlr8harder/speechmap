@@ -188,7 +188,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             this.isFullDataLoading = true;
-            this.loadingMessage = `Loading response details (${this.dataFilenames.length} file(s))...`;
+            this.loadingMessage = `Loading response data files (${this.dataFilenames.length} files. This is a one time action.`;
             this.errorMessage = null;
             console.log(`Loading full data from: ${this.dataFilenames.join(', ')}`);
             await this.$nextTick();
@@ -206,7 +206,7 @@ document.addEventListener('alpine:init', () => {
                     throw new Error(`Failed to fetch data files: ${error_details}`);
                 }
 
-                this.loadingMessage = `Processing ${this.dataFilenames.length} data file(s)...`;
+                this.loadingMessage = `Processing ${this.dataFilenames.length} data files. This is a one time action.`;
                 await this.$nextTick();
 
                 const processing_promises = responses.map(async (response, index) => {

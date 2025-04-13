@@ -28,9 +28,9 @@
     <hr>
 
     <!-- Global Loading Indicator (Phase 1: Metadata) -->
-    <div x-show="isMetadataLoading" class="loading-indicator" x-text="loadingMessage"></div>
-    <!-- Global Error Message -->
-    <div x-show="errorMessage" class="error-message" x-text="errorMessage"></div>
+    <div x-show="isMetadataLoading" class="loading-indicator" x-text="loadingMessage" x-cloak style="display: none;"></div>
+    <!-- Global Error Message - Added inline style -->
+    <div x-show="errorMessage" class="error-message" x-text="errorMessage" x-cloak style="display: none;"></div>
 
     <!-- About View (Only shows AFTER metadata loaded) -->
     <div x-show="currentView === 'about' && isMetadataLoaded" class="about-content" x-transition>
@@ -79,14 +79,6 @@
                     <li><strong class="stat-value" x-text="stats.themes">0</strong> Question Themes</li>
                     <li><strong class="stat-value" x-text="formatJudgments(stats.judgments)">0</strong> Prompt-Level Judgments</li>
                     <li>Models tested on sensitive and political US prompts</li>
-                    <li>Responses tagged as:
-                        <ul class="compliance-key-list">
-                            <li class="compliance-key-item">✅<span>Complete – Direct response</span></li>
-                            <li class="compliance-key-item">⚠️<span>Evasive – Redirected or partial</span></li>
-                            <li class="compliance-key-item">❌<span>Denied – Policy-based refusal</span></li>
-                            <li class="compliance-key-item">🛑<span>Error – Likely moderation block</span></li>
-                        </ul>
-                    </li>
                     <li class="stats-cta">→ Explore the <a href="#/overview" @click.prevent="navigate('overview')">Model Overview</a>or <br>→ <a href="#/questions" @click.prevent="navigate('question_themes')">Browse Questions</a></li>
                 </ul>
             </div>
@@ -137,7 +129,6 @@
              </template>
 
             <h3>Compliance by Question Theme</h3>
-             <!-- This table now renders immediately using metadata -->
             <div id="model-detail-table" class="table-container"></div>
         </div>
     </template>
@@ -155,7 +146,6 @@
          <div>
             <h2 x-text="`Question Theme: ${selectedGroupingKey}`"></h2>
             <button @click="navigate('question_themes')">← Back to Question Themes</button>
-             <!-- Domain display adjusted to use metadata -->
             <p><strong>Domain:</strong> <span x-text="questionThemeSummaryData.find(t => t.grouping_key === selectedGroupingKey)?.domain || 'Loading...'"></span></p>
 
             <!-- Loading indicator for full data (Phase 2) -->
