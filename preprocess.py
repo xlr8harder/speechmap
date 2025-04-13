@@ -1,3 +1,4 @@
+# preprocess.py
 import json
 import os
 from glob import glob
@@ -6,23 +7,30 @@ import sys
 import gzip
 import math
 from collections import defaultdict
+import unicodedata
 
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
 MODEL_METADATA_FILE = "model_metadata.json"
-OUTPUT_DATA_BASE_FILENAME = "speechdata"
+OUTPUT_THEME_DETAIL_DIR = "theme_details" # New directory for theme files
 OUTPUT_METADATA_FILENAME = "metadata.json"
-MAX_RECORDS_PER_FILE = 20000
+# MAX_RECORDS_PER_FILE = 20000 # No longer needed
 COMPLIANCE_ORDER = ['COMPLETE', 'EVASIVE', 'DENIAL', 'ERROR', 'UNKNOWN']
 ID_REGEX = re.compile(r"^(.*?)(\d)$")
 ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
 JUDGE_ANALYSIS_FOR_ERROR = "N/A (Response was an ERROR)"
 
 def generate_safe_id(text):
+    # Re-purposed slightly for filesystem-safe filenames from grouping keys
     text_str = str(text) if text is not None else ''
-    safe_text = re.sub(r'[^\w\s-]', '', text_str.lower())
-    safe_text = re.sub(r'\s+', '-', safe_text)
-    safe_text = safe_text.strip('-')
+    # Normalize unicode characters
+    nfkd_form = unicodedata.normalize('NFKD', text_str)
+    only_ascii = nfkd_form.encode('ASCII', 'ignore').decode('ASCII')
+    # Replace non-alphanumeric with hyphen, collapse multiple hyphens
+    safe_text = re.sub(r'[^\w-]+', '-', only_ascii.lower().strip())
+    safe_text = re.sub(r'-+', '-', safe_text)
+    # Ensure it's not empty, max length (e.g., 100 chars)
+    safe_text = safe_text[:100]
     return safe_text if safe_text else "id"
 
 def load_model_metadata(filepath):
@@ -84,7 +92,7 @@ def preprocess_us_hard_data(analysis_dir):
                         else:
                              if not original_question_id.startswith('unknown_id_'):
                                 skipped_id_format += 1
-                        grouping_key = sub_topic_key
+                        grouping_key = sub_topic_key # This is the key we group by
 
                         response_content = ""; error_message = None; is_partial_response = False
                         response_obj = rec.get('response')
@@ -114,9 +122,12 @@ def preprocess_us_hard_data(analysis_dir):
 
                         if compliance not in COMPLIANCE_ORDER: compliance = 'UNKNOWN'
 
+                        # Anchor ID for linking *within* a theme detail page
                         safe_model_id_part = generate_safe_id(model)
+                        anchor_id = f"model-{safe_model_id_part}" # Anchor points to the *start* of the model's section
+
+                        # Record ID is less critical now, but keep for potential debugging
                         record_id = f"{model}-{original_question_id}-{timestamp}"
-                        anchor_id = f"response-{safe_model_id_part}"
 
                         all_records.append({
                             'id': record_id, 'anchor_id': anchor_id, 'model': model, 'timestamp': timestamp,
@@ -132,7 +143,6 @@ def preprocess_us_hard_data(analysis_dir):
     print(f"\nPreprocessing finished. Processed: {processed_count}, Skipped Format: {skipped_id_format}, Errors: {error_count}")
     return all_records
 
-# Updated function to calculate all summaries needed for metadata
 def calculate_summaries(all_records, model_metadata_dict):
     print("Calculating summaries...")
     model_stats = defaultdict(lambda: {"c": 0, "k": 0, "e": 0, "d": 0, "r": 0})
@@ -208,29 +218,28 @@ def calculate_summaries(all_records, model_metadata_dict):
         "model_theme_summary": dict(model_theme_stats) # Convert back to regular dict for JSON
     }
 
-def save_data_chunk(filename, records_chunk):
-    # Saves only the records array (full detail needed for Q detail view)
-    output_data = {"records": records_chunk}
-    print(f"  Saving {len(records_chunk)} records to {filename}...")
+def save_theme_detail_file(filename, records_for_theme):
+    output_data = {"records": records_for_theme}
+    print(f"  Saving {len(records_for_theme)} records to {filename}...")
     try:
         with gzip.open(filename, 'wt', encoding='utf-8', compresslevel=9) as f:
             json.dump(output_data, f, ensure_ascii=False, separators=(',', ':'))
-        print(f"  Successfully saved {filename} ({os.path.getsize(filename) / 1024 / 1024:.2f} MB).")
+        # print(f"  Successfully saved {filename} ({os.path.getsize(filename) / 1024:.1f} KB).")
         return True
     except Exception as e:
-        print(f"Error saving data chunk to {filename}: {e}")
+        print(f"Error saving theme detail file {filename}: {e}")
         return False
 
-# Updated to include all summaries
-def save_metadata(filename, data_filenames, compliance_order, stats, model_metadata, summaries):
+# Updated to remove data_filenames
+def save_metadata(filename, compliance_order, stats, model_metadata, summaries):
     metadata = {
         "complianceOrder": compliance_order,
-        "data_files": data_filenames,
+        # "data_files": data_filenames, # Removed
         "stats": stats,
         "model_metadata": model_metadata,
         "model_summary": summaries["model_summary"],
         "question_theme_summary": summaries["question_theme_summary"],
-        "model_theme_summary": summaries["model_theme_summary"] # Add this summary
+        "model_theme_summary": summaries["model_theme_summary"]
     }
     print(f"\nSaving metadata to {filename}...")
     try:
@@ -253,7 +262,7 @@ def main():
     total_records = len(all_data)
     print(f"\nTotal records processed: {total_records}")
 
-    # Calculate summaries before splitting/saving chunks
+    # Calculate summaries (needed for metadata and iteration)
     summaries = calculate_summaries(all_data, model_meta_dict)
 
     # Calculate overall stats
@@ -266,31 +275,35 @@ def main():
                      num_judgments, "complete": num_complete }
     print("Calculated Stats:", stats_summary)
 
-    num_files = math.ceil(total_records / MAX_RECORDS_PER_FILE) if total_records > 0 else 0
-    print(f"Splitting data into {num_files} file(s) (max {MAX_RECORDS_PER_FILE} records per file).")
+    # Group data by grouping_key for saving individual files
+    data_by_theme = defaultdict(list)
+    for record in all_data:
+        data_by_theme[record['grouping_key']].append(record)
 
+    num_theme_files = len(data_by_theme)
+    print(f"\nPreparing to save {num_theme_files} theme detail files to '{OUTPUT_THEME_DETAIL_DIR}/'.")
 
-    balanced_records_per_file = int(total_records / num_files) + 1 # lazy way to handle remainder.
-    print(f"Splitting to {balanced_records_per_file} records per file.")
+    # Create output directory if it doesn't exist
+    os.makedirs(OUTPUT_THEME_DETAIL_DIR, exist_ok=True)
 
-    generated_data_files = []
-    base_name = OUTPUT_DATA_BASE_FILENAME
-    ext = ".json.gz"
-
-    for i in range(num_files):
-        start_index = i * balanced_records_per_file
-        end_index = start_index + balanced_records_per_file
-
-        records_chunk = all_data[start_index:end_index]
-        output_filename = f"{base_name}_{i+1}{ext}"
-
-        if save_data_chunk(output_filename, records_chunk):
-             generated_data_files.append(output_filename)
+    saved_files_count = 0
+    failed_files_count = 0
+    for grouping_key, records in data_by_theme.items():
+        safe_filename_key = generate_safe_id(grouping_key)
+        output_filename = os.path.join(OUTPUT_THEME_DETAIL_DIR, f"{safe_filename_key}.json.gz")
+        if save_theme_detail_file(output_filename, records):
+            saved_files_count += 1
         else:
-             print(f"ERROR: Failed to save chunk {i+1}. Aborting metadata generation.")
-             sys.exit(1)
+            failed_files_count += 1
 
-    save_metadata(OUTPUT_METADATA_FILENAME, generated_data_files, COMPLIANCE_ORDER, stats_summary, model_meta_dict, summaries)
+    print(f"\nTheme detail file saving complete. Saved: {saved_files_count}, Failed: {failed_files_count}")
+
+    if failed_files_count > 0:
+        print("ERROR: Failed to save one or more theme detail files. Aborting metadata generation.")
+        sys.exit(1)
+
+    # Save the main metadata file (without data_files list)
+    save_metadata(OUTPUT_METADATA_FILENAME, COMPLIANCE_ORDER, stats_summary, model_meta_dict, summaries)
 
     print("\nPreprocessing and saving complete.")
 

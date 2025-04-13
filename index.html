@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -153,13 +154,15 @@
          <div>
             <h2 x-text="`Question Theme: ${selectedGroupingKey}`"></h2>
             <button @click="navigate('question_themes')">← Back to Question Themes</button>
-            <p><strong>Domain:</strong> <span x-text="questionThemeSummaryData.find(t => t.grouping_key === selectedGroupingKey)?.domain || 'Loading...'"></span></p>
+            <p><strong>Domain:</strong> <span x-text="getDomainForSelectedTheme() || 'Loading...'"></span></p>
 
-            <!-- Loading indicator for full data (Phase 2) -->
-            <div x-show="isFullDataLoading" class="loading-indicator" x-text="loadingMessage" style="margin-top: 20px;"></div>
+            <!-- Loading indicator for this specific theme's data -->
+            <div x-show="isThemeDetailLoading" class="loading-indicator" style="margin-top: 20px;">Loading responses for this theme...</div>
+            <!-- Error indicator for this specific theme's data -->
+            <div x-show="themeDetailErrorMessage" class="error-message" x-text="themeDetailErrorMessage" style="margin-top: 20px;"></div>
 
-            <!-- Only show details when full data is loaded and not currently loading -->
-            <template x-if="isFullDataLoaded && !isFullDataLoading && selectedQuestionThemeData">
+            <!-- Only show details when theme data is loaded and not currently loading -->
+            <template x-if="currentThemeDetailData && !isThemeDetailLoading && !themeDetailErrorMessage">
                 <div> <!-- Wrapper div -->
                     <details class="toc-details" open>
                         <summary>Model Compliance Summary & Links</summary>
@@ -180,9 +183,9 @@
                     </details>
                     <h3>Responses by Model</h3>
                     <div class="response-list">
-                         <template x-if="selectedQuestionThemeData.responses && selectedQuestionThemeData.responses.length > 0">
-                             <template x-for="modelGroup in groupResponsesByModel(selectedQuestionThemeData.responses)" :key="modelGroup.model">
-                                 <section class="model-section" :id="modelGroup.responses[0].anchor_id">
+                         <template x-if="currentThemeDetailData.records && currentThemeDetailData.records.length > 0">
+                             <template x-for="modelGroup in groupResponsesByModel(currentThemeDetailData.records)" :key="modelGroup.model">
+                                 <section class="model-section" :id="modelGroup.responses[0].anchor_id"> <!-- Use anchor_id from first response -->
                                      <h4 class="model-section-header"><span x-text="modelGroup.model"></span></h4>
                                      <template x-for="response in modelGroup.responses" :key="response.id">
                                          <div class="response-card-nested">
@@ -215,10 +218,10 @@
                                  </section>
                              </template>
                          </template>
-                         <template x-if="!selectedQuestionThemeData.responses || selectedQuestionThemeData.responses.length === 0"> <p>No individual responses found for this theme after loading.</p> </template>
+                         <template x-if="!currentThemeDetailData.records || currentThemeDetailData.records.length === 0"> <p>No individual responses found for this theme after loading.</p> </template>
                     </div>
                  </div>
-            </template> <!-- End x-if="isFullDataLoaded && !isFullDataLoading" -->
+            </template> <!-- End x-if="currentThemeDetailData && !isThemeDetailLoading" -->
          </div>
      </template>
 
