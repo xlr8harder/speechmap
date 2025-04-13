@@ -16,6 +16,10 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+    <!-- Chart.js and Adapters -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@^4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@^2"></script> <!-- date-fns -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@^3"></script> <!-- Adapter comes after date-fns -->
 </head>
 <body x-data="explorerData()" x-init="initialize()">
 
@@ -29,6 +33,7 @@
         <button @click="navigate('about')" :class="{ 'active': currentView === 'about' }">About</button>
         <button @click="navigate('overview')" :class="{ 'active': currentView === 'overview' }">Model Overview</button>
         <button @click="navigate('question_themes')" :class="{ 'active': currentView === 'question_themes' }">Question Themes</button>
+        <button @click="navigate('model_timeline')" :class="{ 'active': currentView === 'model_timeline' }">Model Timeline</button> <!-- New Button -->
     </nav>
     <hr>
 
@@ -224,6 +229,49 @@
             </template> <!-- End x-if="currentThemeDetailData && !isThemeDetailLoading" -->
          </div>
      </template>
+
+    <!-- Model Timeline View (Only shows AFTER metadata loaded) -->
+    <div x-show="currentView === 'model_timeline' && isMetadataLoaded" class="timeline-view-container" x-transition> <!-- Added container class -->
+        <h2>Model Timeline</h2>
+        <p>Scatter plot showing model release dates against their compliance percentage for selected filters. Click points to view model details.</p>
+
+        <div class="timeline-filters filter-controls">
+            <div class="filter-item">
+                <label for="timeline-domain-filter">Domain:</label>
+                <select id="timeline-domain-filter" x-model="timelineFilterDomain">
+                    <option value="all">All Domains</option>
+                    <template x-for="domain in availableFilters.domains" :key="domain">
+                        <option :value="domain" x-text="domain"></option>
+                    </template>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="timeline-judgment-filter">Y-Axis Metric:</label>
+                <select id="timeline-judgment-filter" x-model="timelineFilterJudgment">
+                     <template x-for="option in timelineJudgmentOptions" :key="option.value">
+                         <option :value="option.value" x-text="option.label"></option>
+                     </template>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="timeline-creator-filter">Creator:</label>
+                <select id="timeline-creator-filter" x-model="timelineFilterCreator">
+                    <option value="all">All Creators</option>
+                     <template x-for="creator in availableFilters.creators" :key="creator">
+                         <option :value="creator" x-text="creator"></option>
+                     </template>
+                </select>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="timeline-chart-canvas"></canvas>
+        </div>
+        <div x-show="timelineChartData.length === 0 && isMetadataLoaded" style="text-align: center; padding: 20px; color: #666;">
+            No models match the selected filters or have valid release dates.
+        </div>
+    </div>
+
 
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js"></script>
     <script src="script.js?1"></script>
