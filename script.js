@@ -44,6 +44,8 @@ document.addEventListener('alpine:init', () => {
         timelineFilterCreator: 'all',
         timelineChart: null, // Holds the Chart.js instance
         timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})), // Options for Y-axis select
+        minReleaseDate: null, // Earliest release date across all models
+        maxReleaseDate: null, // Today's date for chart max range
         // UI Elements
         overviewTable: null, modelDetailTable: null, questionThemesTable: null,
         variationMap: VARIATION_MAP,
@@ -228,17 +230,19 @@ document.addEventListener('alpine:init', () => {
             this.isThemeDetailLoading = false;
             this.themeDetailErrorMessage = null;
             this.timelineChart = null;
+            this.minReleaseDate = null; // Initialize date range state
+            this.maxReleaseDate = null;
 
-            this.parseHash(); // Parse initial hash first to set filters if present
-            this.setupWatchers(); // Setup watchers before loading data
+            this.parseHash();
+            this.setupWatchers();
 
             try {
-                await this.loadMetadata();
+                await this.loadMetadata(); // This now sets min/max dates
                 this.isMetadataLoaded = true;
                 this.isMetadataLoading = false;
                 this.loadingMessage = '';
                 this.errorMessage = null;
-                this.parseHash(true); // Re-parse hash *after* metadata
+                this.parseHash(true);
                 this.$nextTick(() => {
                     this.initializeView(this.currentView);
                     if (this.currentView === 'question_theme_detail' && this.selectedGroupingKey && !this.currentThemeDetailData) {
@@ -281,19 +285,37 @@ document.addEventListener('alpine:init', () => {
                 this.availableFilters.models = this.modelSummaryData.map(m => m.model).sort();
                 this.availableFilters.domains = [...new Set(this.questionThemeSummaryData.map(q => q.domain))].sort();
                 this.availableFilters.grouping_keys = this.questionThemeSummaryData.map(q => q.grouping_key).sort();
-                this.availableFilters.variations = ['1', '2', '3', '4']; // Kept for consistency if used elsewhere
+                this.availableFilters.variations = ['1', '2', '3', '4'];
 
-                // Extract creators for timeline filter
+                // Extract creators
                 const creators = new Set();
                 Object.values(this.modelMetadata).forEach(meta => {
-                    if (meta.creator) creators.add(meta.creator);
-                    else creators.add(UNKNOWN_CREATOR); // Add placeholder if missing
+                    creators.add(meta.creator || UNKNOWN_CREATOR);
                 });
                 this.availableFilters.creators = [...creators].sort();
+
+                 // Calculate min/max dates for timeline chart
+                 let earliestDate = null;
+                 Object.values(this.modelMetadata).forEach(meta => {
+                     if (meta.release_date) {
+                         try {
+                             const d = new Date(Date.parse(meta.release_date));
+                             if (!isNaN(d)) {
+                                 if (earliestDate === null || d < earliestDate) {
+                                     earliestDate = d;
+                                 }
+                             }
+                         } catch (e) { /* ignore parse errors */ }
+                     }
+                 });
+                 this.minReleaseDate = earliestDate; // Store as Date object or null
+                 this.maxReleaseDate = new Date(); // Store today as Date object
 
 
             } catch (e) {
                 console.error("Failed to load or parse metadata.json:", e);
+                this.minReleaseDate = null; // Ensure dates are null on error
+                this.maxReleaseDate = null;
                 throw new Error(`Metadata Load Failed: ${e.message}`);
             }
         },
@@ -374,7 +396,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             let needsViewInitialization = false;
-            let stateChanged = false; // Track if any relevant state changed
+            let stateChanged = false;
 
             if (v === 'model_timeline') {
                 const params = new URLSearchParams(query);
@@ -409,11 +431,13 @@ document.addEventListener('alpine:init', () => {
                     this.currentThemeDetailData = null;
                     this.themeDetailErrorMessage = null;
                 }
+                needsViewInitialization = true; // Need to init because view/selection changed
             }
 
             // Initialize View or Load Data only if state actually changed relevant to the view
-            if (stateChanged) {
-                this.$nextTick(() => { this.initializeView(v); });
+            if (stateChanged || needsViewInitialization) {
+                 // Always re-initialize view if view/selection/filters changed
+                 this.$nextTick(() => { this.initializeView(v); });
                 if (v === 'question_theme_detail' && k && (!this.currentThemeDetailData || k !== this.selectedGroupingKey)) {
                      this.loadThemeDetailData(k, anchor).catch(e => console.error("Error loading theme data from hash:", e));
                 }
@@ -427,7 +451,6 @@ document.addEventListener('alpine:init', () => {
             else if (view === 'question_themes') { basePath = '#/questions'; }
             else if (view === 'model_timeline') {
                 basePath = '#/timeline';
-                // Always include current filters when navigating TO timeline
                 const params = new URLSearchParams();
                 if(this.timelineFilterDomain !== 'all') params.set('domain', this.timelineFilterDomain);
                 if(this.timelineFilterCreator !== 'all') params.set('creator', this.timelineFilterCreator);
@@ -447,25 +470,28 @@ document.addEventListener('alpine:init', () => {
             if (anchor) finalHash += '#' + anchor;
 
             if (location.hash !== finalHash) {
-                if (replaceHistory) history.replaceState(null, '', finalHash);
-                else history.pushState(null, '', finalHash);
-                this.parseHash();
+                // Use pushState when navigating *between* views
+                if (replaceHistory || view === 'model_timeline') { // Use replaceState for filter changes *within* timeline
+                     history.replaceState(null, '', finalHash);
+                 } else {
+                     history.pushState(null, '', finalHash);
+                 }
+                this.parseHash(); // Let parseHash handle the consequences
             } else if (view !== 'model_timeline' && view !== 'question_theme_detail') {
+                 // If hash is same but we might need to re-init non-dynamic view
                  this.$nextTick(() => { this.initializeView(this.currentView); });
             }
         },
         updateTimelineUrlParams() {
              if(this.currentView !== 'model_timeline' || !this.isMetadataLoaded) return;
-
              const params = new URLSearchParams();
              if (this.timelineFilterDomain !== 'all') params.set('domain', this.timelineFilterDomain);
              if (this.timelineFilterCreator !== 'all') params.set('creator', this.timelineFilterCreator);
              if (this.timelineFilterJudgment !== 'pct_complete_overall') params.set('metric', this.timelineFilterJudgment);
-
              const queryString = params.toString();
-             // Use replaceState for filter changes within the view to avoid excessive history entries
              const newHash = queryString ? `#/timeline?${queryString}` : '#/timeline';
              if (location.hash !== newHash) {
+                 // Use replaceState for filter changes within the view
                  history.replaceState(null, '', newHash);
              }
         },
@@ -480,16 +506,13 @@ document.addEventListener('alpine:init', () => {
         initializeView(view) {
              if (!this.isMetadataLoaded) { return; }
              this.destroyAllUI();
-
              try {
                  if (view === 'overview') this.initOverviewTable();
                  else if (view === 'question_themes') this.initQuestionThemesTable();
                  else if (view === 'model_detail') this.initModelDetailTable();
                  else if (view === 'model_timeline') {
                       this.$nextTick(() => {
-                          setTimeout(() => {
-                              this.initOrUpdateTimelineChart();
-                          }, 0);
+                          setTimeout(() => { this.initOrUpdateTimelineChart(); }, 0);
                       });
                  }
              } catch (error) { console.error(`Error initializing UI for view ${view}:`, error); this.errorMessage = `Error rendering ${view}.`; }
@@ -545,24 +568,18 @@ document.addEventListener('alpine:init', () => {
             });
         },
         initOrUpdateTimelineChart() {
-            // Ensure we are on the correct view and metadata is loaded.
             if (this.currentView !== 'model_timeline' || !this.isMetadataLoaded) return;
-
-            // Destroy any existing chart instance *first*.
             this.destroyChart(this.timelineChart);
 
             const canvas = document.getElementById('timeline-chart-canvas');
             if (!canvas) { console.error("Timeline canvas not found"); return; }
-
             const ctx = canvas.getContext('2d');
-             // Check if context was obtained successfully.
              if (!ctx) { console.error("Failed to get 2D context from canvas."); return; }
 
             const dataPoints = this.timelineChartData;
             const judgmentInfo = JUDGMENT_KEYS[this.timelineFilterJudgment];
             const yAxisLabel = judgmentInfo ? judgmentInfo.label : 'Percentage';
 
-            // Create the new chart instance.
             this.timelineChart = new Chart(ctx, {
                 type: 'scatter',
                 data: {
@@ -592,6 +609,8 @@ document.addEventListener('alpine:init', () => {
                     scales: {
                         x: {
                             type: 'time',
+                            min: this.minReleaseDate ? this.minReleaseDate.valueOf() : undefined, // Use timestamp
+                            max: this.maxReleaseDate ? this.maxReleaseDate.valueOf() : undefined, // Use timestamp
                             time: { unit: 'month', tooltipFormat: 'yyyy-MM-dd', displayFormats: { month: 'yyyy-MM', year: 'yyyy' } },
                             title: { display: true, text: 'Model Release Date' },
                             ticks: { source: 'auto', maxRotation: 45, minRotation: 0 }
@@ -605,29 +624,16 @@ document.addEventListener('alpine:init', () => {
                     plugins: {
                         tooltip: {
                             callbacks: {
+                                // Use default title for date (adapter handles formatting)
                                 label: function(context) {
-                                    try {
-                                        const point = context.raw;
-                                        let label = point.label || '';
-                                        if (label) label += ': ';
-                                        label += `${point.y.toFixed(1)}%`;
-                                        if (point.creator) { label += ` (${point.creator})`; }
-
-                                        // Check if dateFns and format exist before using them
-                                        if (typeof window.dateFns !== 'undefined' && typeof window.dateFns.format === 'function') {
-                                            const dateLabel = context.chart.options.scales.x.time.tooltipFormat;
-                                            const dateStr = window.dateFns.format(point.x, dateLabel);
-                                            label += ` [${dateStr}]`;
-                                        } else {
-                                             // Do not log error here as it can be noisy; fallback is enough
-                                             label += ` [Date N/A]`;
-                                        }
-                                        return label;
-                                    } catch (e) {
-                                         console.error("Error formatting tooltip label:", e);
-                                         const point = context.raw;
-                                         return `${point.label || 'Model'}: ${point.y.toFixed(1)}%`; // Fallback
+                                    const point = context.raw;
+                                    let label = point.label || ''; // Model name
+                                    if (label) label += ': ';
+                                    label += `${point.y.toFixed(1)}%`; // Percentage
+                                    if (point.creator) {
+                                        label += ` (${point.creator})`; // Creator
                                     }
+                                    return label;
                                 }
                             }
                         },
