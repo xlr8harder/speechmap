@@ -28,7 +28,7 @@
     <hr>
 
     <!-- Global Loading Indicator (Phase 1: Metadata) -->
-    <div x-show="isLoading && !isMetadataLoaded" class="loading-indicator" x-text="loadingMessage"></div>
+    <div x-show="isMetadataLoading" class="loading-indicator" x-text="loadingMessage"></div>
     <!-- Global Error Message -->
     <div x-show="errorMessage" class="error-message" x-text="errorMessage"></div>
 
@@ -137,9 +137,8 @@
              </template>
 
             <h3>Compliance by Question Theme</h3>
-            <div id="model-detail-table" class="table-container">
-                 <!-- Placeholder removed, table initializes with metadata -->
-            </div>
+             <!-- This table now renders immediately using metadata -->
+            <div id="model-detail-table" class="table-container"></div>
         </div>
     </template>
 
@@ -154,15 +153,16 @@
      <!-- Question Theme Detail View (Structure shown AFTER metadata loaded) -->
      <template x-if="currentView === 'question_theme_detail' && selectedGroupingKey && isMetadataLoaded">
          <div>
-            <h2 x-text="`Question Theme: ${selectedGroupingKey}`"></h2> <!-- Use selectedGroupingKey directly -->
+            <h2 x-text="`Question Theme: ${selectedGroupingKey}`"></h2>
             <button @click="navigate('question_themes')">← Back to Question Themes</button>
+             <!-- Domain display adjusted to use metadata -->
             <p><strong>Domain:</strong> <span x-text="questionThemeSummaryData.find(t => t.grouping_key === selectedGroupingKey)?.domain || 'Loading...'"></span></p>
 
             <!-- Loading indicator for full data (Phase 2) -->
-            <div x-show="isLoading && !isFullDataLoaded" class="loading-indicator" x-text="loadingMessage"></div>
+            <div x-show="isFullDataLoading" class="loading-indicator" x-text="loadingMessage" style="margin-top: 20px;"></div>
 
             <!-- Only show details when full data is loaded and not currently loading -->
-            <template x-if="isFullDataLoaded && !isLoading && selectedQuestionThemeData">
+            <template x-if="isFullDataLoaded && !isFullDataLoading && selectedQuestionThemeData">
                 <div> <!-- Wrapper div -->
                     <details class="toc-details" open>
                         <summary>Model Compliance Summary & Links</summary>
@@ -221,7 +221,7 @@
                          <template x-if="!selectedQuestionThemeData.responses || selectedQuestionThemeData.responses.length === 0"> <p>No individual responses found for this theme after loading.</p> </template>
                     </div>
                  </div>
-            </template> <!-- End x-if="isFullDataLoaded" -->
+            </template> <!-- End x-if="isFullDataLoaded && !isFullDataLoading" -->
          </div>
      </template>
 

@@ -9,6 +9,8 @@ code { background-color: #eee; padding: 2px 5px; border-radius: 3px; font-family
 pre { background-color: #eee; padding: 12px; border-radius: 4px; overflow-x: auto; font-family: monospace; margin-top: 0.8em; margin-bottom: 1em; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
 a { color: #0056b3; text-decoration: none; }
 a:hover { text-decoration: underline; }
+/* Style for elements hidden before Alpine initializes */
+[x-cloak] { display: none !important; }
 
 /* Loading/Error */
 .loading-indicator, .error-message { padding: 15px; margin: 20px auto; border-radius: 4px; max-width: 800px; text-align: center; }
@@ -341,12 +343,11 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
     border-radius: 4px;
     font-size: 0.9em;
 }
-.error-box b { /* Style the "Provider Error:" text */
+.error-box b {
     font-weight: bold;
-    color: #856404; /* Match text color */
+    color: #856404;
     margin-right: 5px;
 }
-/* .error-message removed */
 
 .partial-warning { color: #fd7e14; font-style: italic; margin-left: 5px;}
 
