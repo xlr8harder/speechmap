@@ -24,9 +24,9 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 /* --- About View --- */
 .about-content {
     padding: 0 20px 20px 20px;
-    max-width: 1200px; /* Added max-width */
-    margin-left: auto;  /* Added for centering */
-    margin-right: auto; /* Added for centering */
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .about-content h3 {
     margin-top: 0;
@@ -74,7 +74,7 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
     height: auto;
     border-radius: 8px;
 }
-.placeholder-image { /* Keep for fallback or if image fails */
+.placeholder-image {
     width: 100%;
     height: 200px;
     background-color: #e9ecef;
@@ -109,6 +109,10 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 .grid-item.where-lines h3 {
     margin-top: 0;
 }
+.grid-item.where-lines ul {
+    padding-left: 20px; /* Indent bullet points */
+    margin-top: 0.5em;
+}
 /* Stats Block */
 .stats-block ul {
     list-style: none;
@@ -121,7 +125,7 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
     margin-bottom: 1.2em;
     color: #333;
 }
-.stats-block .stat-value { /* Reusing class for consistency */
+.stats-block .stat-value {
     font-weight: 600;
     font-size: 1.1em;
     color: #000;
@@ -148,6 +152,41 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 }
 
 .about-content p a img { vertical-align: middle; margin-left: 5px; }
+
+/* --- Model Detail --- */
+/* Style for the new metadata box */
+.model-meta-box {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px 20px;
+    margin: 25px 0;
+}
+.model-meta-box h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.15em;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 8px;
+}
+.meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
+    gap: 10px 20px; /* Row and column gap */
+}
+.meta-item {
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+.meta-key {
+    font-weight: 600;
+    color: #495057;
+    margin-right: 5px;
+}
+.meta-value {
+    color: #333;
+}
+
 
 /* --- Tables --- */
 .table-container { margin-top: 15px; border: 1px solid #ccc; min-height: 100px; max-height: 65vh; overflow: hidden; }

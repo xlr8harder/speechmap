@@ -33,29 +33,24 @@
     <!-- About View -->
     <div x-show="currentView === 'about'" class="about-content">
 
-        <!-- New Hero Section -->
         <div class="about-hero">
             <div class="hero-text">
                 <h2>We map the invisible<br>boundaries of AI speech</h2>
             </div>
             <div class="hero-image">
-                <!-- Replaced placeholder div with img tag -->
                 <img src="graphic.png" alt="Map showing AI model responses across regions" class="hero-graphic">
             </div>
         </div>
 
-        <!-- New Grid Section -->
         <div class="about-grid">
             <div class="grid-item what-is">
-                <!-- Updated Text -->
                 <h3>What is SpeechMap.AI?</h3>
                 <p>SpeechMap.AI is a research project that explores the limits of AI-generated speech.</p>
                 <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and themes.</p>
                 <p>Most organizations focus on what models are capable of.<br>We focus on what they avoid, refuse, or shut down.</p>
             </div>
 
-            <div class="grid-item where-lines"> <!-- Renamed class -->
-                 <!-- Updated Text -->
+            <div class="grid-item where-lines">
                 <h3>Where are the lines drawn—</h3>
                 <p>and how does that affect access to dissent, satire, or debate?</p>
                 <p>Many prompts land in a gray area:</p>
@@ -69,7 +64,6 @@
             </div>
 
             <div class="grid-item why-matters">
-                 <!-- Updated Text -->
                 <h3>Why It Matters</h3>
                  <p>Language models are becoming part of how we write, search, learn, and communicate. As they become embedded in everyday tools, the limits on what they’ll say begin to matter.</p>
                  <p>Some models block criticism of specific governments. Others will only discuss mainstream political views. If these systems shape public discourse, then understanding their boundaries is a public interest issue.</p>
@@ -77,7 +71,6 @@
             </div>
 
             <div class="grid-item stats-block">
-                 <!-- Updated Structure and Text -->
                 <h3>What’s Here Now</h3>
                 <ul>
                     <li><strong class="stat-value" x-text="stats.models">0</strong> AI Models Compared</li>
@@ -116,10 +109,32 @@
     </div>
 
     <!-- Model Detail View -->
-    <template x-if="currentView === 'model_detail' && selectedModelData && !isLoading && !errorMessage">
+    <template x-if="currentView === 'model_detail' && selectedModel && !isLoading && !errorMessage">
         <div>
-            <h2 x-text="`Model Details: ${selectedModelData.model}`"></h2>
+            <h2 x-text="`Model Details: ${selectedModel}`"></h2>
             <button @click="navigate('overview')">← Back to Overview</button>
+
+            <!-- Model Metadata Section -->
+            <template x-if="selectedModelFullMetadata">
+                <div class="model-meta-box">
+                    <h3>Model Information</h3>
+                    <div class="meta-grid">
+                        <template x-for="(value, key) in selectedModelFullMetadata" :key="key">
+                            <div class="meta-item" x-show="value !== null && value !== '' && key !== 'model_identifier'">
+                                 <span class="meta-key" x-text="formatModelMetaKey(key) + ':'"></span>
+                                 <span class="meta-value" x-text="formatModelMetaValue(value)"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+             <template x-if="!selectedModelFullMetadata">
+                 <div class="model-meta-box">
+                     <p><em>(No additional metadata available for this model.)</em></p>
+                 </div>
+             </template>
+
+
             <h3>Compliance by Question Theme</h3>
             <div id="model-detail-table" class="table-container"></div>
         </div>

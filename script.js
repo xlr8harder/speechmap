@@ -14,17 +14,28 @@ document.addEventListener('alpine:init', () => {
         overviewTable: null, modelDetailTable: null, questionThemesTable: null,
         variationMap: VARIATION_MAP,
         stats: { models: 0, themes: 0, judgments: 0 },
+        modelMetadata: {}, // State for model metadata
 
         // --- Computed Properties ---
         get modelSummary() {
             if (!this.isDataLoaded) return [];
             const s = this.allResponses.reduce((a, r) => { if (!a[r.model]) a[r.model] = { m: r.model, c: 0, k: 0, e: 0, d: 0, r: 0 }; a[r.model].c++; if (r.compliance === 'COMPLETE') a[r.model].k++; else if (r.compliance === 'EVASIVE') a[r.model].e++; else if (r.compliance === 'DENIAL') a[r.model].d++; else if (r.compliance === 'ERROR') a[r.model].r++; return a; }, {});
-            const res = Object.values(s).map(i => ({ model: i.m, num_responses: i.c, pct_complete_overall: i.c > 0 ? (i.k / i.c * 100) : 0, pct_evasive: i.c > 0 ? (i.e / i.c * 100) : 0, pct_denial: i.c > 0 ? (i.d / i.c * 100) : 0, pct_error: i.c > 0 ? (i.r / i.c * 100) : 0 }));
-            // Default sort by compliance ascending, then model name
+            const res = Object.values(s).map(i => {
+                 const release_date = this.modelMetadata[i.m]?.release_date || null;
+                 return {
+                    model: i.m,
+                    num_responses: i.c,
+                    pct_complete_overall: i.c > 0 ? (i.k / i.c * 100) : 0,
+                    pct_evasive: i.c > 0 ? (i.e / i.c * 100) : 0,
+                    pct_denial: i.c > 0 ? (i.d / i.c * 100) : 0,
+                    pct_error: i.c > 0 ? (i.r / i.c * 100) : 0,
+                    release_date: release_date
+                 };
+            });
             res.sort((a, b) => {
                 const complianceDiff = Number(a.pct_complete_overall) - Number(b.pct_complete_overall);
                 if (complianceDiff !== 0) return complianceDiff;
-                return a.model.localeCompare(b.model); // Secondary sort by name
+                return a.model.localeCompare(b.model);
             });
             return res;
         },
@@ -37,11 +48,10 @@ document.addEventListener('alpine:init', () => {
                 return a;
             }, {});
             const res = Object.values(s).map(i => ({ grouping_key: i.k, domain: i.d, num_responses: i.c, num_models: i.models.size, pct_complete_overall: i.c > 0 ? (i.p / i.c * 100) : 0, pct_evasive: i.c > 0 ? (i.e / i.c * 100) : 0, pct_denial: i.c > 0 ? (i.de / i.c * 100) : 0, pct_error: i.c > 0 ? (i.er / i.c * 100) : 0, }));
-            // Default sort by compliance ascending, then grouping key
             res.sort((a, b) => {
                  const complianceDiff = Number(a.pct_complete_overall) - Number(b.pct_complete_overall);
                  if (complianceDiff !== 0) return complianceDiff;
-                 return a.grouping_key.localeCompare(b.grouping_key); // Secondary sort by key
+                 return a.grouping_key.localeCompare(b.grouping_key);
             });
             return res;
         },
@@ -55,15 +65,18 @@ document.addEventListener('alpine:init', () => {
                 return a;
             }, {});
             const res = Object.values(s).map(i => ({ grouping_key: i.k, domain: i.d, num_responses: i.c, pct_complete: i.c > 0 ? (i.p / i.c * 100) : 0, pct_evasive: i.c > 0 ? (i.e / i.c * 100) : 0, pct_denial: i.c > 0 ? (i.de / i.c * 100) : 0, pct_error: i.c > 0 ? (i.er / i.c * 100) : 0, }));
-             // Default sort by compliance ascending, then grouping key
              res.sort((a, b) => {
                  const complianceDiff = Number(a.pct_complete) - Number(b.pct_complete);
                  if (complianceDiff !== 0) return complianceDiff;
-                 return a.grouping_key.localeCompare(b.grouping_key); // Secondary sort by key
+                 return a.grouping_key.localeCompare(b.grouping_key);
              });
             return res;
         },
         get selectedModelData() { if (!this.selectedModel || !this.isDataLoaded) return null; return this.modelSummary.find(m => m.model === this.selectedModel) || null; },
+        get selectedModelFullMetadata() {
+            if (!this.selectedModel || !this.modelMetadata) return null;
+            return this.modelMetadata[this.selectedModel] || null;
+        },
         get selectedQuestionThemeData() { if (!this.selectedGroupingKey || !this.isDataLoaded) return null; const firstRecord = this.allResponses.find(r => r.grouping_key === this.selectedGroupingKey); if (!firstRecord) return null; const domain = firstRecord.domain; const responsesForTheme = this.allResponses .filter(r => r.grouping_key === this.selectedGroupingKey) .sort((a,b) => a.model.localeCompare(b.model) || parseInt(a.variation) - parseInt(b.variation)); return { grouping_key: this.selectedGroupingKey, domain: domain, responses: responsesForTheme }; },
         get selectedQuestionThemeModelSummary() { if (!this.selectedQuestionThemeData || !this.selectedQuestionThemeData.responses) return []; const summary = this.selectedQuestionThemeData.responses.reduce((acc, r) => { if (!acc[r.model]) acc[r.model] = { model: r.model, anchor_id: r.anchor_id, count: 0, complete_count: 0 }; acc[r.model].count++; if (r.compliance === 'COMPLETE') acc[r.model].complete_count++; acc[r.model].anchor_id = r.anchor_id; return acc; }, {}); return Object.values(summary).map(s => ({ model: s.model, anchor_id: s.anchor_id, count: s.count, pct_complete: s.count > 0 ? (s.complete_count / s.count * 100) : 0, })).sort((a,b) => a.model.localeCompare(b.model)); },
         get selectedModelDetailedStats() { if (!this.selectedModel || !this.isDataLoaded) { return { overall: { count: 0, complete_count: 0, pct_complete: 0, counts: {}, percentages: {} }, by_domain: [], by_variation: [], by_domain_sorted: [] }; } const modelResponses = this.allResponses.filter(r => r.model === this.selectedModel); const overall = { count: 0, complete_count: 0, counts: {}, percentages: {} }; const by_domain = {}; const by_variation = {}; this.complianceOrder.forEach(level => { overall.counts[level] = 0; }); this.availableFilters.domains.forEach(d => { by_domain[d] = { domain: d, count: 0, complete_count: 0 }; }); this.availableFilters.variations.forEach(v => { by_variation[v] = { variation: v, count: 0, complete_count: 0 }; }); for (const r of modelResponses) { overall.count++; if(this.complianceOrder.includes(r.compliance)) overall.counts[r.compliance]++; else overall.counts['UNKNOWN']++; if (r.compliance === 'COMPLETE') overall.complete_count++; if (!by_domain[r.domain]) by_domain[r.domain] = { domain: r.domain, count: 0, complete_count: 0 }; by_domain[r.domain].count++; if (r.compliance === 'COMPLETE') by_domain[r.domain].complete_count++; if (!by_variation[r.variation]) by_variation[r.variation] = { variation: r.variation, count: 0, complete_count: 0 }; by_variation[r.variation].count++; if (r.compliance === 'COMPLETE') by_variation[r.variation].complete_count++; } overall.pct_complete = overall.count > 0 ? (overall.complete_count / overall.count * 100) : 0; this.complianceOrder.forEach(level => { overall.percentages[level] = overall.count > 0 ? (overall.counts[level] / overall.count * 100) : 0; }); const domain_results = Object.values(by_domain).map(d => ({ ...d, pct_complete: d.count > 0 ? (d.complete_count / d.count * 100) : 0 }));
@@ -74,6 +87,14 @@ document.addEventListener('alpine:init', () => {
                  return Math.floor(num / 1000) + 'K+';
              }
              return num.toLocaleString();
+        },
+        formatModelMetaKey(key) {
+             if (!key) return '';
+             return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        },
+        formatModelMetaValue(value) {
+             if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+             return value;
         },
 
 
@@ -99,8 +120,14 @@ document.addEventListener('alpine:init', () => {
                 if (!metadata.data_files || !Array.isArray(metadata.data_files) || metadata.data_files.length === 0) {
                     throw new Error("Metadata is missing 'data_files' array or it's empty.");
                 }
+                if (!metadata.model_metadata || typeof metadata.model_metadata !== 'object') {
+                     console.warn("Metadata is missing 'model_metadata' object.");
+                     metadata.model_metadata = {};
+                }
+
 
                 this.complianceOrder = metadata.complianceOrder;
+                this.modelMetadata = metadata.model_metadata;
 
                 if (metadata.stats && typeof metadata.stats === 'object') {
                     this.stats.models = Number.isFinite(metadata.stats.models) ? metadata.stats.models : 0;
@@ -250,12 +277,14 @@ document.addEventListener('alpine:init', () => {
             const t = document.getElementById("overview-table");
             if (!t || this.currentView !== 'overview') return;
             this.destroyTable(this.overviewTable);
-            const d = this.modelSummary; // Data is already sorted by default
+            const d = this.modelSummary;
             console.log("Init Overview, #", d.length);
             this.overviewTable = new Tabulator(t, {
-                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No models.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ], // Set initial sort for user
+                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No models.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
                 columns: [
                     { title: "Model", field: "model", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectModel(c.getRow().getData().model), cssClass: "clickable-cell" },
+                    // Updated Release Date column sorter
+                    { title: "Released", field: "release_date", width: 110, sorter: dateSorterNullable, headerFilter:"input", hozAlign:"center" },
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
                     { title: "% Comp", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
                     { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
@@ -268,10 +297,10 @@ document.addEventListener('alpine:init', () => {
             const t = document.getElementById("question-themes-table");
             if (!t || this.currentView !== 'question_themes') return;
             this.destroyTable(this.questionThemesTable);
-            const d = this.questionThemeSummary; // Data is already sorted by default
+            const d = this.questionThemeSummary;
             console.log("Init Q Themes, #", d.length);
             this.questionThemesTable = new Tabulator(t, {
-                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ], // Set initial sort for user
+                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
                 columns: [
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell" },
                     { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] } },
@@ -288,10 +317,10 @@ document.addEventListener('alpine:init', () => {
             const t = document.getElementById("model-detail-table");
             if (!t || this.currentView !== 'model_detail' || !this.selectedModel) return;
             this.destroyTable(this.modelDetailTable);
-            const d = this.selectedModelQuestionSummary; // Data is already sorted by default
+            const d = this.selectedModelQuestionSummary;
             console.log(`Init Model Detail ${this.selectedModel}, #`, d.length);
             this.modelDetailTable = new Tabulator(t, {
-                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Qs for this model (or matching filters if set).", selectable: false, initialSort: [ {column:"pct_complete", dir:"asc"} ], // Set initial sort for user
+                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Qs for this model (or matching filters if set).", selectable: false, initialSort: [ {column:"pct_complete", dir:"asc"} ],
                 columns: [
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key, `response-${generateSafeId(this.selectedModel)}`), cssClass: "clickable-cell" },
                     { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains.filter(dm => d.some(q => q.domain === dm))] } },
@@ -363,3 +392,18 @@ function percentWithBgBarFormatter(cell, formatterParams, onRendered) {
 
     return container;
 }
+
+// Custom sorter for YYYY-MM-DD dates, handling nulls
+function dateSorterNullable(a, b, aRow, bRow, column, dir, sorterParams) {
+    // Treat nulls as "later" than any valid date
+    const aIsNull = a === null || a === undefined || a === '';
+    const bIsNull = b === null || b === undefined || b === '';
+
+    if (aIsNull && bIsNull) return 0; // Both null, equal
+    if (aIsNull) return dir === "asc" ? 1 : -1; // a is null, comes after b
+    if (bIsNull) return dir === "asc" ? -1 : 1; // b is null, comes after a
+
+    // Both are non-null strings, compare lexicographically
+    return a.localeCompare(b);
+}
+

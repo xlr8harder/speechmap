@@ -14,6 +14,288 @@
   "stats": {
     "models": 34,
     "themes": 469,
-    "judgments": 42165
+    "judgments": 57716
+  },
+  "model_metadata": {
+    "x-ai/grok-3-beta": {
+      "model_identifier": "x-ai/grok-3-beta",
+      "creator": "x-ai",
+      "model_name": "grok-3-beta",
+      "model_family": "grok-3",
+      "release_date": "2025-02-17",
+      "reasoning_model": true
+    },
+    "x-ai/grok-3-mini-beta": {
+      "model_identifier": "x-ai/grok-3-mini-beta",
+      "creator": "x-ai",
+      "model_name": "grok-3-mini-beta",
+      "model_family": "grok-3",
+      "release_date": "2025-02-17",
+      "reasoning_model": true
+    },
+    "anthropic/claude-3.7-sonnet": {
+      "model_identifier": "anthropic/claude-3.7-sonnet",
+      "creator": "anthropic",
+      "model_name": "claude-3.7-sonnet",
+      "model_family": "claude-3.7",
+      "release_date": "2025-02-24",
+      "reasoning_model": true
+    },
+    "deepseek/deepseek-chat-v3-0324": {
+      "model_identifier": "deepseek/deepseek-chat-v3-0324",
+      "creator": "deepseek",
+      "model_name": "deepseek-chat-v3-0324",
+      "model_family": "deepseek-v3",
+      "release_date": "2025-03-24",
+      "reasoning_model": false
+    },
+    "deepseek/deepseek-chat": {
+      "model_identifier": "deepseek/deepseek-chat",
+      "creator": "deepseek",
+      "model_name": "deepseek-chat",
+      "model_family": "deepseek-v3",
+      "release_date": "2024-12-26",
+      "reasoning_model": false
+    },
+    "deepseek/deepseek-r1": {
+      "model_identifier": "deepseek/deepseek-r1",
+      "creator": "deepseek",
+      "model_name": "deepseek-r1",
+      "model_family": "deepseek-r1",
+      "release_date": "2025-01-20",
+      "reasoning_model": true
+    },
+    "google/gemini-2.5-pro-preview-03-25": {
+      "model_identifier": "google/gemini-2.5-pro-preview-03-25",
+      "creator": "google",
+      "model_name": "gemini-2.5-pro-preview-03-25",
+      "model_family": "gemini-2.5-pro",
+      "release_date": "2025-03-25",
+      "reasoning_model": true
+    },
+    "mistralai/mistral-large-2411": {
+      "model_identifier": "mistralai/mistral-large-2411",
+      "creator": "mistralai",
+      "model_name": "mistral-large-2411",
+      "model_family": "mistral-large",
+      "release_date": "2024-11-18",
+      "reasoning_model": true
+    },
+    "qwen/qwen-max": {
+      "model_identifier": "qwen/qwen-max",
+      "creator": "qwen",
+      "model_name": "qwen2.5-max",
+      "model_family": "qwen2.5-max",
+      "release_date": "2025-01-25",
+      "reasoning_model": false
+    },
+    "openrouter/optimus-alpha": {
+      "model_identifier": "openrouter/optimus-alpha",
+      "creator": "unknown",
+      "model_name": "optimus-alpha",
+      "model_family": "unknown",
+      "release_date": "2025-04-10",
+      "reasoning_model": false
+    },
+    "openrouter/quasar-alpha": {
+      "model_identifier": "openrouter/quasar-alpha",
+      "creator": "unknown",
+      "model_name": "quasar-alpha",
+      "model_family": "unknown",
+      "release_date": "2025-04-10",
+      "reasoning_model": false
+    },
+    "openai/chatgpt-4o-latest": {
+      "model_identifier": "openai/chatgpt-4o-latest",
+      "creator": "openai",
+      "model_name": "chatgpt-4o-latest",
+      "model_family": "gpt-4o",
+      "release_date": "2025-03-26",
+      "reasoning_model": false
+    },
+    "meta-llama/llama-4-scout": {
+      "model_identifier": "meta-llama/llama-4-scout",
+      "creator": "meta-llama",
+      "model_name": "llama-4-scout",
+      "model_family": "llama-4",
+      "release_date": "2025-04-05",
+      "reasoning_model": false
+    },
+    "meta-llama/llama-4-maverick": {
+      "model_identifier": "meta-llama/llama-4-maverick",
+      "creator": "meta-llama",
+      "model_name": "llama-4-maverick",
+      "model_family": "llama-4",
+      "release_date": "2025-04-05",
+      "reasoning_model": false
+    },
+    "meta-llama/llama-3.3-70b-instruct": {
+      "model_identifier": "meta-llama/llama-3.3-70b-instruct",
+      "creator": "meta-llama",
+      "model_name": "llama-3.3-70b-instruct",
+      "model_family": "llama-3.3",
+      "release_date": "2024-12-05",
+      "reasoning_model": false
+    },
+    "meta-llama/llama-3.1-70b-instruct": {
+      "model_identifier": "meta-llama/llama-3.1-70b-instruct",
+      "creator": "meta-llama",
+      "model_name": "llama-3.1-70b-instruct",
+      "model_family": "llama-3.1",
+      "release_date": "2024-07-23",
+      "reasoning_model": false
+    },
+    "meta-llama/llama-3.1-405b-instruct": {
+      "model_identifier": "meta-llama/llama-3.1-405b-instruct",
+      "creator": "meta-llama",
+      "model_name": "llama-3.1-405b-instruct",
+      "model_family": "llama-3.1",
+      "release_date": "2024-07-23",
+      "reasoning_model": false
+    },
+    "openai/gpt-3.5-turbo-0613": {
+      "model_identifier": "openai/gpt-3.5-turbo-0613",
+      "creator": "openai",
+      "model_name": "gpt-3.5-turbo-0613",
+      "model_family": "gpt-3.5-turbo",
+      "release_date": "2023-06-13",
+      "reasoning_model": false
+    },
+    "openai/gpt-3.5-turbo-1106": {
+      "model_identifier": "openai/gpt-3.5-turbo-1106",
+      "creator": "openai",
+      "model_name": "gpt-3.5-turbo-1106",
+      "model_family": "gpt-3.5-turbo",
+      "release_date": "2023-11-06",
+      "reasoning_model": false
+    },
+    "openai/gpt-3.5-turbo-0125": {
+      "model_identifier": "openai/gpt-3.5-turbo-0125",
+      "creator": "openai",
+      "model_name": "gpt-3.5-turbo-0125",
+      "model_family": "gpt-3.5-turbo",
+      "release_date": "2024-01-25",
+      "reasoning_model": false
+    },
+    "openai/gpt-4": {
+      "model_identifier": "openai/gpt-4",
+      "creator": "openai",
+      "model_name": "gpt-4",
+      "model_family": "gpt-4",
+      "release_date": "2023-03-14",
+      "reasoning_model": false
+    },
+    "openai/gpt-4-0314": {
+      "model_identifier": "openai/gpt-4-0314",
+      "creator": "openai",
+      "model_name": "gpt-4-0314",
+      "model_family": "gpt-4",
+      "release_date": "2023-03-14",
+      "reasoning_model": false
+    },
+    "openai/gpt-4-turbo": {
+      "model_identifier": "openai/gpt-4-turbo",
+      "creator": "openai",
+      "model_name": "gpt-4-turbo-2024-04-09",
+      "model_family": "gpt-4-turbo",
+      "release_date": "2024-04-09",
+      "reasoning_model": false
+    },
+    "openai/gpt-4-turbo-preview": {
+      "model_identifier": "openai/gpt-4-turbo-preview",
+      "creator": "openai",
+      "model_name": "gpt-4-0125-preview",
+      "model_family": "gpt-4-turbo",
+      "release_date": "2024-01-25",
+      "reasoning_model": false
+    },
+    "openai/gpt-4-1106-preview": {
+      "model_identifier": "openai/gpt-4-1106-preview",
+      "creator": "openai",
+      "model_name": "gpt-4-turbo-1106-preview",
+      "model_family": "gpt-4-turbo",
+      "release_date": "2023-11-06",
+      "reasoning_model": false
+    },
+    "openai/gpt-4o-2024-11-20": {
+      "model_identifier": "openai/gpt-4o-2024-11-20",
+      "creator": "openai",
+      "model_name": "gpt-4o-2024-11-20",
+      "model_family": "gpt-4o",
+      "release_date": "2024-11-20",
+      "reasoning_model": false
+    },
+    "openai/gpt-4o-2024-08-06": {
+      "model_identifier": "openai/gpt-4o-2024-08-06",
+      "creator": "openai",
+      "model_name": "gpt-4o-2024-08-06",
+      "model_family": "gpt-4o",
+      "release_date": "2024-08-06",
+      "reasoning_model": false
+    },
+    "openai/gpt-4o-2024-05-13": {
+      "model_identifier": "openai/gpt-4o-2024-05-13",
+      "creator": "openai",
+      "model_name": "gpt-4o-2024-05-13",
+      "model_family": "gpt-4o",
+      "release_date": "2024-05-13",
+      "reasoning_model": false
+    },
+    "openai/gpt-4o-mini-2024-07-18": {
+      "model_identifier": "openai/gpt-4o-mini-2024-07-18",
+      "creator": "openai",
+      "model_name": "gpt-4o-mini-2024-07-18",
+      "model_family": "gpt-4o-mini",
+      "release_date": "2024-07-18",
+      "reasoning_model": false
+    },
+    "openai/o1-preview-2024-09-12": {
+      "model_identifier": "openai/o1-preview-2024-09-12",
+      "creator": "openai",
+      "model_name": "o1-preview-2024-09-12",
+      "model_family": "o1",
+      "release_date": "2024-09-12",
+      "reasoning_model": true
+    },
+    "openai/o1": {
+      "model_identifier": "openai/o1",
+      "creator": "openai",
+      "model_name": "o1-2024-12-17",
+      "model_family": "o1",
+      "release_date": "2024-12-17",
+      "reasoning_model": true
+    },
+    "openai/o1-mini-2024-09-12": {
+      "model_identifier": "openai/o1-mini-2024-09-12",
+      "creator": "openai",
+      "model_name": "o1-mini-2024-09-12",
+      "model_family": "o1-mini",
+      "release_date": "2024-09-12",
+      "reasoning_model": true
+    },
+    "openai/o1-pro": {
+      "model_identifier": "openai/o1-pro",
+      "creator": "openai",
+      "model_name": "o1-pro-2025-03-19",
+      "model_family": "o1-pro",
+      "release_date": "2025-03-19",
+      "reasoning_model": true
+    },
+    "openai/o3-mini": {
+      "model_identifier": "openai/o3-mini",
+      "creator": "openai",
+      "model_name": "o3-mini-2025-01-31",
+      "model_family": "o3-mini",
+      "release_date": "2025-01-31",
+      "reasoning_model": true
+    },
+    "openai/gpt-4.5-preview": {
+      "model_identifier": "openai/gpt-4.5-preview",
+      "creator": "openai",
+      "model_name": "gpt-4.5-preview-2025-02-27",
+      "model_family": "gpt-4.5",
+      "release_date": "2025-02-27",
+      "reasoning_model": false
+    }
   }
 }

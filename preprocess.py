@@ -8,6 +8,7 @@ import math
 
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
+MODEL_METADATA_FILE = "model_metadata.json" # Input model metadata
 OUTPUT_DATA_BASE_FILENAME = "speechdata" # Base name for data files (data_1, data_2, ...)
 OUTPUT_METADATA_FILENAME = "metadata.json" # Metadata file name
 MAX_RECORDS_PER_FILE = 20000
@@ -23,7 +24,37 @@ def generate_safe_id(text):
     safe_text = safe_text.strip('-')
     return safe_text if safe_text else "id"
 
+def load_model_metadata(filepath):
+    """Loads model metadata from a line-delimited JSON file."""
+    metadata = {}
+    if not os.path.exists(filepath):
+        print(f"Warning: Model metadata file not found: {filepath}")
+        return metadata # Return empty dict if file doesn't exist
+
+    print(f"Loading model metadata from {filepath}...")
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            for i, line in enumerate(f):
+                try:
+                    data = json.loads(line.strip())
+                    identifier = data.get("model_identifier")
+                    if identifier:
+                        metadata[identifier] = data
+                    else:
+                        print(f"  Warning: Missing 'model_identifier' on line {i+1} in {filepath}")
+                except json.JSONDecodeError as e:
+                    print(f"  Error parsing JSON on line {i+1} in {filepath}: {e}")
+                except Exception as e:
+                     print(f"  Unexpected error processing line {i+1} in {filepath}: {e}")
+        print(f"Successfully loaded metadata for {len(metadata)} models.")
+    except Exception as e:
+        print(f"Error reading model metadata file {filepath}: {e}")
+        # Return potentially partially loaded data or empty dict? Let's return what we have.
+    return metadata
+
+
 def preprocess_us_hard_data(analysis_dir):
+    # (Preprocessing logic remains the same as before)
     all_records = []
     file_paths = glob(os.path.join(analysis_dir, "compliance_us_hard_*.jsonl"))
     print(f"\nFound {len(file_paths)} us_hard analysis files in {analysis_dir}")
@@ -118,12 +149,13 @@ def save_data_chunk(filename, records_chunk):
         print(f"Error saving data chunk to {filename}: {e}")
         return False
 
-# Updated function to include stats
-def save_metadata(filename, data_filenames, compliance_order, stats):
+# Updated function to include model metadata
+def save_metadata(filename, data_filenames, compliance_order, stats, model_metadata):
     metadata = {
         "complianceOrder": compliance_order,
         "data_files": data_filenames,
-        "stats": stats # Add stats dictionary
+        "stats": stats,
+        "model_metadata": model_metadata # Add model metadata dictionary
     }
     print(f"\nSaving metadata to {filename}...")
     try:
@@ -136,6 +168,9 @@ def save_metadata(filename, data_filenames, compliance_order, stats):
 
 def main():
     print("Starting preprocessing...")
+    # Load model metadata first
+    model_meta_dict = load_model_metadata(MODEL_METADATA_FILE)
+
     all_data = preprocess_us_hard_data(ANALYSIS_DIR)
 
     if not all_data:
@@ -177,8 +212,8 @@ def main():
              print(f"ERROR: Failed to save chunk {i+1}. Aborting metadata generation.")
              sys.exit(1)
 
-    # Save metadata file including stats
-    save_metadata(OUTPUT_METADATA_FILENAME, generated_data_files, COMPLIANCE_ORDER, stats_summary)
+    # Save metadata file including stats and model metadata
+    save_metadata(OUTPUT_METADATA_FILENAME, generated_data_files, COMPLIANCE_ORDER, stats_summary, model_meta_dict)
 
     print("\nPreprocessing and saving complete.")
 
