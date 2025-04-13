@@ -8,66 +8,81 @@ document.addEventListener('alpine:init', () => {
         // --- State Variables ---
         isLoading: true, loadingMessage: 'Initializing...', errorMessage: null,
         // Data Holders
-        allResponses: [], // Will be loaded on demand
+        allResponses: [], // Loaded on demand for question detail
         modelSummaryData: [], // Loaded from metadata
         questionThemeSummaryData: [], // Loaded from metadata
+        modelThemeSummaryData: {}, // Loaded from metadata (model -> theme -> stats)
         complianceOrder: [], // Loaded from metadata
         modelMetadata: {}, // Loaded from metadata
         stats: { models: 0, themes: 0, judgments: 0 }, // Loaded from metadata
         dataFilenames: [], // Loaded from metadata
         // Status Flags
-        isMetadataLoaded: false, // Tracks if metadata.json has loaded
-        isFullDataLoaded: false, // Tracks if all speechdata_*.json.gz files have loaded
+        isMetadataLoaded: false,
+        isFullDataLoaded: false,
         // UI State
         currentView: 'about',
         selectedModel: null,
         selectedGroupingKey: null,
-        availableFilters: { models: [], domains: [], variations: [], grouping_keys: [] }, // Keep definition here
-        activeModelDomainFilters: [], activeModelVariationFilters: [], activeModelComplianceFilters: [], // Filters only apply to model detail view table
+        availableFilters: { models: [], domains: [], variations: [], grouping_keys: [] },
+        activeModelDomainFilters: [], // Keep for filtering model detail table by domain
+        // activeModelVariationFilters removed
+        // activeModelComplianceFilters removed
         // UI Elements
         overviewTable: null, modelDetailTable: null, questionThemesTable: null,
         variationMap: VARIATION_MAP,
 
         // --- Computed Properties ---
-        // Summaries now return pre-calculated data directly
-        get modelSummary() { return this.modelSummaryData; },
-        get questionThemeSummary() { return this.questionThemeSummaryData; },
+        get modelSummary() { return this.modelSummaryData; }, // Use pre-calculated
+        get questionThemeSummary() { return this.questionThemeSummaryData; }, // Use pre-calculated
 
-        // This still calculates based on selectedModel filters, requires full data
-        get selectedModelQuestionSummary() {
-            if (!this.selectedModel || !this.isFullDataLoaded) return []; // Depends on full data
-            const f = this.allResponses.filter(r =>
-                r.model === this.selectedModel &&
-                (this.activeModelDomainFilters.length === 0 || this.activeModelDomainFilters.includes(r.domain)) &&
-                (this.activeModelVariationFilters.length === 0 || this.activeModelVariationFilters.includes(r.variation)) &&
-                (this.activeModelComplianceFilters.length === 0 || this.activeModelComplianceFilters.includes(r.compliance))
+        get selectedModelQuestionSummary() { // Uses pre-calculated modelThemeSummaryData
+            if (!this.selectedModel || !this.isMetadataLoaded || !this.modelThemeSummaryData) return [];
+
+            const modelData = this.modelThemeSummaryData[this.selectedModel];
+            if (!modelData) return [];
+
+            const summaryList = Object.entries(modelData).map(([grouping_key, stats]) => {
+                const count = stats.c || 0;
+                return {
+                    grouping_key: grouping_key,
+                    domain: stats.domain || 'N/A',
+                    num_responses: count,
+                    pct_complete: count > 0 ? ((stats.k || 0) / count * 100) : 0,
+                    pct_evasive: count > 0 ? ((stats.e || 0) / count * 100) : 0,
+                    pct_denial: count > 0 ? ((stats.d || 0) / count * 100) : 0,
+                    pct_error: count > 0 ? ((stats.r || 0) / count * 100) : 0,
+                };
+            });
+
+            // Filter by domain if selected
+            const filteredList = summaryList.filter(item =>
+                this.activeModelDomainFilters.length === 0 || this.activeModelDomainFilters.includes(item.domain)
             );
-            const s = f.reduce((a, r) => {
-                if (!a[r.grouping_key]) { a[r.grouping_key] = { k: r.grouping_key, d: r.domain, c: 0, p: 0, e: 0, de: 0, er: 0 }; }
-                a[r.grouping_key].c++; a[r.grouping_key].d = r.domain;
-                if (r.compliance === 'COMPLETE') a[r.grouping_key].p++; else if (r.compliance === 'EVASIVE') a[r.grouping_key].e++; else if (r.compliance === 'DENIAL') a[r.grouping_key].de++; else if (r.compliance === 'ERROR') a[r.grouping_key].er++;
-                return a;
-            }, {});
-            const res = Object.values(s).map(i => ({ grouping_key: i.k, domain: i.d, num_responses: i.c, pct_complete: i.c > 0 ? (i.p / i.c * 100) : 0, pct_evasive: i.c > 0 ? (i.e / i.c * 100) : 0, pct_denial: i.c > 0 ? (i.de / i.c * 100) : 0, pct_error: i.c > 0 ? (i.er / i.c * 100) : 0, }));
-            res.sort((a, b) => { // Default sort compliance ascending
+
+             // Default sort by compliance ascending, then grouping key
+             filteredList.sort((a, b) => {
                  const complianceDiff = Number(a.pct_complete) - Number(b.pct_complete);
                  if (complianceDiff !== 0) return complianceDiff;
                  return a.grouping_key.localeCompare(b.grouping_key);
              });
-            return res;
+
+            return filteredList;
         },
-        get selectedModelData() { // Uses pre-calculated summary
+        get selectedModelData() {
             if (!this.selectedModel || !this.isMetadataLoaded) return null;
             return this.modelSummaryData.find(m => m.model === this.selectedModel) || null;
         },
-        get selectedModelFullMetadata() { // Uses loaded metadata
+        get selectedModelFullMetadata() {
             if (!this.selectedModel || !this.isMetadataLoaded || !this.modelMetadata) return null;
             return this.modelMetadata[this.selectedModel] || null;
         },
         get selectedQuestionThemeData() { // Requires full data
             if (!this.selectedGroupingKey || !this.isFullDataLoaded) return null;
             const firstRecord = this.allResponses.find(r => r.grouping_key === this.selectedGroupingKey);
-            if (!firstRecord) return null;
+            if (!firstRecord) {
+                console.warn(`No records found for grouping key ${this.selectedGroupingKey} in allResponses`);
+                return { grouping_key: this.selectedGroupingKey, domain: 'N/A', responses: [] }; // Return default structure
+            }
             const domain = firstRecord.domain;
             const responsesForTheme = this.allResponses
                 .filter(r => r.grouping_key === this.selectedGroupingKey)
@@ -75,11 +90,11 @@ document.addEventListener('alpine:init', () => {
             return { grouping_key: this.selectedGroupingKey, domain: domain, responses: responsesForTheme };
         },
         get selectedQuestionThemeModelSummary() { // Requires full data
-            if (!this.selectedQuestionThemeData || !this.isFullDataLoaded) return []; // Depend on full data implicitly via selectedQuestionThemeData
+            if (!this.selectedQuestionThemeData || !this.isFullDataLoaded || !this.selectedQuestionThemeData.responses) return [];
             const summary = this.selectedQuestionThemeData.responses.reduce((acc, r) => { if (!acc[r.model]) acc[r.model] = { model: r.model, anchor_id: r.anchor_id, count: 0, complete_count: 0 }; acc[r.model].count++; if (r.compliance === 'COMPLETE') acc[r.model].complete_count++; acc[r.model].anchor_id = r.anchor_id; return acc; }, {});
             return Object.values(summary).map(s => ({ model: s.model, anchor_id: s.anchor_id, count: s.count, pct_complete: s.count > 0 ? (s.complete_count / s.count * 100) : 0, })).sort((a, b) => a.model.localeCompare(b.model));
         },
-        // selectedModelDetailedStats is no longer used/needed as filters were removed
+        // selectedModelDetailedStats removed
         formatJudgments(num) {
              if (typeof num !== 'number' || isNaN(num)) return '0';
              if (num >= 10000) { return Math.floor(num / 1000) + 'K+'; }
@@ -138,17 +153,19 @@ document.addEventListener('alpine:init', () => {
                     throw new Error(`HTTP ${meta_response.status} fetching metadata.json`);
                 }
                 metadata = await meta_response.json();
-                console.log("Metadata loaded:", metadata);
+                console.log("Metadata loaded.");
 
                 // Validate essential metadata structure
-                if (!metadata.complianceOrder || !Array.isArray(metadata.complianceOrder)) throw new Error("Metadata is missing 'complianceOrder' array.");
-                if (!metadata.data_files || !Array.isArray(metadata.data_files)) throw new Error("Metadata is missing 'data_files' array.");
-                if (!metadata.model_metadata || typeof metadata.model_metadata !== 'object') throw new Error("Metadata is missing 'model_metadata' object.");
-                if (!metadata.stats || typeof metadata.stats !== 'object') throw new Error("Metadata is missing 'stats' object.");
-                if (!metadata.model_summary || !Array.isArray(metadata.model_summary)) throw new Error("Metadata is missing 'model_summary' array.");
-                if (!metadata.question_theme_summary || !Array.isArray(metadata.question_theme_summary)) throw new Error("Metadata is missing 'question_theme_summary' array.");
+                if (!metadata.complianceOrder || !Array.isArray(metadata.complianceOrder)) throw new Error("Metadata missing 'complianceOrder'.");
+                if (!metadata.data_files || !Array.isArray(metadata.data_files)) throw new Error("Metadata missing 'data_files'.");
+                if (!metadata.model_metadata || typeof metadata.model_metadata !== 'object') throw new Error("Metadata missing 'model_metadata'.");
+                if (!metadata.stats || typeof metadata.stats !== 'object') throw new Error("Metadata missing 'stats'.");
+                if (!metadata.model_summary || !Array.isArray(metadata.model_summary)) throw new Error("Metadata missing 'model_summary'.");
+                if (!metadata.question_theme_summary || !Array.isArray(metadata.question_theme_summary)) throw new Error("Metadata missing 'question_theme_summary'.");
+                if (!metadata.model_theme_summary || typeof metadata.model_theme_summary !== 'object') throw new Error("Metadata missing 'model_theme_summary'.");
 
-                // Populate state from metadata BEFORE deriving filters
+
+                // Populate state from metadata
                 this.complianceOrder = metadata.complianceOrder;
                 this.modelMetadata = metadata.model_metadata;
                 this.stats = {
@@ -158,13 +175,14 @@ document.addEventListener('alpine:init', () => {
                 };
                 this.modelSummaryData = metadata.model_summary;
                 this.questionThemeSummaryData = metadata.question_theme_summary;
+                this.modelThemeSummaryData = metadata.model_theme_summary; // Load new summary
                 this.dataFilenames = metadata.data_files;
 
-                // Derive filters from summaries AFTER summaries are populated
+                // Derive filters from summaries
                 this.availableFilters.models = this.modelSummaryData.map(m => m.model).sort();
                 this.availableFilters.domains = [...new Set(this.questionThemeSummaryData.map(q => q.domain))].sort();
                 this.availableFilters.grouping_keys = this.questionThemeSummaryData.map(q => q.grouping_key).sort();
-                this.availableFilters.variations = ['1', '2', '3', '4']; // Assume fixed
+                this.availableFilters.variations = ['1', '2', '3', '4'];
 
                 console.log("Metadata successfully processed.");
 
@@ -174,10 +192,7 @@ document.addEventListener('alpine:init', () => {
             }
         },
         async loadFullDataIfNeeded() {
-            if (this.isFullDataLoaded) {
-                 console.log("Full data already loaded.");
-                 return;
-            }
+            if (this.isFullDataLoaded) return;
             if (!this.isMetadataLoaded || !this.dataFilenames || this.dataFilenames.length === 0) {
                 this.errorMessage = "Cannot load full data: Metadata not loaded or missing data file list.";
                 console.error(this.errorMessage);
@@ -223,7 +238,7 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 const recordChunks = await Promise.all(processing_promises);
-                this.allResponses = recordChunks.flat();
+                this.allResponses = recordChunks.flat(); // Populate allResponses
                 this.isFullDataLoaded = true;
                 console.log(`Full data loaded successfully. Total records: ${this.allResponses.length}`);
 
@@ -253,11 +268,7 @@ document.addEventListener('alpine:init', () => {
             if (pathParts[0] === 'overview') { v = 'overview'; }
             else if (pathParts[0] === 'model' && pathParts[1]) {
                 const pM = decodeURIComponent(pathParts[1]);
-                // Check against available filters which are now loaded from metadata
-                 // Need to ensure metadata is loaded before checking filters here
-                 if (!this.isMetadataLoaded && !forceUpdate) { // Defer if metadata not ready unless forcing (e.g. after load)
-                     console.log("Deferring hash parse for model, metadata not ready."); return;
-                 }
+                 if (!this.isMetadataLoaded && !forceUpdate) { console.log("Deferring model view nav, metadata not ready."); return; }
                 if (this.isMetadataLoaded && !this.availableFilters.models.includes(pM)) {
                     console.warn(`Model '${pM}' invalid.`); this.navigate('about', true); return;
                 }
@@ -265,10 +276,7 @@ document.addEventListener('alpine:init', () => {
             } else if (pathParts[0] === 'questions') {
                 if (pathParts[1]) {
                     const pK = decodeURIComponent(pathParts[1]);
-                    // Check against available filters
-                    if (!this.isMetadataLoaded && !forceUpdate) { // Defer if metadata not ready
-                        console.log("Deferring hash parse for question theme detail, metadata not ready."); return;
-                    }
+                    if (!this.isMetadataLoaded && !forceUpdate) { console.log("Deferring question detail nav, metadata not ready."); return; }
                     if (this.isMetadataLoaded && !this.availableFilters.grouping_keys.includes(pK)) {
                         console.warn(`Key '${pK}' invalid.`); this.navigate('question_themes', true); return;
                     }
@@ -284,26 +292,30 @@ document.addEventListener('alpine:init', () => {
                 if (v !== 'question_theme_detail') this.selectedGroupingKey = null;
                 this.selectedModel = m;
                 this.selectedGroupingKey = k;
-                if (v === 'model_detail' && m !== this.selectedModel) this.clearModelDetailFilters(false);
+                 // Clear domain filter if navigating to model detail? No, keep it if user set it.
+                 // if (v === 'model_detail' && m !== this.selectedModel) this.activeModelDomainFilters = []; // Removed this clear
 
                 if (this.isMetadataLoaded) {
                      if (v !== 'question_theme_detail') {
+                        // Render non-detail views immediately using metadata
                         setTimeout(() => {
                             this.destroyAllTables();
                             console.log("Attempting table init for view:", this.currentView);
                             try {
                                 if (this.currentView === 'overview') this.initOverviewTable();
                                 if (this.currentView === 'question_themes') this.initQuestionThemesTable();
-                                if (this.currentView === 'model_detail') this.initModelDetailTable(); // Will show placeholder if full data needed
+                                if (this.currentView === 'model_detail') this.initModelDetailTable(); // Now uses metadata
                             } catch (e) { console.error("Error initializing table:", e); this.errorMessage = "Error rendering table."; }
                         }, 50);
                      } else {
-                         if (previousView === 'question_theme_detail') { this.destroyAllTables(); }
+                         // Detail view rendering/scrolling handled after load trigger in selectQuestionTheme
+                         if (previousView === 'question_theme_detail' || previousView === 'model_detail') {
+                             this.destroyAllTables(); // Destroy table if navigating *away* from a detail view
+                         }
                      }
                 }
             } else {
                 console.log("State matches hash.");
-                 // Ensure scrolling happens even if hash didn't change state but anchor exists
                 if (anchor && this.currentView === 'question_theme_detail' && this.isFullDataLoaded) {
                      this.smoothScroll('#' + anchor);
                 }
@@ -329,18 +341,19 @@ document.addEventListener('alpine:init', () => {
                 this.parseHash();
             } else if (replaceHistory || anchor) {
                 console.log("Same hash nav, ensuring redraw/scroll.");
+                // Redraw non-detail views. Detail views redraw after data load.
                 if (this.isMetadataLoaded && view !== 'question_theme_detail') {
                     setTimeout(() => { this.initializeTableForView(this.currentView); }, 50);
                 }
-                // Scroll only if target view is detail and full data is loaded
                 if(anchor && view === 'question_theme_detail' && this.isFullDataLoaded) {
                      this.smoothScroll('#'+anchor);
                  }
             }
         },
         selectModel(modelName) {
+            // No need to clear domain filter when just selecting a model
+             // this.activeModelDomainFilters = [];
             this.selectedModel = modelName;
-            this.clearModelDetailFilters(false);
             this.navigate('model_detail', false, modelName);
         },
         async selectQuestionTheme(groupingKey, modelAnchorId = null) {
@@ -348,22 +361,21 @@ document.addEventListener('alpine:init', () => {
              try {
                  await this.loadFullDataIfNeeded();
                  console.log("Full data check complete.");
-                 this.selectedGroupingKey = groupingKey; // Set the key *after* loading
-                 // Navigate, which triggers parseHash, which will show the content now that data is ready
+                 this.selectedGroupingKey = groupingKey;
                  this.navigate('question_theme_detail', false, groupingKey, modelAnchorId);
              } catch (e) {
                  console.error("Failed to load full data for question theme detail:", e);
                  this.errorMessage = `Failed to load response details: ${e.message}`;
              }
         },
-        clearModelDetailFilters(doNavigate = true) { this.activeModelDomainFilters = []; this.activeModelVariationFilters = []; this.activeModelComplianceFilters = []; if(doNavigate) this.navigate('model_detail', true); },
+        // clearModelDetailFilters removed as UI filters are gone
 
         // --- Tabulator Initializers ---
         initOverviewTable() {
             const t = document.getElementById("overview-table");
-            if (!t || this.currentView !== 'overview' || !this.isMetadataLoaded) return; // Check metadata loaded
+            if (!t || this.currentView !== 'overview' || !this.isMetadataLoaded) return;
             this.destroyTable(this.overviewTable);
-            const d = this.modelSummaryData; // Use metadata summary
+            const d = this.modelSummaryData;
             console.log("Init Overview, #", d.length);
             this.overviewTable = new Tabulator(t, {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No models.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
@@ -380,9 +392,9 @@ document.addEventListener('alpine:init', () => {
         },
         initQuestionThemesTable() {
             const t = document.getElementById("question-themes-table");
-            if (!t || this.currentView !== 'question_themes' || !this.isMetadataLoaded) return; // Check metadata loaded
+            if (!t || this.currentView !== 'question_themes' || !this.isMetadataLoaded) return;
             this.destroyTable(this.questionThemesTable);
-            const d = this.questionThemeSummaryData; // Use metadata summary
+            const d = this.questionThemeSummaryData;
             console.log("Init Q Themes, #", d.length);
             this.questionThemesTable = new Tabulator(t, {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
@@ -398,21 +410,17 @@ document.addEventListener('alpine:init', () => {
                 ],
             });
         },
-        initModelDetailTable() {
+        initModelDetailTable() { // Now uses metadata summary
             const t = document.getElementById("model-detail-table");
-            if (!t || this.currentView !== 'model_detail' || !this.selectedModel || !this.isFullDataLoaded) { // Check full data loaded
-                 console.log("Deferring model detail table init: Full data not ready.");
-                 if (t) t.innerHTML = '<div style="padding: 20px; text-align: center; font-style: italic;">Please select a Question Theme first to load detailed response data for this model.</div>';
-                 return;
-            }
+            if (!t || this.currentView !== 'model_detail' || !this.selectedModel || !this.isMetadataLoaded) return; // Check metadata loaded
             this.destroyTable(this.modelDetailTable);
-            const d = this.selectedModelQuestionSummary;
+            const d = this.selectedModelQuestionSummary; // Uses metadata summary now
             console.log(`Init Model Detail ${this.selectedModel}, #`, d.length);
             this.modelDetailTable = new Tabulator(t, {
-                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Qs for this model matching filters.", selectable: false, initialSort: [ {column:"pct_complete", dir:"asc"} ],
+                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Question Themes found for this model (or matching domain filter).", selectable: false, initialSort: [ {column:"pct_complete", dir:"asc"} ],
                 columns: [
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key, `response-${generateSafeId(this.selectedModel)}`), cssClass: "clickable-cell" },
-                    { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains.filter(dm => d.some(q => q.domain === dm))] } },
+                    { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains.filter(dm => d.some(q => q.domain === dm))] } }, // Filter options based on data
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
                     { title: "% Complete", field: "pct_complete", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
                     { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
@@ -422,30 +430,23 @@ document.addEventListener('alpine:init', () => {
             });
         },
         initializeTableForView(view, anchor = null) {
-             if (!this.isMetadataLoaded) {
-                 console.log("Deferring table init, metadata not loaded.");
-                 return;
-             }
+             if (!this.isMetadataLoaded) { console.log("Deferring table init, metadata not loaded."); return; }
              console.log(`Initializing table for view: ${view}`);
              this.destroyAllTables();
              try {
                  if (view === 'overview') this.initOverviewTable();
                  else if (view === 'question_themes') this.initQuestionThemesTable();
                  else if (view === 'model_detail') this.initModelDetailTable();
-             } catch (error) {
-                 console.error(`Error initializing table for view ${view}:`, error);
-                 this.errorMessage = `Error rendering ${view} table.`;
-             }
+             } catch (error) { console.error(`Error initializing table for view ${view}:`, error); this.errorMessage = `Error rendering ${view} table.`; }
         },
         destroyTable(tableInstance) { if (tableInstance) { try { tableInstance.destroy(); } catch (e) {} } return null; },
         destroyAllTables() { this.overviewTable = this.destroyTable(this.overviewTable); this.questionThemesTable = this.destroyTable(this.questionThemesTable); this.modelDetailTable = this.destroyTable(this.modelDetailTable); },
 
         // --- Watchers ---
         setupWatchers() {
-            // Filters now re-init the table only if full data is loaded
-            this.$watch('activeModelDomainFilters', () => { if (this.currentView === 'model_detail' && this.isFullDataLoaded) this.initModelDetailTable(); });
-            this.$watch('activeModelVariationFilters', () => { if (this.currentView === 'model_detail' && this.isFullDataLoaded) this.initModelDetailTable(); });
-            this.$watch('activeModelComplianceFilters', () => { if (this.currentView === 'model_detail' && this.isFullDataLoaded) this.initModelDetailTable(); });
+             // Domain filter only affects model detail table now
+            this.$watch('activeModelDomainFilters', () => { if (this.currentView === 'model_detail' && this.isMetadataLoaded) this.initModelDetailTable(); });
+             // Variation/Compliance watchers removed
         },
 
         // --- Helper Methods ---
@@ -499,3 +500,4 @@ function dateSorterNullable(a, b, aRow, bRow, column, dir, sorterParams) {
     if (bIsNull) return dir === "asc" ? -1 : 1;
     return a.localeCompare(b);
 }
+

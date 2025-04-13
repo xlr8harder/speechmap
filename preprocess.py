@@ -83,7 +83,6 @@ def preprocess_us_hard_data(analysis_dir):
                             variation = match.group(2)
                         else:
                              if not original_question_id.startswith('unknown_id_'):
-                                # print(f"    Warn: QID format '{original_question_id}' mismatch ln {line_num+1}. Using defaults.") # Reduce noise
                                 skipped_id_format += 1
                         grouping_key = sub_topic_key
 
@@ -106,8 +105,7 @@ def preprocess_us_hard_data(analysis_dir):
                             choice = response_obj['choices'][0]
                             if isinstance(choice.get('message'), dict): response_content = choice['message'].get('content', '')
                             if isinstance(choice.get('error'), dict):
-                                # print(f"    Warn: API error ln {line_num+1} but compliance='{compliance}'. Forcing ERROR.") # Reduce noise
-                                compliance = 'ERROR'; is_partial_response = True; error_count += 1 # Count as error
+                                compliance = 'ERROR'; is_partial_response = True; error_count += 1
                                 specific_api_error = choice['error'].get('message', 'Unknown API error structure')
                                 error_message = ERROR_MSG_CENSORSHIP
                                 if specific_api_error and specific_api_error != 'Unknown API error structure':
@@ -120,18 +118,13 @@ def preprocess_us_hard_data(analysis_dir):
                         record_id = f"{model}-{original_question_id}-{timestamp}"
                         anchor_id = f"response-{safe_model_id_part}"
 
-                        # Only include fields needed for summaries if optimizing further,
-                        # but for now keep all fields for simplicity in calculating summaries later
                         all_records.append({
                             'id': record_id, 'anchor_id': anchor_id, 'model': model, 'timestamp': timestamp,
-                            'compliance': compliance,
-                            # Exclude large text fields initially if needed? No, need them for calculation later.
-                            'response_text': response_content, 'judge_analysis': judge_analysis,
+                            'compliance': compliance, 'response_text': response_content, 'judge_analysis': judge_analysis,
                             'judge_model': judge_model, 'error_message': error_message, 'is_partial_response': is_partial_response,
                             'original_question_id': original_question_id, 'question_text': question_text,
                             'domain': domain, 'sub_topic_key': sub_topic_key, 'variation': variation,
-                            'grouping_key': grouping_key
-                        })
+                            'grouping_key': grouping_key })
                         processed_count += 1
                     except Exception as e: print(f"    ERR Proc Line {line_num+1} in {fname}: {e} - Rec: {rec}"); error_count += 1
         except Exception as e: print(f"  ERR Reading File {fname}: {e}"); error_count += 1
@@ -140,79 +133,88 @@ def preprocess_us_hard_data(analysis_dir):
     return all_records
 
 def calculate_summaries(all_records, model_metadata_dict):
-    """Calculates model and question theme summaries from all records."""
     print("Calculating summaries...")
-    # Model Summary Calculation
     model_stats = defaultdict(lambda: {"c": 0, "k": 0, "e": 0, "d": 0, "r": 0})
+    theme_stats = defaultdict(lambda: {"d": "", "c": 0, "p": 0, "e": 0, "de": 0, "er": 0, "models": set()})
+    # New: Model x Theme Stats (counts only)
+    model_theme_stats = defaultdict(lambda: defaultdict(lambda: {"domain": "", "c": 0, "k": 0, "e": 0, "d": 0, "r": 0}))
+
     for r in all_records:
         model = r['model']
+        key = r['grouping_key']
+        domain = r['domain']
+        compliance = r['compliance']
+
+        # Overall Model Stats
         model_stats[model]["c"] += 1
-        if r['compliance'] == 'COMPLETE': model_stats[model]["k"] += 1
-        elif r['compliance'] == 'EVASIVE': model_stats[model]["e"] += 1
-        elif r['compliance'] == 'DENIAL': model_stats[model]["d"] += 1
-        elif r['compliance'] == 'ERROR': model_stats[model]["r"] += 1
+        if compliance == 'COMPLETE': model_stats[model]["k"] += 1
+        elif compliance == 'EVASIVE': model_stats[model]["e"] += 1
+        elif compliance == 'DENIAL': model_stats[model]["d"] += 1
+        elif compliance == 'ERROR': model_stats[model]["r"] += 1
+
+        # Overall Theme Stats
+        theme_stats[key]["c"] += 1
+        theme_stats[key]["models"].add(model)
+        theme_stats[key]["d"] = domain
+        if compliance == 'COMPLETE': theme_stats[key]["p"] += 1
+        elif compliance == 'EVASIVE': theme_stats[key]["e"] += 1
+        elif compliance == 'DENIAL': theme_stats[key]["de"] += 1
+        elif compliance == 'ERROR': theme_stats[key]["er"] += 1
+
+        # Model x Theme Stats
+        mt_stat = model_theme_stats[model][key]
+        mt_stat["domain"] = domain
+        mt_stat["c"] += 1
+        if compliance == 'COMPLETE': mt_stat["k"] += 1
+        elif compliance == 'EVASIVE': mt_stat["e"] += 1
+        elif compliance == 'DENIAL': mt_stat["d"] += 1
+        elif compliance == 'ERROR': mt_stat["r"] += 1
+
 
     model_summary = []
     for model, stats in model_stats.items():
         count = stats["c"]
         release_date = model_metadata_dict.get(model, {}).get("release_date", None)
         model_summary.append({
-            "model": model,
-            "num_responses": count,
+            "model": model, "num_responses": count, "release_date": release_date,
             "pct_complete_overall": (stats["k"] / count * 100) if count > 0 else 0,
             "pct_evasive": (stats["e"] / count * 100) if count > 0 else 0,
             "pct_denial": (stats["d"] / count * 100) if count > 0 else 0,
             "pct_error": (stats["r"] / count * 100) if count > 0 else 0,
-            "release_date": release_date
         })
-    # Default sort by compliance ascending, then model name
     model_summary.sort(key=lambda x: (x["pct_complete_overall"], x["model"]))
-    print(f"Calculated summary for {len(model_summary)} models.")
-
-    # Question Theme Summary Calculation
-    theme_stats = defaultdict(lambda: {"d": "", "c": 0, "p": 0, "e": 0, "de": 0, "er": 0, "models": set()})
-    for r in all_records:
-        key = r['grouping_key']
-        theme_stats[key]["c"] += 1
-        theme_stats[key]["models"].add(r['model'])
-        theme_stats[key]["d"] = r['domain'] # Assume domain is consistent for a key
-        if r['compliance'] == 'COMPLETE': theme_stats[key]["p"] += 1
-        elif r['compliance'] == 'EVASIVE': theme_stats[key]["e"] += 1
-        elif r['compliance'] == 'DENIAL': theme_stats[key]["de"] += 1
-        elif r['compliance'] == 'ERROR': theme_stats[key]["er"] += 1
+    print(f"Calculated model summary for {len(model_summary)} models.")
 
     question_theme_summary = []
     for key, stats in theme_stats.items():
         count = stats["c"]
         question_theme_summary.append({
-            "grouping_key": key,
-            "domain": stats["d"],
-            "num_responses": count,
-            "num_models": len(stats["models"]),
+            "grouping_key": key, "domain": stats["d"], "num_responses": count, "num_models": len(stats["models"]),
             "pct_complete_overall": (stats["p"] / count * 100) if count > 0 else 0,
             "pct_evasive": (stats["e"] / count * 100) if count > 0 else 0,
             "pct_denial": (stats["de"] / count * 100) if count > 0 else 0,
             "pct_error": (stats["er"] / count * 100) if count > 0 else 0
         })
-     # Default sort by compliance ascending, then grouping key
     question_theme_summary.sort(key=lambda x: (x["pct_complete_overall"], x["grouping_key"]))
-    print(f"Calculated summary for {len(question_theme_summary)} question themes.")
+    print(f"Calculated question theme summary for {len(question_theme_summary)} themes.")
+    print(f"Calculated model x theme summary.")
+
 
     return {
         "model_summary": model_summary,
-        "question_theme_summary": question_theme_summary
+        "question_theme_summary": question_theme_summary,
+        "model_theme_summary": model_theme_stats # Return the nested dict
     }
 
-
 def save_data_chunk(filename, records_chunk):
-    # Only include fields needed for the detail view in the chunks
+    # Only need specific fields for detail view now
     chunk_to_save = []
     needed_keys = ['id', 'anchor_id', 'model', 'timestamp', 'compliance', 'response_text',
                    'judge_analysis', 'judge_model', 'error_message', 'is_partial_response',
                    'original_question_id', 'question_text', 'domain', 'sub_topic_key',
                    'variation', 'grouping_key']
     for record in records_chunk:
-        chunk_to_save.append({k: record.get(k) for k in needed_keys})
+        chunk_to_save.append({k: record.get(k) for k in needed_keys if k in record}) # Check key exists
 
     output_data = {"records": chunk_to_save}
     print(f"  Saving {len(records_chunk)} records (detail fields only) to {filename}...")
@@ -225,19 +227,21 @@ def save_data_chunk(filename, records_chunk):
         print(f"Error saving data chunk to {filename}: {e}")
         return False
 
+# Updated to include all summaries
 def save_metadata(filename, data_filenames, compliance_order, stats, model_metadata, summaries):
     metadata = {
         "complianceOrder": compliance_order,
         "data_files": data_filenames,
         "stats": stats,
         "model_metadata": model_metadata,
-        "model_summary": summaries["model_summary"], # Add pre-calculated summaries
-        "question_theme_summary": summaries["question_theme_summary"]
+        "model_summary": summaries["model_summary"],
+        "question_theme_summary": summaries["question_theme_summary"],
+        "model_theme_summary": summaries["model_theme_summary"] # Add model x theme summary
     }
     print(f"\nSaving metadata to {filename}...")
     try:
         with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(metadata, f, ensure_ascii=False, indent=2)
+            json.dump(metadata, f, ensure_ascii=False, indent=2) # Keep indent for readability
         print(f"Successfully saved {filename}.")
     except Exception as e:
         print(f"Error saving metadata: {e}")
@@ -255,14 +259,11 @@ def main():
     total_records = len(all_data)
     print(f"\nTotal records processed: {total_records}")
 
-    # Calculate summaries before splitting/saving chunks
     summaries = calculate_summaries(all_data, model_meta_dict)
 
-    # Calculate overall stats
     num_models = len(summaries["model_summary"])
     num_themes = len(summaries["question_theme_summary"])
     num_judgments = total_records
-
     stats_summary = { "models": num_models, "themes": num_themes, "judgments": num_judgments }
     print("Calculated Stats:", stats_summary)
 
@@ -276,7 +277,6 @@ def main():
     for i in range(num_files):
         start_index = i * MAX_RECORDS_PER_FILE
         end_index = start_index + MAX_RECORDS_PER_FILE
-        # Pass the full record chunk to save_data_chunk
         records_chunk = all_data[start_index:end_index]
         output_filename = f"{base_name}_{i+1}{ext}"
 
@@ -286,7 +286,6 @@ def main():
              print(f"ERROR: Failed to save chunk {i+1}. Aborting metadata generation.")
              sys.exit(1)
 
-    # Save metadata file including stats, model metadata, and summaries
     save_metadata(OUTPUT_METADATA_FILENAME, generated_data_files, COMPLIANCE_ORDER, stats_summary, model_meta_dict, summaries)
 
     print("\nPreprocessing and saving complete.")

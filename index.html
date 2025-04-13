@@ -27,13 +27,13 @@
     </nav>
     <hr>
 
-    <!-- Global Loading Indicator (for initial metadata load) -->
+    <!-- Global Loading Indicator (Phase 1: Metadata) -->
     <div x-show="isLoading && !isMetadataLoaded" class="loading-indicator" x-text="loadingMessage"></div>
     <!-- Global Error Message -->
     <div x-show="errorMessage" class="error-message" x-text="errorMessage"></div>
 
-    <!-- About View -->
-    <div x-show="currentView === 'about' && isMetadataLoaded" class="about-content">
+    <!-- About View (Only shows AFTER metadata loaded) -->
+    <div x-show="currentView === 'about' && isMetadataLoaded" class="about-content" x-transition>
 
         <div class="about-hero">
             <div class="hero-text">
@@ -103,14 +103,14 @@
     </div>
 
 
-    <!-- Overview View -->
+    <!-- Overview View (Only shows AFTER metadata loaded) -->
     <div x-show="currentView === 'overview' && isMetadataLoaded" x-transition>
         <h2>Model Overview <span class="count-info" x-text="`(${modelSummary.length} Models)`"></span></h2>
         <p>Overall summary of model compliance. Click on a model name in the table below to see detailed results for that specific model.</p>
         <div id="overview-table" class="table-container"></div>
     </div>
 
-    <!-- Model Detail View -->
+    <!-- Model Detail View (Only shows AFTER metadata loaded) -->
     <template x-if="currentView === 'model_detail' && selectedModel && isMetadataLoaded">
         <div>
             <h2 x-text="`Model Details: ${selectedModel}`"></h2>
@@ -138,15 +138,12 @@
 
             <h3>Compliance by Question Theme</h3>
             <div id="model-detail-table" class="table-container">
-                <!-- Placeholder/message if full data needed -->
-                 <template x-if="!isFullDataLoaded">
-                     <div style="padding: 20px; text-align: center; font-style: italic;">Select a Question Theme from the overview page to load detailed response data.</div>
-                 </template>
+                 <!-- Placeholder removed, table initializes with metadata -->
             </div>
         </div>
     </template>
 
-    <!-- Question Theme List View -->
+    <!-- Question Theme List View (Only shows AFTER metadata loaded) -->
     <div x-show="currentView === 'question_themes' && isMetadataLoaded" x-transition>
          <h2>Question Themes <span class="count-info" x-text="`(${questionThemeSummary.length} Themes)`"></span></h2>
          <p>Overall compliance for each question theme across all models.</p>
@@ -154,18 +151,18 @@
          <div id="question-themes-table" class="table-container"></div>
     </div>
 
-     <!-- Question Theme Detail View -->
-     <template x-if="currentView === 'question_theme_detail' && selectedQuestionThemeData && isMetadataLoaded">
+     <!-- Question Theme Detail View (Structure shown AFTER metadata loaded) -->
+     <template x-if="currentView === 'question_theme_detail' && selectedGroupingKey && isMetadataLoaded">
          <div>
-            <h2 x-text="`Question Theme: ${selectedQuestionThemeData.grouping_key}`"></h2>
+            <h2 x-text="`Question Theme: ${selectedGroupingKey}`"></h2> <!-- Use selectedGroupingKey directly -->
             <button @click="navigate('question_themes')">← Back to Question Themes</button>
-            <p><strong>Domain:</strong> <span x-text="selectedQuestionThemeData.domain || 'Loading...'"></span></p>
+            <p><strong>Domain:</strong> <span x-text="questionThemeSummaryData.find(t => t.grouping_key === selectedGroupingKey)?.domain || 'Loading...'"></span></p>
 
-            <!-- Loading indicator for full data -->
+            <!-- Loading indicator for full data (Phase 2) -->
             <div x-show="isLoading && !isFullDataLoaded" class="loading-indicator" x-text="loadingMessage"></div>
 
             <!-- Only show details when full data is loaded and not currently loading -->
-            <template x-if="isFullDataLoaded && !isLoading">
+            <template x-if="isFullDataLoaded && !isLoading && selectedQuestionThemeData">
                 <div> <!-- Wrapper div -->
                     <details class="toc-details" open>
                         <summary>Model Compliance Summary & Links</summary>
