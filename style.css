@@ -110,7 +110,7 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
     margin-top: 0;
 }
 .grid-item.where-lines ul {
-    padding-left: 20px; /* Indent bullet points */
+    padding-left: 20px;
     margin-top: 0.5em;
 }
 /* Stats Block */
@@ -154,7 +154,6 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 .about-content p a img { vertical-align: middle; margin-left: 5px; }
 
 /* --- Model Detail --- */
-/* Style for the new metadata box */
 .model-meta-box {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
@@ -171,8 +170,8 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 }
 .meta-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
-    gap: 10px 20px; /* Row and column gap */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px 20px;
 }
 .meta-item {
     font-size: 0.9em;
@@ -221,18 +220,17 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
     left: 0;
     top: 0;
     height: 100%;
-    border-radius: 2px 0 0 2px; /* Adjusted for border */
+    border-radius: 2px 0 0 2px;
 }
 .percent-bar-text {
     position: relative;
     z-index: 1;
     display: block;
     text-align: center;
-    line-height: 16px; /* Adjusted for border */
+    line-height: 16px;
     font-size: 0.85em;
     font-weight: 500;
-    color: #333; /* Always dark text */
-    /* White text outline */
+    color: #333;
     text-shadow:
        -1px -1px 0 #fff,
         1px -1px 0 #fff,
@@ -334,8 +332,22 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .markdown-content hr { margin: 1.5em 0; border-top: 1px solid #ddd;}
 
 /* Error Box Styling */
-.error-box { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 0 0 15px 0; border-radius: 4px; font-size: 0.9em; }
-.error-message { color: #dc3545; font-weight: bold;}
+.error-box {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 10px 15px;
+    margin: 0 0 15px 0;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+.error-box b { /* Style the "Provider Error:" text */
+    font-weight: bold;
+    color: #856404; /* Match text color */
+    margin-right: 5px;
+}
+/* .error-message removed */
+
 .partial-warning { color: #fd7e14; font-style: italic; margin-left: 5px;}
 
 /* Compliance Label Styling */

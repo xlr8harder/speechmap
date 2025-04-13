@@ -120,6 +120,7 @@
                     <h3>Model Information</h3>
                     <div class="meta-grid">
                         <template x-for="(value, key) in selectedModelFullMetadata" :key="key">
+                            <!-- Display only non-null/empty values, excluding identifier -->
                             <div class="meta-item" x-show="value !== null && value !== '' && key !== 'model_identifier'">
                                  <span class="meta-key" x-text="formatModelMetaKey(key) + ':'"></span>
                                  <span class="meta-value" x-text="formatModelMetaValue(value)"></span>
@@ -133,7 +134,6 @@
                      <p><em>(No additional metadata available for this model.)</em></p>
                  </div>
              </template>
-
 
             <h3>Compliance by Question Theme</h3>
             <div id="model-detail-table" class="table-container"></div>
@@ -182,7 +182,12 @@
                                     <div class="response-header nested-header">
                                         <strong x-text="getVariationDescription(response.variation)"></strong>
                                     </div>
-                                    <div class="error-box" x-show="response.error_message"> <strong class="error-message">Provider Error:</strong> <span x-text="response.error_message"></span> <span class="partial-warning" x-show="response.is_partial_response">(Response may be incomplete)</span> </div>
+                                    <!-- Error Box HTML Updated -->
+                                    <div class="error-box" x-show="response.error_message">
+                                        <b>Provider Error:</b> <!-- Changed from strong with class -->
+                                        <span x-text="response.error_message"></span>
+                                        <span class="partial-warning" x-show="response.is_partial_response">(Response may be incomplete)</span>
+                                    </div>
                                     <div class="response-content-area nested-content">
                                         <div class="detail-section question-section">
                                              <strong>Question:</strong>
