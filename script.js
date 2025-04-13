@@ -35,17 +35,18 @@ document.addEventListener('alpine:init', () => {
         selectedModel: null,
         selectedGroupingKey: null,
         currentLoadingThemeKey: null,
-        currentThemeAnchor: null,
-        availableFilters: { models: [], domains: [], variations: [], grouping_keys: [], creators: [] }, // Added creators
-        activeModelDomainFilters: [], // Used in model detail view
+        currentThemeAnchor: null, // Stores the target anchor for theme detail scrolling
+        availableFilters: { models: [], domains: [], variations: [], grouping_keys: [], creators: [] },
+        activeModelDomainFilters: [],
+        internalNavigationInProgress: false, // Flag to manage hash changes
         // Timeline View State
         timelineFilterDomain: 'all',
-        timelineFilterJudgment: 'pct_complete_overall', // Default Y-axis
+        timelineFilterJudgment: 'pct_complete_overall',
         timelineFilterCreator: 'all',
-        timelineChart: null, // Holds the Chart.js instance
-        timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})), // Options for Y-axis select
-        minReleaseDate: null, // Earliest release date across all models
-        maxReleaseDate: null, // Today's date for chart max range
+        timelineChart: null,
+        timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})),
+        minReleaseDate: null,
+        maxReleaseDate: null,
         // UI Elements
         overviewTable: null, modelDetailTable: null, questionThemesTable: null,
         variationMap: VARIATION_MAP,
@@ -58,7 +59,6 @@ document.addEventListener('alpine:init', () => {
             if (!this.selectedModel || !this.isMetadataLoaded || !this.modelThemeSummaryData) return [];
             const modelData = this.modelThemeSummaryData[this.selectedModel];
             if (!modelData) return [];
-            // Calculate percentages based on the modelThemeSummaryData for the selected model
             const summaryList = Object.entries(modelData).map(([grouping_key, stats]) => {
                  const count = stats.c || 0;
                  return {
@@ -71,11 +71,9 @@ document.addEventListener('alpine:init', () => {
                      pct_error: count > 0 ? ((stats.r || 0) / count * 100) : 0,
                  };
             });
-             // Apply domain filters if active
             const filteredList = summaryList.filter(item =>
                 this.activeModelDomainFilters.length === 0 || this.activeModelDomainFilters.includes(item.domain)
             );
-             // Sort the filtered list
              filteredList.sort((a, b) => {
                  const complianceDiff = Number(a.pct_complete) - Number(b.pct_complete);
                  if (complianceDiff !== 0) return complianceDiff;
@@ -135,71 +133,43 @@ document.addEventListener('alpine:init', () => {
 
             const judgmentInfo = JUDGMENT_KEYS[this.timelineFilterJudgment];
             if (!judgmentInfo) { console.error("Invalid judgment key:", this.timelineFilterJudgment); return []; }
-            const judgmentStatKey = judgmentInfo.key; // 'k', 'e', 'd', or 'r'
+            const judgmentStatKey = judgmentInfo.key;
 
             const chartPoints = [];
 
-            // Iterate over models defined in metadata to ensure we have creator/release date info
             for (const modelName in this.modelMetadata) {
                 const meta = this.modelMetadata[modelName];
                 const creator = meta.creator || UNKNOWN_CREATOR;
                 const releaseDateStr = meta.release_date;
 
-                // Filter by Creator
-                if (this.timelineFilterCreator !== 'all' && creator !== this.timelineFilterCreator) {
-                    continue;
-                }
+                if (this.timelineFilterCreator !== 'all' && creator !== this.timelineFilterCreator) continue;
 
-                // Attempt to parse release date
                 let releaseDate = null;
                 if (releaseDateStr) {
                     try {
                         let parsed = Date.parse(releaseDateStr);
-                        if (!isNaN(parsed)) {
-                            releaseDate = new Date(parsed);
-                        } else {
-                           console.warn(`Could not parse release date for ${modelName}: ${releaseDateStr}`);
-                        }
-                    } catch (e) {
-                        console.warn(`Error parsing release date for ${modelName}: ${releaseDateStr}`, e);
-                    }
+                        if (!isNaN(parsed)) releaseDate = new Date(parsed);
+                        else console.warn(`Could not parse release date for ${modelName}: ${releaseDateStr}`);
+                    } catch (e) { console.warn(`Error parsing release date for ${modelName}: ${releaseDateStr}`, e); }
                 }
+                if (!releaseDate) continue;
 
-                // Skip if no valid release date
-                if (!releaseDate) {
-                    continue;
-                }
-
-                // Calculate filtered stats for this model
                 let filtered_total = 0;
                 let filtered_judgment_count = 0;
-
                 const modelThemeData = this.modelThemeSummaryData[modelName];
                 if (modelThemeData) {
                     for (const themeKey in modelThemeData) {
                         const stats = modelThemeData[themeKey];
-                        // Filter by Domain
                         if (this.timelineFilterDomain === 'all' || stats.domain === this.timelineFilterDomain) {
                             filtered_total += stats.c || 0;
                             filtered_judgment_count += stats[judgmentStatKey] || 0;
                         }
                     }
                 }
+                if (filtered_total === 0) continue;
 
-                // Exclude models with zero relevant responses after filtering
-                if (filtered_total === 0) {
-                    continue;
-                }
-
-                // Calculate percentage
-                const y_value = (filtered_total > 0) ? (filtered_judgment_count / filtered_total * 100) : 0; // Denominator check is slightly redundant now but safe
-
-                chartPoints.push({
-                    x: releaseDate, // Date object
-                    y: y_value,
-                    label: modelName,
-                    creator: creator
-                });
+                const y_value = (filtered_total > 0) ? (filtered_judgment_count / filtered_total * 100) : 0;
+                chartPoints.push({ x: releaseDate, y: y_value, label: modelName, creator: creator });
             }
              chartPoints.sort((a, b) => a.x - b.x);
             return chartPoints;
@@ -230,14 +200,15 @@ document.addEventListener('alpine:init', () => {
             this.isThemeDetailLoading = false;
             this.themeDetailErrorMessage = null;
             this.timelineChart = null;
-            this.minReleaseDate = null; // Initialize date range state
+            this.minReleaseDate = null;
             this.maxReleaseDate = null;
+            this.internalNavigationInProgress = false;
 
             this.parseHash();
             this.setupWatchers();
 
             try {
-                await this.loadMetadata(); // This now sets min/max dates
+                await this.loadMetadata();
                 this.isMetadataLoaded = true;
                 this.isMetadataLoading = false;
                 this.loadingMessage = '';
@@ -255,7 +226,14 @@ document.addEventListener('alpine:init', () => {
                 this.isMetadataLoading = false;
                 this.loadingMessage = '';
             }
-            window.addEventListener('hashchange', () => this.parseHash());
+            window.addEventListener('hashchange', () => {
+                 if (this.internalNavigationInProgress) {
+                     this.internalNavigationInProgress = false;
+                     return;
+                 }
+                 // console.log("Hash changed externally, parsing..."); // Keep commented unless debugging heavily
+                 this.parseHash();
+            });
         },
         async loadMetadata() {
             this.loadingMessage = 'Fetching metadata...';
@@ -266,7 +244,6 @@ document.addEventListener('alpine:init', () => {
                 if (!meta_response.ok) throw new Error(`HTTP ${meta_response.status} fetching metadata.json`);
                 metadata = await meta_response.json();
 
-                // Basic validation
                 if (!metadata.complianceOrder) throw new Error("Metadata missing 'complianceOrder'.");
                 if (!metadata.model_metadata) throw new Error("Metadata missing 'model_metadata'.");
                 if (!metadata.stats) throw new Error("Metadata missing 'stats'.");
@@ -281,114 +258,123 @@ document.addEventListener('alpine:init', () => {
                 this.questionThemeSummaryData = metadata.question_theme_summary;
                 this.modelThemeSummaryData = metadata.model_theme_summary;
 
-                // Populate filters
                 this.availableFilters.models = this.modelSummaryData.map(m => m.model).sort();
                 this.availableFilters.domains = [...new Set(this.questionThemeSummaryData.map(q => q.domain))].sort();
                 this.availableFilters.grouping_keys = this.questionThemeSummaryData.map(q => q.grouping_key).sort();
                 this.availableFilters.variations = ['1', '2', '3', '4'];
 
-                // Extract creators
                 const creators = new Set();
                 Object.values(this.modelMetadata).forEach(meta => {
                     creators.add(meta.creator || UNKNOWN_CREATOR);
                 });
                 this.availableFilters.creators = [...creators].sort();
 
-                 // Calculate min/max dates for timeline chart
                  let earliestDate = null;
                  Object.values(this.modelMetadata).forEach(meta => {
                      if (meta.release_date) {
                          try {
                              const d = new Date(Date.parse(meta.release_date));
-                             if (!isNaN(d)) {
-                                 if (earliestDate === null || d < earliestDate) {
-                                     earliestDate = d;
-                                 }
-                             }
-                         } catch (e) { /* ignore parse errors */ }
+                             if (!isNaN(d)) { if (earliestDate === null || d < earliestDate) { earliestDate = d; } }
+                         } catch (e) {}
                      }
                  });
-                 this.minReleaseDate = earliestDate; // Store as Date object or null
-                 this.maxReleaseDate = new Date(); // Store today as Date object
-
+                 this.minReleaseDate = earliestDate;
+                 this.maxReleaseDate = new Date();
 
             } catch (e) {
                 console.error("Failed to load or parse metadata.json:", e);
-                this.minReleaseDate = null; // Ensure dates are null on error
+                this.minReleaseDate = null;
                 this.maxReleaseDate = null;
                 throw new Error(`Metadata Load Failed: ${e.message}`);
             }
         },
 
         async loadThemeDetailData(groupingKey, anchor = null) {
-            if (!groupingKey) return;
-            if (this.currentLoadingThemeKey === groupingKey) return;
-            if (this.selectedGroupingKey === groupingKey && this.currentThemeDetailData) {
-                 if(anchor) this.$nextTick(() => this.smoothScroll('#'+anchor));
-                 return;
-            }
+             // Use stored anchor if loading is triggered without one explicitly passed
+             const targetAnchor = anchor || this.currentThemeAnchor;
 
-            this.selectedGroupingKey = groupingKey;
-            this.isThemeDetailLoading = true;
-            this.themeDetailErrorMessage = null;
-            this.currentThemeDetailData = null;
-            this.currentLoadingThemeKey = groupingKey;
-            this.currentThemeAnchor = anchor;
+             if (!groupingKey) return;
+             // Check if already loading this specific key
+             if (this.currentLoadingThemeKey === groupingKey) return;
+             // Check if data is already loaded for this key
+             if (this.selectedGroupingKey === groupingKey && this.currentThemeDetailData) {
+                  if (targetAnchor) this.$nextTick(() => this.smoothScroll('#' + targetAnchor));
+                  return;
+             }
 
-            console.log(`Loading theme detail for: ${groupingKey}`);
-            await this.$nextTick();
+             this.selectedGroupingKey = groupingKey;
+             this.isThemeDetailLoading = true;
+             this.themeDetailErrorMessage = null;
+             this.currentThemeDetailData = null;
+             this.currentLoadingThemeKey = groupingKey;
+             // Store the target anchor regardless of how load was triggered
+             this.currentThemeAnchor = targetAnchor;
 
-            try {
-                const safeFileName = this.generateSafeIdForFilename(groupingKey);
-                const filePath = `${THEME_DETAIL_DIR}/${safeFileName}.json.gz`;
-                const response = await fetch(filePath, { headers: { 'Accept-Encoding': 'gzip' } });
-                if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${filePath}`);
+             console.log(`Loading theme detail for: ${groupingKey}, Target Anchor: ${this.currentThemeAnchor}`);
+             await this.$nextTick();
 
-                const compressed_data = await response.arrayBuffer();
-                const decompressed_data = pako.inflate(new Uint8Array(compressed_data), { to: 'string' });
-                const parsed_json = JSON.parse(decompressed_data);
-                if (!parsed_json.records || !Array.isArray(parsed_json.records)) {
-                    throw new Error(`Invalid data structure in ${filePath}`);
-                }
-                 parsed_json.records.sort((a, b) => a.model.localeCompare(b.model) || parseInt(a.variation) - parseInt(b.variation));
-                 this.currentThemeDetailData = parsed_json;
-                 console.log(`Successfully loaded ${this.currentThemeDetailData.records.length} records for theme: ${groupingKey}`);
-                 if (this.currentThemeAnchor) {
-                    this.$nextTick(() => {
-                        this.smoothScroll('#' + this.currentThemeAnchor);
-                        this.currentThemeAnchor = null;
-                    });
+             try {
+                 const safeFileName = this.generateSafeIdForFilename(groupingKey);
+                 const filePath = `${THEME_DETAIL_DIR}/${safeFileName}.json.gz`;
+                 const response = await fetch(filePath, { headers: { 'Accept-Encoding': 'gzip' } });
+                 if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${filePath}`);
+
+                 const compressed_data = await response.arrayBuffer();
+                 const decompressed_data = pako.inflate(new Uint8Array(compressed_data), { to: 'string' });
+                 const parsed_json = JSON.parse(decompressed_data);
+                 if (!parsed_json.records || !Array.isArray(parsed_json.records)) {
+                     throw new Error(`Invalid data structure in ${filePath}`);
                  }
-            } catch (e) {
-                console.error(`Failed to load or process theme detail for ${groupingKey}:`, e);
-                this.themeDetailErrorMessage = `Failed to load details for theme "${groupingKey}": ${e.message}`;
-                this.currentThemeDetailData = null;
-            } finally {
-                this.isThemeDetailLoading = false;
-                if (this.currentLoadingThemeKey === groupingKey) {
-                     this.currentLoadingThemeKey = null;
-                }
-            }
+                  parsed_json.records.sort((a, b) => a.model.localeCompare(b.model) || parseInt(a.variation) - parseInt(b.variation));
+                  this.currentThemeDetailData = parsed_json;
+                  console.log(`Successfully loaded ${this.currentThemeDetailData.records.length} records for theme: ${groupingKey}`);
+
+                  // Scroll *after* data is loaded and UI likely updated
+                  if (this.currentThemeAnchor) {
+                     this.$nextTick(() => {
+                         this.smoothScroll('#' + this.currentThemeAnchor);
+                         // Keep anchor until navigating away from this theme detail? Or clear? Let's clear for now.
+                         // If we clear it, navigating *away* then *back* via history won't scroll.
+                         // Let's *keep* it until the selectedGroupingKey changes.
+                         // this.currentThemeAnchor = null; // Maybe don't clear?
+                     });
+                  }
+             } catch (e) {
+                 console.error(`Failed to load or process theme detail for ${groupingKey}:`, e);
+                 this.themeDetailErrorMessage = `Failed to load details for theme "${groupingKey}": ${e.message}`;
+                 this.currentThemeDetailData = null;
+             } finally {
+                 this.isThemeDetailLoading = false;
+                 if (this.currentLoadingThemeKey === groupingKey) {
+                      this.currentLoadingThemeKey = null;
+                 }
+             }
         },
 
-        parseHash(forceUpdate = false) {
+        // Added anchorFromNavigate parameter
+        parseHash(forceUpdate = false, anchorFromNavigate = null) {
             const h = location.hash.slice(1);
             const hashParts = h.split('?');
             const path = hashParts[0];
             const query = hashParts[1] || '';
             const pathParts = path.split('/').filter(Boolean);
-            const anchor = null;
+            // Anchor from URL (if present, after #) - separate from anchorFromNavigate
+            const anchorFromUrl = path.includes('#') ? path.substring(path.indexOf('#') + 1) : null;
 
             let v = 'about';
             let m = null;
             let k = null;
+            // Strip anchor from path before splitting parts
+            const pathOnly = path.split('#')[0];
+            const cleanPathParts = pathOnly.split('/').filter(Boolean);
 
-            if (pathParts[0] === 'overview') { v = 'overview'; }
-            else if (pathParts[0] === 'model' && pathParts[1]) { v = 'model_detail'; m = decodeURIComponent(pathParts[1]); }
-            else if (pathParts[0] === 'questions') {
-                if (pathParts[1]) { v = 'question_theme_detail'; k = decodeURIComponent(pathParts[1]); }
+
+            if (cleanPathParts[0] === 'overview') { v = 'overview'; }
+            else if (cleanPathParts[0] === 'model' && cleanPathParts[1]) { v = 'model_detail'; m = decodeURIComponent(cleanPathParts[1]); }
+            else if (cleanPathParts[0] === 'questions') {
+                if (cleanPathParts[1]) { v = 'question_theme_detail'; k = decodeURIComponent(cleanPathParts[1]); }
                 else { v = 'question_themes'; }
-            } else if (pathParts[0] === 'timeline') { v = 'model_timeline'; }
+            } else if (cleanPathParts[0] === 'timeline') { v = 'model_timeline'; }
 
             if (!this.isMetadataLoaded && !forceUpdate) {
                 if (v !== this.currentView) this.currentView = v;
@@ -397,6 +383,10 @@ document.addEventListener('alpine:init', () => {
 
             let needsViewInitialization = false;
             let stateChanged = false;
+
+            // Set the target anchor: prioritize the one passed from internal navigation,
+            // otherwise use one found in the URL itself (for direct links with anchors)
+            const targetAnchor = anchorFromNavigate || anchorFromUrl;
 
             if (v === 'model_timeline') {
                 const params = new URLSearchParams(query);
@@ -413,10 +403,10 @@ document.addEventListener('alpine:init', () => {
                 if (validMetric && metricParam !== this.timelineFilterJudgment) { this.timelineFilterJudgment = metricParam; stateChanged = true; }
             }
 
-            if (v === 'model_detail' && !this.availableFilters.models.includes(m)) {
+            if (v === 'model_detail' && m && !this.availableFilters.models.includes(m)) {
                  console.warn(`Model '${m}' invalid.`); this.navigate('about', true); return;
             }
-            if (v === 'question_theme_detail' && !this.availableFilters.grouping_keys.includes(k)) {
+            if (v === 'question_theme_detail' && k && !this.availableFilters.grouping_keys.includes(k)) {
                  console.warn(`Key '${k}' invalid.`); this.navigate('question_themes', true); return;
             }
 
@@ -424,23 +414,38 @@ document.addEventListener('alpine:init', () => {
                 const previousView = this.currentView;
                 this.currentView = v;
                 this.selectedModel = (v === 'model_detail') ? m : null;
+                const previousGroupingKey = this.selectedGroupingKey;
                 this.selectedGroupingKey = (v === 'question_theme_detail') ? k : null;
-                stateChanged = true; // View or selection changed
+                // Store the determined anchor if we are navigating *to* the theme detail view
+                this.currentThemeAnchor = (v === 'question_theme_detail') ? targetAnchor : null;
+                stateChanged = true;
 
-                if ((v === 'question_theme_detail' && k !== this.selectedGroupingKey) || (previousView === 'question_theme_detail' && v !== 'question_theme_detail')) {
+                if ((v === 'question_theme_detail' && k !== previousGroupingKey) || (previousView === 'question_theme_detail' && v !== 'question_theme_detail')) {
                     this.currentThemeDetailData = null;
                     this.themeDetailErrorMessage = null;
+                    // Clear anchor only if navigating *away* from theme detail or to a *different* theme
+                    if (v !== 'question_theme_detail' || (v === 'question_theme_detail' && k !== previousGroupingKey)) {
+                        this.currentThemeAnchor = null;
+                    }
                 }
-                needsViewInitialization = true; // Need to init because view/selection changed
+                needsViewInitialization = true;
+            } else if (v === 'question_theme_detail' && targetAnchor && targetAnchor !== this.currentThemeAnchor) {
+                 // Handle case where only the anchor changes for the *current* theme detail view
+                 this.currentThemeAnchor = targetAnchor;
+                 if (this.currentThemeDetailData) { // Scroll only if data is already loaded
+                     this.$nextTick(() => this.smoothScroll('#' + this.currentThemeAnchor));
+                 }
+                 // No need to re-initialize view or reload data if only anchor changed
             }
 
-            // Initialize View or Load Data only if state actually changed relevant to the view
-            if (stateChanged || needsViewInitialization) {
-                 // Always re-initialize view if view/selection/filters changed
+
+            if (needsViewInitialization || (stateChanged && v === 'model_timeline') ) { // Re-initialize if view/selection changed OR if timeline filters changed
                  this.$nextTick(() => { this.initializeView(v); });
-                if (v === 'question_theme_detail' && k && (!this.currentThemeDetailData || k !== this.selectedGroupingKey)) {
-                     this.loadThemeDetailData(k, anchor).catch(e => console.error("Error loading theme data from hash:", e));
-                }
+            }
+            if (v === 'question_theme_detail' && k && (!this.currentThemeDetailData || k !== this.selectedGroupingKey)) {
+                 // Load theme detail data if needed (navigating to new/different theme)
+                 // Pass the determined targetAnchor to loadThemeDetailData
+                 this.loadThemeDetailData(k, this.currentThemeAnchor).catch(e => console.error("Error loading theme data from hash:", e));
             }
         },
         navigate(view, replaceHistory = false, selectionKey = null, anchor = null) {
@@ -456,7 +461,6 @@ document.addEventListener('alpine:init', () => {
                 if(this.timelineFilterCreator !== 'all') params.set('creator', this.timelineFilterCreator);
                 if(this.timelineFilterJudgment !== 'pct_complete_overall') params.set('metric', this.timelineFilterJudgment);
                 queryParams = params.toString();
-
             } else if (view === 'model_detail') {
                 const m = selectionKey || this.selectedModel;
                 if (m) basePath = `#/model/${encodeURIComponent(m)}`; else return;
@@ -467,18 +471,29 @@ document.addEventListener('alpine:init', () => {
 
             let finalHash = basePath;
             if (queryParams) finalHash += '?' + queryParams;
-            if (anchor) finalHash += '#' + anchor;
+             // Append anchor correctly, ensuring only one #
+             if (anchor) {
+                 if (finalHash.includes('#')) finalHash = finalHash.split('#')[0]; // Remove existing anchor if any
+                 finalHash += '#' + anchor;
+             }
 
             if (location.hash !== finalHash) {
-                // Use pushState when navigating *between* views
-                if (replaceHistory || view === 'model_timeline') { // Use replaceState for filter changes *within* timeline
-                     history.replaceState(null, '', finalHash);
-                 } else {
-                     history.pushState(null, '', finalHash);
+                 this.internalNavigationInProgress = true;
+                 if (replaceHistory) {
+                      history.replaceState(null, '', finalHash);
+                  } else {
+                      history.pushState(null, '', finalHash);
+                  }
+                  // Pass the anchor to parseHash when triggering internally
+                  this.parseHash(false, anchor);
+            } else if (view === 'question_theme_detail' && anchor) {
+                 // If hash didn't change but we have an anchor for theme detail, attempt scroll
+                 this.currentThemeAnchor = anchor; // Make sure anchor state is updated
+                 if(this.currentThemeDetailData) { // Scroll only if data already loaded
+                     this.$nextTick(() => this.smoothScroll('#' + anchor));
                  }
-                this.parseHash(); // Let parseHash handle the consequences
             } else if (view !== 'model_timeline' && view !== 'question_theme_detail') {
-                 // If hash is same but we might need to re-init non-dynamic view
+                 // Re-initialize non-dynamic views if needed
                  this.$nextTick(() => { this.initializeView(this.currentView); });
             }
         },
@@ -491,8 +506,9 @@ document.addEventListener('alpine:init', () => {
              const queryString = params.toString();
              const newHash = queryString ? `#/timeline?${queryString}` : '#/timeline';
              if (location.hash !== newHash) {
-                 // Use replaceState for filter changes within the view
-                 history.replaceState(null, '', newHash);
+                  this.internalNavigationInProgress = true;
+                  history.replaceState(null, '', newHash);
+                  // No parseHash needed here, chart is updated by watcher directly
              }
         },
         selectModel(modelName) {
@@ -511,9 +527,7 @@ document.addEventListener('alpine:init', () => {
                  else if (view === 'question_themes') this.initQuestionThemesTable();
                  else if (view === 'model_detail') this.initModelDetailTable();
                  else if (view === 'model_timeline') {
-                      this.$nextTick(() => {
-                          setTimeout(() => { this.initOrUpdateTimelineChart(); }, 0);
-                      });
+                      this.$nextTick(() => { setTimeout(() => { this.initOrUpdateTimelineChart(); }, 0); });
                  }
              } catch (error) { console.error(`Error initializing UI for view ${view}:`, error); this.errorMessage = `Error rendering ${view}.`; }
         },
@@ -557,6 +571,7 @@ document.addEventListener('alpine:init', () => {
             this.modelDetailTable = new Tabulator(t, {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Question Themes found for this model (or matching domain filter).", selectable: false, initialSort: [ {column:"pct_complete", dir:"asc"} ],
                 columns: [
+                    // Pass anchor correctly when clicking from model detail table
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key, `model-${this.generateSafeIdForFilename(this.selectedModel)}`), cssClass: "clickable-cell" },
                     { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains.filter(dm => d.some(q => q.domain === dm))] } },
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
@@ -601,7 +616,6 @@ document.addEventListener('alpine:init', () => {
                             const { datasetIndex, index } = elements[0];
                             const point = this.timelineChart.config.data.datasets[datasetIndex].data[index];
                             if (point && point.label) {
-                                console.log("Chart point clicked:", point.label);
                                 this.navigate('model_detail', false, point.label);
                             }
                         }
@@ -609,8 +623,8 @@ document.addEventListener('alpine:init', () => {
                     scales: {
                         x: {
                             type: 'time',
-                            min: this.minReleaseDate ? this.minReleaseDate.valueOf() : undefined, // Use timestamp
-                            max: this.maxReleaseDate ? this.maxReleaseDate.valueOf() : undefined, // Use timestamp
+                            min: this.minReleaseDate ? this.minReleaseDate.valueOf() : undefined,
+                            max: this.maxReleaseDate ? this.maxReleaseDate.valueOf() : undefined,
                             time: { unit: 'month', tooltipFormat: 'yyyy-MM-dd', displayFormats: { month: 'yyyy-MM', year: 'yyyy' } },
                             title: { display: true, text: 'Model Release Date' },
                             ticks: { source: 'auto', maxRotation: 45, minRotation: 0 }
@@ -624,15 +638,12 @@ document.addEventListener('alpine:init', () => {
                     plugins: {
                         tooltip: {
                             callbacks: {
-                                // Use default title for date (adapter handles formatting)
                                 label: function(context) {
                                     const point = context.raw;
-                                    let label = point.label || ''; // Model name
+                                    let label = point.label || '';
                                     if (label) label += ': ';
-                                    label += `${point.y.toFixed(1)}%`; // Percentage
-                                    if (point.creator) {
-                                        label += ` (${point.creator})`; // Creator
-                                    }
+                                    label += `${point.y.toFixed(1)}%`;
+                                    if (point.creator) { label += ` (${point.creator})`; }
                                     return label;
                                 }
                             }
@@ -656,7 +667,6 @@ document.addEventListener('alpine:init', () => {
         // --- Watchers ---
         setupWatchers() {
             this.$watch('activeModelDomainFilters', () => { if (this.currentView === 'model_detail' && this.isMetadataLoaded) this.initModelDetailTable(); });
-            // Watch timeline filters, update chart and URL params
             this.$watch('timelineFilterDomain', () => {
                 if (this.currentView === 'model_timeline') {
                     this.initOrUpdateTimelineChart();
@@ -680,7 +690,7 @@ document.addEventListener('alpine:init', () => {
         // --- Helper Methods ---
         getVariationDescription(variation) { return VARIATION_MAP[String(variation)] || `Type ${variation || 'N/A'}`; },
         renderMarkdown(text) { if (!text) return ''; try { const clean = DOMPurify.sanitize(marked.parse(text), { USE_PROFILES: { html: true } }); return clean; } catch (e) { console.error("Markdown error:", e); return `<pre>Err:\n${sanitize(text)}</pre>`; } },
-        smoothScroll(selector) { const el = document.querySelector(selector); if(el){ console.log("Scrolling to:", selector); setTimeout(() => el.scrollIntoView({behavior:'smooth',block:'start'}), 100); } else console.warn("Smooth scroll target not found:",selector); },
+        smoothScroll(selector) { const el = document.querySelector(selector); if(el){ /* console.log("Scrolling to:", selector); */ setTimeout(() => el.scrollIntoView({behavior:'smooth',block:'start'}), 100); } else console.warn("Smooth scroll target not found:",selector); }, // Quieted log
         getComplianceBoxStyle(percent) { let c=COMPLIANCE_COLORS.UNKNOWN; if(typeof percent==='number'&&!isNaN(percent)){c=percent>=90?COMPLIANCE_COLORS.COMPLETE:(percent>=25?COMPLIANCE_COLORS.EVASIVE:COMPLIANCE_COLORS.DENIAL);} const t=(c===COMPLIANCE_COLORS.EVASIVE||c===COMPLIANCE_COLORS.UNKNOWN)?'#333':'white'; return `background-color:${c};color:${t};`; },
         groupResponsesByModel(records) {
              if (!records) return [];
@@ -748,3 +758,4 @@ function dateSorterNullable(a, b, aRow, bRow, column, dir, sorterParams) {
     } catch(e) {}
     return String(a).localeCompare(String(b)); // Fallback
 }
+
