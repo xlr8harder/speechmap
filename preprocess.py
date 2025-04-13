@@ -12,7 +12,7 @@ ANALYSIS_DIR = "analysis"
 MODEL_METADATA_FILE = "model_metadata.json"
 OUTPUT_DATA_BASE_FILENAME = "speechdata"
 OUTPUT_METADATA_FILENAME = "metadata.json"
-MAX_RECORDS_PER_FILE = 20000
+MAX_RECORDS_PER_FILE = 19000
 COMPLIANCE_ORDER = ['COMPLETE', 'EVASIVE', 'DENIAL', 'ERROR', 'UNKNOWN']
 ID_REGEX = re.compile(r"^(.*?)(\d)$")
 ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
@@ -269,14 +269,18 @@ def main():
 
     num_files = math.ceil(total_records / MAX_RECORDS_PER_FILE) if total_records > 0 else 0
     print(f"Splitting data into {num_files} file(s) (max {MAX_RECORDS_PER_FILE} records per file).")
+    balanced_records_per_file = int(total_records / num_files) + 1 # lazy way to handle remainder.
+
+    print(f"Splitting to {balanced_records_per_file} records per file.")
+
 
     generated_data_files = []
     base_name = OUTPUT_DATA_BASE_FILENAME
     ext = ".json.gz"
 
     for i in range(num_files):
-        start_index = i * MAX_RECORDS_PER_FILE
-        end_index = start_index + MAX_RECORDS_PER_FILE
+        start_index = i * balanced_records_per_file
+        end_index = start_index + balanced_records_per_file
         records_chunk = all_data[start_index:end_index]
         output_filename = f"{base_name}_{i+1}{ext}"
 
