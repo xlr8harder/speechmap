@@ -27,11 +27,13 @@
     </nav>
     <hr>
 
-    <div x-show="isLoading" class="loading-indicator" x-text="loadingMessage"></div>
+    <!-- Global Loading Indicator (for initial metadata load) -->
+    <div x-show="isLoading && !isMetadataLoaded" class="loading-indicator" x-text="loadingMessage"></div>
+    <!-- Global Error Message -->
     <div x-show="errorMessage" class="error-message" x-text="errorMessage"></div>
 
     <!-- About View -->
-    <div x-show="currentView === 'about'" class="about-content">
+    <div x-show="currentView === 'about' && isMetadataLoaded" class="about-content">
 
         <div class="about-hero">
             <div class="hero-text">
@@ -102,14 +104,14 @@
 
 
     <!-- Overview View -->
-    <div x-show="currentView === 'overview' && !isLoading && !errorMessage">
+    <div x-show="currentView === 'overview' && isMetadataLoaded" x-transition>
         <h2>Model Overview <span class="count-info" x-text="`(${modelSummary.length} Models)`"></span></h2>
         <p>Overall summary of model compliance. Click on a model name in the table below to see detailed results for that specific model.</p>
         <div id="overview-table" class="table-container"></div>
     </div>
 
     <!-- Model Detail View -->
-    <template x-if="currentView === 'model_detail' && selectedModel && !isLoading && !errorMessage">
+    <template x-if="currentView === 'model_detail' && selectedModel && isMetadataLoaded">
         <div>
             <h2 x-text="`Model Details: ${selectedModel}`"></h2>
             <button @click="navigate('overview')">← Back to Overview</button>
@@ -120,7 +122,6 @@
                     <h3>Model Information</h3>
                     <div class="meta-grid">
                         <template x-for="(value, key) in selectedModelFullMetadata" :key="key">
-                            <!-- Display only non-null/empty values, excluding identifier -->
                             <div class="meta-item" x-show="value !== null && value !== '' && key !== 'model_identifier'">
                                  <span class="meta-key" x-text="formatModelMetaKey(key) + ':'"></span>
                                  <span class="meta-value" x-text="formatModelMetaValue(value)"></span>
@@ -136,12 +137,17 @@
              </template>
 
             <h3>Compliance by Question Theme</h3>
-            <div id="model-detail-table" class="table-container"></div>
+            <div id="model-detail-table" class="table-container">
+                <!-- Placeholder/message if full data needed -->
+                 <template x-if="!isFullDataLoaded">
+                     <div style="padding: 20px; text-align: center; font-style: italic;">Select a Question Theme from the overview page to load detailed response data.</div>
+                 </template>
+            </div>
         </div>
     </template>
 
     <!-- Question Theme List View -->
-    <div x-show="currentView === 'question_themes' && !isLoading && !errorMessage">
+    <div x-show="currentView === 'question_themes' && isMetadataLoaded" x-transition>
          <h2>Question Themes <span class="count-info" x-text="`(${questionThemeSummary.length} Themes)`"></span></h2>
          <p>Overall compliance for each question theme across all models.</p>
          <p>Click on a question theme to view prompts and model responses.</p>
@@ -149,68 +155,76 @@
     </div>
 
      <!-- Question Theme Detail View -->
-     <template x-if="currentView === 'question_theme_detail' && selectedQuestionThemeData && !isLoading && !errorMessage">
+     <template x-if="currentView === 'question_theme_detail' && selectedQuestionThemeData && isMetadataLoaded">
          <div>
             <h2 x-text="`Question Theme: ${selectedQuestionThemeData.grouping_key}`"></h2>
             <button @click="navigate('question_themes')">← Back to Question Themes</button>
-            <p><strong>Domain:</strong> <span x-text="selectedQuestionThemeData.domain"></span></p>
-            <details class="toc-details" open>
-                <summary>Model Compliance Summary & Links</summary>
-                <ul class="toc-links model-toc vertical">
-                    <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model">
-                        <li>
-                            <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)">
-                                <span class="toc-model-name" x-text="modelInfo.model"></span>
-                                <span class="toc-right-group">
-                                    <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
-                                    <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span>
-                                </span>
-                            </a>
-                        </li>
-                    </template>
-                    <li x-show="selectedQuestionThemeModelSummary.length === 0" style="list-style:none; font-style:italic;">No responses found.</li>
-                </ul>
-            </details>
-            <h3>Responses by Model</h3>
-            <div class="response-list">
-                 <template x-if="selectedQuestionThemeData.responses && selectedQuestionThemeData.responses.length > 0">
-                     <template x-for="modelGroup in groupResponsesByModel(selectedQuestionThemeData.responses)" :key="modelGroup.model">
-                         <section class="model-section" :id="modelGroup.responses[0].anchor_id">
-                             <h4 class="model-section-header"><span x-text="modelGroup.model"></span></h4>
-                             <template x-for="response in modelGroup.responses" :key="response.id">
-                                 <div class="response-card-nested">
-                                    <div class="response-header nested-header">
-                                        <strong x-text="getVariationDescription(response.variation)"></strong>
-                                    </div>
-                                    <!-- Error Box HTML Updated -->
-                                    <div class="error-box" x-show="response.error_message">
-                                        <b>Provider Error:</b> <!-- Changed from strong with class -->
-                                        <span x-text="response.error_message"></span>
-                                        <span class="partial-warning" x-show="response.is_partial_response">(Response may be incomplete)</span>
-                                    </div>
-                                    <div class="response-content-area nested-content">
-                                        <div class="detail-section question-section">
-                                             <strong>Question:</strong>
-                                             <span class="compliance-label" :class="'compliance-' + response.compliance" x-text="response.compliance"></span>
-                                             <a class="openrouter-link"
-                                                :href="generateOpenRouterLink(response.model, response.question_text)"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                title="Try this prompt on OpenRouter">
-                                                 Try this prompt on <img src="https://openrouter.ai/favicon.ico" alt="OpenRouter Logo"> OpenRouter
-                                             </a>
-                                             <pre class="text-display" x-text="response.question_text"></pre>
-                                        </div>
-                                         <div class="detail-section"> <strong>Model Response:</strong> <div class="text-display markdown-content" x-html="renderMarkdown(response.response_text || '(No Response Content)')"></div> </div>
-                                         <div class="detail-section"> <strong>Judge Analysis (<span x-text="response.judge_model || 'N/A'"></span>):</strong> <div class="text-display markdown-content" x-html="renderMarkdown(response.judge_analysis || '(No Analysis Available)')"></div> </div>
-                                    </div>
-                                 </div>
+            <p><strong>Domain:</strong> <span x-text="selectedQuestionThemeData.domain || 'Loading...'"></span></p>
+
+            <!-- Loading indicator for full data -->
+            <div x-show="isLoading && !isFullDataLoaded" class="loading-indicator" x-text="loadingMessage"></div>
+
+            <!-- Only show details when full data is loaded and not currently loading -->
+            <template x-if="isFullDataLoaded && !isLoading">
+                <div> <!-- Wrapper div -->
+                    <details class="toc-details" open>
+                        <summary>Model Compliance Summary & Links</summary>
+                        <ul class="toc-links model-toc vertical">
+                            <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model">
+                                <li>
+                                    <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)">
+                                        <span class="toc-model-name" x-text="modelInfo.model"></span>
+                                        <span class="toc-right-group">
+                                            <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
+                                            <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            </template>
+                            <li x-show="selectedQuestionThemeModelSummary.length === 0" style="list-style:none; font-style:italic;">No responses found for this theme.</li>
+                        </ul>
+                    </details>
+                    <h3>Responses by Model</h3>
+                    <div class="response-list">
+                         <template x-if="selectedQuestionThemeData.responses && selectedQuestionThemeData.responses.length > 0">
+                             <template x-for="modelGroup in groupResponsesByModel(selectedQuestionThemeData.responses)" :key="modelGroup.model">
+                                 <section class="model-section" :id="modelGroup.responses[0].anchor_id">
+                                     <h4 class="model-section-header"><span x-text="modelGroup.model"></span></h4>
+                                     <template x-for="response in modelGroup.responses" :key="response.id">
+                                         <div class="response-card-nested">
+                                            <div class="response-header nested-header">
+                                                <strong x-text="getVariationDescription(response.variation)"></strong>
+                                            </div>
+                                            <div class="error-box" x-show="response.error_message">
+                                                <b>Provider Error:</b>
+                                                <span x-text="response.error_message"></span>
+                                                <span class="partial-warning" x-show="response.is_partial_response">(Response may be incomplete)</span>
+                                            </div>
+                                            <div class="response-content-area nested-content">
+                                                <div class="detail-section question-section">
+                                                     <strong>Question:</strong>
+                                                     <span class="compliance-label" :class="'compliance-' + response.compliance" x-text="response.compliance"></span>
+                                                     <a class="openrouter-link"
+                                                        :href="generateOpenRouterLink(response.model, response.question_text)"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        title="Try this prompt on OpenRouter">
+                                                         Try this prompt on <img src="https://openrouter.ai/favicon.ico" alt="OpenRouter Logo"> OpenRouter
+                                                     </a>
+                                                     <pre class="text-display" x-text="response.question_text"></pre>
+                                                </div>
+                                                 <div class="detail-section"> <strong>Model Response:</strong> <div class="text-display markdown-content" x-html="renderMarkdown(response.response_text || '(No Response Content)')"></div> </div>
+                                                 <div class="detail-section"> <strong>Judge Analysis (<span x-text="response.judge_model || 'N/A'"></span>):</strong> <div class="text-display markdown-content" x-html="renderMarkdown(response.judge_analysis || '(No Analysis Available)')"></div> </div>
+                                            </div>
+                                         </div>
+                                     </template>
+                                 </section>
                              </template>
-                         </section>
-                     </template>
-                 </template>
-                 <template x-if="!selectedQuestionThemeData.responses || selectedQuestionThemeData.responses.length === 0"> <p>No individual responses found.</p> </template>
-            </div>
+                         </template>
+                         <template x-if="!selectedQuestionThemeData.responses || selectedQuestionThemeData.responses.length === 0"> <p>No individual responses found for this theme after loading.</p> </template>
+                    </div>
+                 </div>
+            </template> <!-- End x-if="isFullDataLoaded" -->
          </div>
      </template>
 
