@@ -3,7 +3,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     margin: 20px;
     line-height: 1.6;
-    background-color: #f8f8f8;
+    background-color: #ffffff;
     color: #333;
     scroll-padding-top: 20px;
 }
@@ -130,7 +130,7 @@ nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-
 }
 /* Specific styling for grey box */
 .grid-item.where-lines {
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 6px;
     border: 1px solid #eee;
