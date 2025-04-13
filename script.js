@@ -188,7 +188,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             this.isFullDataLoading = true;
-            this.loadingMessage = `Loading response data files (${this.dataFilenames.length} files. This is a one time action.`;
+            this.loadingMessage = `Loading response data files ${this.dataFilenames.length} files. This is a one time action.`;
             this.errorMessage = null;
             console.log(`Loading full data from: ${this.dataFilenames.join(', ')}`);
             await this.$nextTick();

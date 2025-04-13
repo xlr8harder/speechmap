@@ -12,7 +12,7 @@ ANALYSIS_DIR = "analysis"
 MODEL_METADATA_FILE = "model_metadata.json"
 OUTPUT_DATA_BASE_FILENAME = "speechdata"
 OUTPUT_METADATA_FILENAME = "metadata.json"
-MAX_RECORDS_PER_FILE = 19000
+MAX_RECORDS_PER_FILE = 20000
 COMPLIANCE_ORDER = ['COMPLETE', 'EVASIVE', 'DENIAL', 'ERROR', 'UNKNOWN']
 ID_REGEX = re.compile(r"^(.*?)(\d)$")
 ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
@@ -132,11 +132,11 @@ def preprocess_us_hard_data(analysis_dir):
     print(f"\nPreprocessing finished. Processed: {processed_count}, Skipped Format: {skipped_id_format}, Errors: {error_count}")
     return all_records
 
+# Updated function to calculate all summaries needed for metadata
 def calculate_summaries(all_records, model_metadata_dict):
     print("Calculating summaries...")
     model_stats = defaultdict(lambda: {"c": 0, "k": 0, "e": 0, "d": 0, "r": 0})
     theme_stats = defaultdict(lambda: {"d": "", "c": 0, "p": 0, "e": 0, "de": 0, "er": 0, "models": set()})
-    # New: Model x Theme Stats (counts only)
     model_theme_stats = defaultdict(lambda: defaultdict(lambda: {"domain": "", "c": 0, "k": 0, "e": 0, "d": 0, "r": 0}))
 
     for r in all_records:
@@ -161,7 +161,7 @@ def calculate_summaries(all_records, model_metadata_dict):
         elif compliance == 'DENIAL': theme_stats[key]["de"] += 1
         elif compliance == 'ERROR': theme_stats[key]["er"] += 1
 
-        # Model x Theme Stats
+        # Model x Theme Stats (Counts only)
         mt_stat = model_theme_stats[model][key]
         mt_stat["domain"] = domain
         mt_stat["c"] += 1
@@ -170,7 +170,7 @@ def calculate_summaries(all_records, model_metadata_dict):
         elif compliance == 'DENIAL': mt_stat["d"] += 1
         elif compliance == 'ERROR': mt_stat["r"] += 1
 
-
+    # --- Finalize Model Summary ---
     model_summary = []
     for model, stats in model_stats.items():
         count = stats["c"]
@@ -185,6 +185,7 @@ def calculate_summaries(all_records, model_metadata_dict):
     model_summary.sort(key=lambda x: (x["pct_complete_overall"], x["model"]))
     print(f"Calculated model summary for {len(model_summary)} models.")
 
+    # --- Finalize Question Theme Summary ---
     question_theme_summary = []
     for key, stats in theme_stats.items():
         count = stats["c"]
@@ -197,27 +198,20 @@ def calculate_summaries(all_records, model_metadata_dict):
         })
     question_theme_summary.sort(key=lambda x: (x["pct_complete_overall"], x["grouping_key"]))
     print(f"Calculated question theme summary for {len(question_theme_summary)} themes.")
-    print(f"Calculated model x theme summary.")
 
+    # --- Finalize Model x Theme Summary (keep nested dict structure) ---
+    print(f"Finalized model x theme summary structure.")
 
     return {
         "model_summary": model_summary,
         "question_theme_summary": question_theme_summary,
-        "model_theme_summary": model_theme_stats # Return the nested dict
+        "model_theme_summary": dict(model_theme_stats) # Convert back to regular dict for JSON
     }
 
 def save_data_chunk(filename, records_chunk):
-    # Only need specific fields for detail view now
-    chunk_to_save = []
-    needed_keys = ['id', 'anchor_id', 'model', 'timestamp', 'compliance', 'response_text',
-                   'judge_analysis', 'judge_model', 'error_message', 'is_partial_response',
-                   'original_question_id', 'question_text', 'domain', 'sub_topic_key',
-                   'variation', 'grouping_key']
-    for record in records_chunk:
-        chunk_to_save.append({k: record.get(k) for k in needed_keys if k in record}) # Check key exists
-
-    output_data = {"records": chunk_to_save}
-    print(f"  Saving {len(records_chunk)} records (detail fields only) to {filename}...")
+    # Saves only the records array (full detail needed for Q detail view)
+    output_data = {"records": records_chunk}
+    print(f"  Saving {len(records_chunk)} records to {filename}...")
     try:
         with gzip.open(filename, 'wt', encoding='utf-8', compresslevel=9) as f:
             json.dump(output_data, f, ensure_ascii=False, separators=(',', ':'))
@@ -236,12 +230,12 @@ def save_metadata(filename, data_filenames, compliance_order, stats, model_metad
         "model_metadata": model_metadata,
         "model_summary": summaries["model_summary"],
         "question_theme_summary": summaries["question_theme_summary"],
-        "model_theme_summary": summaries["model_theme_summary"] # Add model x theme summary
+        "model_theme_summary": summaries["model_theme_summary"] # Add this summary
     }
     print(f"\nSaving metadata to {filename}...")
     try:
         with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(metadata, f, ensure_ascii=False, indent=2) # Keep indent for readability
+            json.dump(metadata, f, ensure_ascii=False, indent=None, separators=(',', ':')) # No indent for smaller file
         print(f"Successfully saved {filename}.")
     except Exception as e:
         print(f"Error saving metadata: {e}")
@@ -259,8 +253,10 @@ def main():
     total_records = len(all_data)
     print(f"\nTotal records processed: {total_records}")
 
+    # Calculate summaries before splitting/saving chunks
     summaries = calculate_summaries(all_data, model_meta_dict)
 
+    # Calculate overall stats
     num_models = len(summaries["model_summary"])
     num_themes = len(summaries["question_theme_summary"])
     num_judgments = total_records
@@ -269,10 +265,10 @@ def main():
 
     num_files = math.ceil(total_records / MAX_RECORDS_PER_FILE) if total_records > 0 else 0
     print(f"Splitting data into {num_files} file(s) (max {MAX_RECORDS_PER_FILE} records per file).")
+
+
     balanced_records_per_file = int(total_records / num_files) + 1 # lazy way to handle remainder.
-
     print(f"Splitting to {balanced_records_per_file} records per file.")
-
 
     generated_data_files = []
     base_name = OUTPUT_DATA_BASE_FILENAME
@@ -281,6 +277,7 @@ def main():
     for i in range(num_files):
         start_index = i * balanced_records_per_file
         end_index = start_index + balanced_records_per_file
+
         records_chunk = all_data[start_index:end_index]
         output_filename = f"{base_name}_{i+1}{ext}"
 
