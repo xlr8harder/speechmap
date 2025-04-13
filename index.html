@@ -18,7 +18,11 @@
 </head>
 <body x-data="explorerData()" x-init="initialize()">
 
-    <h1>SpeechMap.AI <span class="subtitle">The Free Speech Dashboard for AI.</span></h1>
+    <!-- Wrap logo and h1 in a flex container -->
+    <div class="site-header">
+        <img src="speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo">
+        <h1>SpeechMap.AI <span class="subtitle">The Free Speech Dashboard for AI.</span></h1>
+    </div>
 
     <nav class="view-selector">
         <button @click="navigate('about')" :class="{ 'active': currentView === 'about' }">About</button>
@@ -49,8 +53,7 @@
                 <h3>What is SpeechMap.AI?</h3>
                 <p><b>SpeechMap.AI</b> is a research project that explores the limits of AI-generated speech.</p>
                 <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and themes.</p>
-                <p>Most organizations measure what models <i>can</i> do.<br>We focus on what they <i>won’t</i>: what they avoid, refuse, or shut down.
-                <p>Most organizations focus on what models are capable of.<br>We focus on what they avoid, refuse, or shut down.</p>
+                <p>Most organizations measure what models <i>can</i> do.<br>We focus on what they <i>won’t</i>: what they avoid, refuse, or shut down.</p>
             </div>
 
             <div class="grid-item where-lines">
@@ -63,12 +66,12 @@
                     <li>Religious or moral arguments</li>
                     <li>Questions about rights or protest</li>
                 </ul>
-                <p>One model might answer. Another might refuse. A third might redirect the question. We test across provider, phrasing, region, and topic to reveal how models behave differently, and how that behavior shifts.</p>
+                <p>One model might answer. Another might refuse. A third might redirect the question. We test across provider, phrasing, region, and topic to reveal how models behave differently, and how that behavior shifts over time.</p>
             </div>
 
             <div class="grid-item why-matters">
                 <h3>Why It Matters</h3>
-                <p>Language models are becoming part of how we write, search, learn, and communicate.  As they’re embedded into everyday tools, the limits on what they’ll say begin to shape what <b>we</b> can say.
+                 <p>Language models are becoming part of how we write, search, learn, and communicate. As they’re embedded into everyday tools, the limits on what they’ll say begin to shape what <b>we</b> can say.</p>
                  <p>Some models block criticism of specific governments. Others will only support mainstream political views. If these systems shape public discourse, then understanding their boundaries is a public interest issue.</p>
                  <p><b>SpeechMap.AI</b> helps researchers, developers, journalists, and citizens see and compare those boundaries.</p>
             </div>
@@ -79,6 +82,7 @@
                     <li><strong class="stat-value" x-text="stats.models">0</strong> AI Models Compared</li>
                     <li><strong class="stat-value" x-text="stats.themes">0</strong> Question Themes</li>
                     <li><strong class="stat-value" x-text="formatJudgments(stats.judgments)">0</strong> Prompt-Level Judgments</li>
+                    <li><strong class="stat-value" x-text="filteredOrDeniedPercentage + '%'">N/A%</strong> of requests were filtered, redirected, or denied</li>
                     <li>Models tested on sensitive and political US prompts</li>
                     <li class="stats-cta">→ Explore the <a href="#/overview" @click.prevent="navigate('overview')">Model Overview</a>or <br>→ <a href="#/questions" @click.prevent="navigate('question_themes')">Browse Questions</a></li>
                 </ul>
@@ -88,7 +92,7 @@
         <!-- Ko-fi Section -->
         <h3>☕ Support us on Ko-fi</h3>
         <p>We believe that AI will be the defining speech-enabling technology of the 21st century.</p>
-        <p>It's critical to understand what AI models allow, what they won't generate, and how that changes over time.</p>
+        <p>It's critical to understand what AI models allow, what they won't generate, and how that changes.</p>
         <p>If you believe this work is important, please consider supporting us on <a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer">Ko-fi</a>.
         <p>Unfortunately, API costs add up quickly, and we need ongoing support to sustain and expand our coverage.</p>
         <p><a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Support%20Us%20on%20Ko%20fi-F16061?style=flat-square&logo=ko-fi&logoColor=white" alt="Support Us on Ko-fi"></a></p>
@@ -165,7 +169,7 @@
                                         <span class="toc-model-name" x-text="modelInfo.model"></span>
                                         <span class="toc-right-group">
                                             <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
-                                            <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                            <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)</span>
                                         </span>
                                     </a>
                                 </li>

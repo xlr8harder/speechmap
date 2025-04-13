@@ -14,7 +14,7 @@ document.addEventListener('alpine:init', () => {
         modelThemeSummaryData: {},
         complianceOrder: [],
         modelMetadata: {},
-        stats: { models: 0, themes: 0, judgments: 0 },
+        stats: { models: 0, themes: 0, judgments: 0, complete: 0 }, // Added complete stat
         dataFilenames: [],
         // Status Flags
         isMetadataLoading: true,
@@ -73,19 +73,28 @@ document.addEventListener('alpine:init', () => {
             if (!this.selectedGroupingKey || !this.isFullDataLoaded) return null;
             const firstRecord = this.allResponses.find(r => r.grouping_key === this.selectedGroupingKey);
             if (!firstRecord) {
-                // console.warn(`No records found for grouping key ${this.selectedGroupingKey} in allResponses`); // Reduce noise
                 return { grouping_key: this.selectedGroupingKey, domain: 'N/A', responses: [] };
             }
             const domain = firstRecord.domain;
             const responsesForTheme = this.allResponses
                 .filter(r => r.grouping_key === this.selectedGroupingKey)
                 .sort((a, b) => a.model.localeCompare(b.model) || parseInt(a.variation) - parseInt(b.variation));
+             if (responsesForTheme.length === 0) { }
             return { grouping_key: this.selectedGroupingKey, domain: domain, responses: responsesForTheme };
         },
         get selectedQuestionThemeModelSummary() {
             if (!this.selectedQuestionThemeData || !this.isFullDataLoaded || !this.selectedQuestionThemeData.responses) return [];
             const summary = this.selectedQuestionThemeData.responses.reduce((acc, r) => { if (!acc[r.model]) acc[r.model] = { model: r.model, anchor_id: r.anchor_id, count: 0, complete_count: 0 }; acc[r.model].count++; if (r.compliance === 'COMPLETE') acc[r.model].complete_count++; acc[r.model].anchor_id = r.anchor_id; return acc; }, {});
             return Object.values(summary).map(s => ({ model: s.model, anchor_id: s.anchor_id, count: s.count, pct_complete: s.count > 0 ? (s.complete_count / s.count * 100) : 0, })).sort((a, b) => a.model.localeCompare(b.model));
+        },
+        get filteredOrDeniedPercentage() { // New computed property for stats
+            if (!this.stats || this.stats.judgments === 0) {
+                 return 'N/A';
+            }
+            const completeCount = this.stats.complete || 0;
+            const totalJudgments = this.stats.judgments;
+            const percentage = (1 - (completeCount / totalJudgments)) * 100;
+            return percentage.toFixed(1); // Return formatted percentage string
         },
         formatJudgments(num) {
              if (typeof num !== 'number' || isNaN(num)) return '0';
@@ -129,15 +138,12 @@ document.addEventListener('alpine:init', () => {
                 this.errorMessage = `Failed initial load: ${e.message}`;
                 this.isMetadataLoading = false;
                 this.loadingMessage = '';
-            } finally {
-                // console.log("Initial metadata loading attempt finished."); // Reduce noise
             }
             window.addEventListener('hashchange', () => this.parseHash());
         },
         async loadMetadata() {
             this.loadingMessage = 'Fetching metadata...';
             await this.$nextTick();
-            // console.log("Fetching metadata.json"); // Reduce noise
 
             let metadata;
             try {
@@ -146,7 +152,6 @@ document.addEventListener('alpine:init', () => {
                     throw new Error(`HTTP ${meta_response.status} fetching metadata.json`);
                 }
                 metadata = await meta_response.json();
-                // console.log("Metadata loaded."); // Reduce noise
 
                 if (!metadata.complianceOrder || !Array.isArray(metadata.complianceOrder)) throw new Error("Metadata missing 'complianceOrder'.");
                 if (!metadata.data_files || !Array.isArray(metadata.data_files)) throw new Error("Metadata missing 'data_files'.");
@@ -159,10 +164,11 @@ document.addEventListener('alpine:init', () => {
 
                 this.complianceOrder = metadata.complianceOrder;
                 this.modelMetadata = metadata.model_metadata;
-                this.stats = {
+                this.stats = { // Populate stats, ensuring numbers
                     models: Number.isFinite(metadata.stats.models) ? metadata.stats.models : 0,
                     themes: Number.isFinite(metadata.stats.themes) ? metadata.stats.themes : 0,
                     judgments: Number.isFinite(metadata.stats.judgments) ? metadata.stats.judgments : 0,
+                    complete: Number.isFinite(metadata.stats.complete) ? metadata.stats.complete : 0 // Load new 'complete' stat
                 };
                 this.modelSummaryData = metadata.model_summary;
                 this.questionThemeSummaryData = metadata.question_theme_summary;
@@ -174,21 +180,19 @@ document.addEventListener('alpine:init', () => {
                 this.availableFilters.grouping_keys = this.questionThemeSummaryData.map(q => q.grouping_key).sort();
                 this.availableFilters.variations = ['1', '2', '3', '4'];
 
-                // console.log("Metadata successfully processed."); // Reduce noise
-
             } catch (e) {
                 console.error("Failed to load or parse metadata.json:", e);
                 throw new Error(`Metadata Load Failed: ${e.message}`);
             }
         },
         async loadFullDataIfNeeded() {
-            if (this.isFullDataLoaded) { /* console.log("Full data already loaded."); */ return; } // Reduce noise
+            if (this.isFullDataLoaded) { return; }
             if (!this.isMetadataLoaded || !this.dataFilenames || this.dataFilenames.length === 0) {
                 this.errorMessage = "Cannot load full data: Metadata error."; console.error(this.errorMessage); return;
             }
 
             this.isFullDataLoading = true;
-            this.loadingMessage = `Loading response data files ${this.dataFilenames.length} files. This is a one time action.`;
+            this.loadingMessage = `Loading response data files (${this.dataFilenames.length} files). This is a one time action.`;
             this.errorMessage = null;
             console.log(`Loading full data from: ${this.dataFilenames.join(', ')}`);
             await this.$nextTick();
@@ -244,12 +248,7 @@ document.addEventListener('alpine:init', () => {
             }
         },
         parseHash(forceUpdate = false) {
-            // console.log("-> parseHash function entered. isMetadataLoaded:", this.isMetadataLoaded); // Removed diagnostic log
-            if (!this.isMetadataLoaded && !forceUpdate) {
-                // console.log("Deferring initial hash parse until metadata loads."); // Removed diagnostic log
-                return;
-            }
-            // console.log("Parsing Hash:", location.hash); // Reduce noise
+            if (!this.isMetadataLoaded && !forceUpdate) { return; }
             const h = location.hash.slice(1);
             const parts = h.split('#');
             const pathParts = parts[0].split('/').filter(Boolean);
@@ -275,31 +274,23 @@ document.addEventListener('alpine:init', () => {
             }
 
              if (forceUpdate || v !== this.currentView || m !== this.selectedModel || k !== this.selectedGroupingKey) {
-                 // console.log("-> State change detected, proceeding to update view and potentially tables..."); // Removed diagnostic log
-                 // console.log(`State update: view=${v}, model=${m}, key=${k}`); // Reduce noise
                  const previousView = this.currentView;
                  this.currentView = v;
-
                  this.selectedModel = (v === 'model_detail') ? m : null;
                  this.selectedGroupingKey = (v === 'question_theme_detail') ? k : null;
 
                  if (this.isMetadataLoaded) {
-                      if (v === 'question_theme_detail' && !this.isFullDataLoaded && !this.isFullDataLoading) { // Avoid triggering if already loading
+                      if (v === 'question_theme_detail' && !this.isFullDataLoaded && !this.isFullDataLoading) {
                           console.log("Triggering full data load from parseHash for deep link...");
                           this.loadFullDataIfNeeded().catch(e => console.error("Error loading full data on deep link:", e));
                       }
-                      // Initialize tables if view is *not* detail OR if it *is* detail and data IS loaded
                       else if (v !== 'question_theme_detail' || this.isFullDataLoaded) {
-                          this.$nextTick(() => {
-                             this.initializeTableForView(this.currentView);
-                          });
+                          this.$nextTick(() => { this.initializeTableForView(this.currentView); });
                       } else {
-                         // If navigating TO detail view and full data IS loading, destroy old tables
                           if (previousView !== 'question_theme_detail') { this.destroyAllTables(); }
                       }
                  }
              } else {
-                 // console.log("State matches hash."); // Reduce noise
                  if (anchor && this.currentView === 'question_theme_detail' && this.isFullDataLoaded) {
                       this.smoothScroll('#' + anchor);
                  }
@@ -319,14 +310,10 @@ document.addEventListener('alpine:init', () => {
 
             const nH = anchor ? `${h}#${anchor}` : h;
             if (location.hash !== nH) {
-                // console.log(`URL Update: ${nH} (repl:${replaceHistory})`); // Reduce noise
                 if (replaceHistory) history.replaceState(null, '', nH);
                 else history.pushState(null, '', nH);
-                // Add back direct parseHash call here for immediate UI update
-                this.parseHash();
-                // console.log("-> Relying on hashchange listener to call parseHash."); // Removed diagnostic log
-            } else if (replaceHistory || anchor) { // Handle cases where only anchor or history flag changes
-                console.log("Same hash nav, ensuring redraw/scroll.");
+                this.parseHash(); // Call parseHash after URL changes
+            } else if (replaceHistory || anchor) {
                 if (this.isMetadataLoaded && view !== 'question_theme_detail') {
                     this.$nextTick(() => { this.initializeTableForView(this.currentView); });
                 }
@@ -340,17 +327,13 @@ document.addEventListener('alpine:init', () => {
             this.navigate('model_detail', false, modelName);
         },
         async selectQuestionTheme(groupingKey, modelAnchorId = null) {
-             // console.log("Selecting question theme:", groupingKey); // Reduce noise
              this.selectedGroupingKey = groupingKey;
              this.currentView = 'question_theme_detail';
              this.navigate('question_theme_detail', true, groupingKey, modelAnchorId); // Update URL first
 
              try {
                  await this.loadFullDataIfNeeded();
-                 // console.log("Full data load complete for theme detail. View should update."); // Reduce noise
-                 // Ensure scroll happens after potential DOM updates from data load
                  this.$nextTick(() => { if (modelAnchorId) this.smoothScroll('#' + modelAnchorId); });
-
              } catch (e) {
                  console.error("Failed to load full data for question theme detail:", e);
                  this.errorMessage = `Failed to load response details: ${e.message}`;
@@ -363,7 +346,6 @@ document.addEventListener('alpine:init', () => {
             if (!t || this.currentView !== 'overview' || !this.isMetadataLoaded) return;
             this.destroyTable(this.overviewTable);
             const d = this.modelSummaryData;
-            // console.log("Init Overview, #", d.length); // Reduce noise
             this.overviewTable = new Tabulator(t, {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No models.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
                 columns: [
@@ -382,7 +364,6 @@ document.addEventListener('alpine:init', () => {
             if (!t || this.currentView !== 'question_themes' || !this.isMetadataLoaded) return;
             this.destroyTable(this.questionThemesTable);
             const d = this.questionThemeSummaryData;
-            // console.log("Init Q Themes, #", d.length); // Reduce noise
             this.questionThemesTable = new Tabulator(t, {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
                 columns: [
@@ -402,7 +383,6 @@ document.addEventListener('alpine:init', () => {
             if (!t || this.currentView !== 'model_detail' || !this.selectedModel || !this.isMetadataLoaded) return;
             this.destroyTable(this.modelDetailTable);
             const d = this.selectedModelQuestionSummary;
-            // console.log(`Init Model Detail ${this.selectedModel}, #`, d.length); // Reduce noise
             this.modelDetailTable = new Tabulator(t, {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Question Themes found for this model (or matching domain filter).", selectable: false, initialSort: [ {column:"pct_complete", dir:"asc"} ],
                 columns: [
@@ -417,14 +397,13 @@ document.addEventListener('alpine:init', () => {
             });
         },
         initializeTableForView(view, anchor = null) {
-             if (!this.isMetadataLoaded) { /* console.log("Deferring table init, metadata not loaded."); */ return; } // Reduce noise
-             // console.log(`Initializing table for view: ${view}`); // Reduce noise
+             if (!this.isMetadataLoaded) { return; }
              this.destroyAllTables();
              try {
                  if (view === 'overview') this.initOverviewTable();
                  else if (view === 'question_themes') this.initQuestionThemesTable();
                  else if (view === 'model_detail') this.initModelDetailTable();
-                 // console.log("Finished initializeTableForView for view:", view); // Reduce noise
+                 // console.log("Finished initializeTableForView for view:", view);
              } catch (error) { console.error(`Error initializing table for view ${view}:`, error); this.errorMessage = `Error rendering ${view} table.`; }
         },
         destroyTable(tableInstance) { if (tableInstance) { try { tableInstance.destroy(); } catch (e) {} } return null; },

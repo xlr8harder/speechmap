@@ -260,7 +260,10 @@ def main():
     num_models = len(summaries["model_summary"])
     num_themes = len(summaries["question_theme_summary"])
     num_judgments = total_records
-    stats_summary = { "models": num_models, "themes": num_themes, "judgments": num_judgments }
+    num_complete = sum([1 for i in all_data if i['compliance'] == "COMPLETE"])
+
+    stats_summary = { "models": num_models, "themes": num_themes, "judgments":
+                     num_judgments, "complete": num_complete }
     print("Calculated Stats:", stats_summary)
 
     num_files = math.ceil(total_records / MAX_RECORDS_PER_FILE) if total_records > 0 else 0
