@@ -37,3 +37,6 @@
 {"model_identifier": "google/gemma-2-27b-it", "creator": "google", "model_name": "gemma-2-27b-it", "model_family": "gemma-3", "release_date": "2024-06-27", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-small-24b-instruct-2501", "creator": "mistralai", "model_name": "mistral-small-3-24b-instruct-2501", "model_family": "mistral-small", "release_date": "2025-01-28", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-small-3.1-24b-instruct", "creator": "mistralai", "model_name": "mistral-small-3.1-24b-instruct-2503", "model_family": "mistral-small", "release_date": "2024-03-17", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-4.1-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-4.1-mini-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-mini-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-4.1-nano-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-nano-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
