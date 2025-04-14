@@ -4,6 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Metadata for social sharing -->
+    <meta name="description" content="SpeechMap.AI is a public dashboard that explores what AI models will and won't say—revealing how different systems respond to political, controversial, and sensitive prompts.">
+    <meta property="og:title" content="SpeechMap.AI – The Free Speech Dashboard for AI">
+    <meta property="og:description" content="Explore how AI models respond to sensitive political prompts—and where they draw the line.">
+    <meta property="og:image" content="https://speechmap.ai/og-image.png">
+    <meta property="og:url" content="https://speechmap.ai">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SpeechMap.AI – The Free Speech Dashboard for AI">
+    <meta name="twitter:description" content="See where AI models answer, refuse, or redirect controversial prompts.">
+    <meta name="twitter:image" content="https://speechmap.ai/og-image.png">
+    <meta name="theme-color" content="#0056b3">
+    <meta name="author" content="SpeechMap.AI">
     <title>SpeechMap.AI Explorer</title>
     <link href="https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css" rel="stylesheet">
     <link href="style.css?1" rel="stylesheet">
@@ -88,7 +101,7 @@
                 <ul>
                     <li><strong class="stat-value" x-text="stats.models">0</strong> AI Models Compared</li>
                     <li><strong class="stat-value" x-text="stats.themes">0</strong> Question Themes</li>
-                    <li><strong class="stat-value" x-text="formatJudgments(stats.judgments)">0</strong> Prompt-Level Judgments</li>
+                    <li><strong class="stat-value" x-text="formatJudgments(stats.judgments)">0</strong> Model Responses Analyzed</li>
                     <li><strong class="stat-value" x-text="filteredOrDeniedPercentage + '%'">N/A%</strong> of requests were filtered, redirected, or denied</li>
                     <li>Models tested on sensitive and political US prompts</li>
                     <li class="stats-cta">→ Explore the <a href="#/overview" @click.prevent="navigate('overview')">Model Overview</a>or <br>→ <a href="#/questions" @click.prevent="navigate('question_themes')">Browse Questions</a></li>
