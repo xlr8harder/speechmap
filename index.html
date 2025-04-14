@@ -45,7 +45,7 @@
 
     <nav class="view-selector">
         <button @click="navigate('about')" :class="{ 'active': currentView === 'about' }">About</button>
-        <button @click="navigate('overview')" :class="{ 'active': currentView === 'overview' }">Model Overview</button>
+        <button @click="navigate('overview')" :class="{ 'active': currentView === 'overview' }">Model Results</button>
         <button @click="navigate('question_themes')" :class="{ 'active': currentView === 'question_themes' }">Question Themes</button>
         <button @click="navigate('model_timeline')" :class="{ 'active': currentView === 'model_timeline' }">Model Timeline</button> <!-- New Button -->
     </nav>
@@ -105,7 +105,7 @@
                     <li><strong class="stat-value" x-text="formatJudgments(stats.judgments)">0</strong> Model Responses Analyzed</li>
                     <li><strong class="stat-value" x-text="filteredOrDeniedPercentage + '%'">N/A%</strong> of requests were filtered, redirected, or denied</li>
                     <li>Models tested on sensitive and political US prompts</li>
-                    <li class="stats-cta">→ Explore the <a href="#/overview" @click.prevent="navigate('overview')">Model Overview</a>or <br>→ <a href="#/questions" @click.prevent="navigate('question_themes')">Browse Questions</a></li>
+                    <li class="stats-cta">→ Explore the <a href="#/overview" @click.prevent="navigate('overview')">Model Results</a>or <br>→ <a href="#/questions" @click.prevent="navigate('question_themes')">Browse Questions</a></li>
                 </ul>
             </div>
         </div>
@@ -124,8 +124,9 @@
 
     <!-- Overview View (Only shows AFTER metadata loaded) -->
     <div x-show="currentView === 'overview' && isMetadataLoaded" x-transition>
-        <h2>Model Overview <span class="count-info" x-text="`(${modelSummary.length} Models)`"></span></h2>
+        <h2>Model Results <span class="count-info" x-text="`(${modelSummary.length} Models)`"></span></h2>
         <p>Overall summary of model compliance. Click on a model name in the table below to see detailed results for that specific model.</p>
+        <p>The columns available indicate whether the model has Completely satisfied the request, whether the model was Evasive in its answer (incomplete answers, answers slightly different questions, or redirects the user), whether the request was Denied by the model, or whether the API returned an Error, typically indicating a moderation layer that has disallowed the request.</p>
         <div id="overview-table" class="table-container"></div>
     </div>
 
@@ -165,6 +166,7 @@
          <h2>Question Themes <span class="count-info" x-text="`(${questionThemeSummary.length} Themes)`"></span></h2>
          <p>Overall compliance for each question theme across all models.</p>
          <p>Click on a question theme to view prompts and model responses.</p>
+        <p>The columns available indicate the number of Models we have answers from, the total number of Responses in this category, whether the model has Completely satisfied the request, whether the model was Evasive in its answer (incomplete answers, answers slightly different questions, or redirects the user), whether the request was Denied by the model, or whether the API returned an Error, typically indicating a moderation layer that has disallowed the request.</p>
          <div id="question-themes-table" class="table-container"></div>
     </div>
 
