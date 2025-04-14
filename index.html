@@ -174,7 +174,7 @@
                         <ul class="toc-links model-toc vertical">
                             <template x-for="modelInfo in selectedQuestionThemeModelSummary" :key="modelInfo.model">
                                 <li>
-                                    <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll('#' + modelInfo.anchor_id)">
+                                    <a :href="'#' + modelInfo.anchor_id" class="toc-link-item" @click.prevent="smoothScroll(modelInfo.anchor_id, true)">
                                         <span class="toc-model-name" x-text="modelInfo.model"></span>
                                         <span class="toc-right-group">
                                             <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
@@ -190,7 +190,7 @@
                     <div class="response-list">
                          <template x-if="currentThemeDetailData.records && currentThemeDetailData.records.length > 0">
                              <template x-for="modelGroup in groupResponsesByModel(currentThemeDetailData.records)" :key="modelGroup.model">
-                                 <section class="model-section" :id="modelGroup.responses[0].anchor_id"> <!-- Use anchor_id from first response -->
+                                 <section class="model-section" :id="modelGroup.responses[0].anchor_id">
                                      <h4 class="model-section-header"><span x-text="modelGroup.model"></span></h4>
                                      <template x-for="response in modelGroup.responses" :key="response.id">
                                          <div class="response-card-nested">
@@ -231,7 +231,7 @@
      </template>
 
     <!-- Model Timeline View (Only shows AFTER metadata loaded) -->
-    <div x-show="currentView === 'model_timeline' && isMetadataLoaded" class="timeline-view-container" x-transition> <!-- Added container class -->
+    <div x-show="currentView === 'model_timeline' && isMetadataLoaded" class="timeline-view-container" x-transition>
         <h2>Model Timeline</h2>
         <p>Scatter plot showing model release dates against their compliance percentage for selected filters. Click points to view model details.</p>
 
@@ -267,7 +267,8 @@
         <div class="chart-container">
             <canvas id="timeline-chart-canvas"></canvas>
         </div>
-        <div x-show="timelineChartData.length === 0 && isMetadataLoaded" style="text-align: center; padding: 20px; color: #666;">
+        <!-- Updated x-show condition to check timelineChartData exists first -->
+        <div x-show="isMetadataLoaded && timelineChartData && timelineChartData.length === 0" style="text-align: center; padding: 20px; color: #666;">
             No models match the selected filters or have valid release dates.
         </div>
     </div>
