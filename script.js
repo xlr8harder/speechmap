@@ -34,11 +34,12 @@ document.addEventListener('alpine:init', () => {
         currentThemeAnchor: null,
         availableFilters: { models: [], domains: [], variations: [], grouping_keys: [], creators: [] },
         activeModelDomainFilters: [],
-        internalNavigationInProgress: false, // Keep flag for hashchange listener coordination
+        internalNavigationInProgress: false,
         timelineFilterDomain: 'all',
         timelineFilterJudgment: 'pct_complete_overall',
         timelineFilterCreator: 'all',
         timelineChart: null,
+        currentChartInitId: 0, // ID to track the latest chart init request
         timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})),
         minReleaseDate: null,
         maxReleaseDate: null,
@@ -141,7 +142,7 @@ document.addEventListener('alpine:init', () => {
                     try {
                         let parsed = Date.parse(releaseDateStr);
                         if (!isNaN(parsed)) releaseDate = new Date(parsed);
-                        else console.warn(`Could not parse release date for ${modelName}: ${releaseDateStr}`);
+                        // else console.warn(`Could not parse release date for ${modelName}: ${releaseDateStr}`);
                     } catch (e) { console.warn(`Error parsing release date for ${modelName}: ${releaseDateStr}`, e); }
                 }
                 if (!releaseDate) continue;
@@ -194,7 +195,8 @@ document.addEventListener('alpine:init', () => {
             this.timelineChart = null;
             this.minReleaseDate = null;
             this.maxReleaseDate = null;
-            this.internalNavigationInProgress = false; // Initialize flag
+            this.internalNavigationInProgress = false;
+            this.currentChartInitId = 0; // Initialize chart ID
 
             this.parseHash(); // Initial parse on load
             this.setupWatchers();
@@ -212,11 +214,10 @@ document.addEventListener('alpine:init', () => {
                 this.isMetadataLoading = false;
                 this.loadingMessage = '';
             }
-            // Add flag check to hashchange listener
             window.addEventListener('hashchange', () => {
                  if (this.internalNavigationInProgress) {
-                     this.internalNavigationInProgress = false; // Reset flag and ignore this event
-                     console.log("Hashchange event ignored (internal navigation)");
+                     this.internalNavigationInProgress = false;
+                     // console.log("Hashchange event ignored (internal navigation)");
                      return;
                  }
                  console.log("hashchange event triggered externally, parsing...");
@@ -268,8 +269,6 @@ document.addEventListener('alpine:init', () => {
                  });
                  this.minReleaseDate = earliestDate;
                  this.maxReleaseDate = new Date();
-
-                 // No explicit init call here, parseHash(true) in initialize handles it
 
             } catch (e) {
                 console.error("Failed to load or parse metadata.json:", e);
@@ -341,7 +340,7 @@ document.addEventListener('alpine:init', () => {
             const previousCreatorFilter = this.timelineFilterCreator;
             const previousMetricFilter = this.timelineFilterJudgment;
 
-            // console.log(`Parsing hash: ${location.hash} (forceUpdate: ${forceUpdate})`); // Reduced logging noise
+            // console.log(`Parsing hash: ${location.hash} (forceUpdate: ${forceUpdate})`);
             const fullHash = location.hash.slice(1);
             const anchorMatch = fullHash.match(/#([^#]*)$/);
             const anchor = anchorMatch ? anchorMatch[1] : null;
@@ -372,6 +371,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (!this.isMetadataLoaded && !forceUpdate) {
+                // console.log("Metadata not loaded, setting tentative view:", viewTarget);
                 if (viewTarget !== previousView) this.currentView = viewTarget;
                 return;
             }
@@ -389,8 +389,7 @@ document.addEventListener('alpine:init', () => {
 
             const stateChanged = forceUpdate || viewChanged || modelChanged || keyChanged || anchorChanged || timelineFiltersChanged;
 
-            // console.log(`Parsed: view=${viewTarget}, model=${modelTarget}, key=${keyTarget}, anchor=${anchor}`); // Reduced logging noise
-            // console.log(`Filters: domain=${domainTarget}, creator=${creatorTarget}, metric=${metricTarget}`);
+            // console.log(`Parsed: view=${viewTarget}, model=${modelTarget}, key=${keyTarget}, anchor=${anchor}`);
             // console.log(`Current: view=${previousView}, model=${previousModel}, key=${previousKey}, anchor=${previousAnchor}`);
             // console.log(`Changes: view=${viewChanged}, model=${modelChanged}, key=${keyChanged}, anchor=${anchorChanged}, filters=${timelineFiltersChanged}, stateChanged=${stateChanged}`);
 
@@ -412,7 +411,6 @@ document.addEventListener('alpine:init', () => {
                  this.timelineFilterDomain = validDomain ? domainTarget : 'all';
                  this.timelineFilterCreator = validCreator ? creatorTarget : 'all';
                  this.timelineFilterJudgment = validMetric ? metricTarget : 'pct_complete_overall';
-                 // console.log("Updated timeline filters in state:", this.timelineFilterDomain, this.timelineFilterCreator, this.timelineFilterJudgment);
              }
 
              if (this.currentView === 'model_detail' && this.selectedModel && !this.availableFilters.models.includes(this.selectedModel)) {
@@ -422,9 +420,9 @@ document.addEventListener('alpine:init', () => {
                   console.warn(`Key '${this.selectedGroupingKey}' invalid.`); this.navigate('question_themes', true); return;
              }
 
-             console.log("Triggering UI/Data updates...");
+             console.log("Triggering UI updates...");
              this.destroyAllUI();
-             this.$nextTick(() => {
+             this.$nextTick(() => { // Initialize UI based on *new* state
                  try {
                      console.log("Initializing UI for:", this.currentView);
                      if (this.currentView === 'overview') { this.initOverviewTable(); }
@@ -436,6 +434,7 @@ document.addEventListener('alpine:init', () => {
                      this.errorMessage = `Error rendering ${this.currentView}.`;
                  }
              });
+
 
              if (this.currentView === 'question_theme_detail') {
                  if (keyChanged || (viewChanged && !this.currentThemeDetailData) || forceUpdate ) {
@@ -456,10 +455,9 @@ document.addEventListener('alpine:init', () => {
              }
         },
         navigate(view, replaceHistory = false, selectionKey = null, anchor = null) {
-            let basePath = '#/'; // Always start with the base hashbang
+            let basePath = '#/';
             let queryParams = '';
 
-            // Build the path segment
             if (view === 'overview') { basePath += 'overview'; }
             else if (view === 'question_themes') { basePath += 'questions'; }
             else if (view === 'model_timeline') {
@@ -475,20 +473,18 @@ document.addEventListener('alpine:init', () => {
                 else { console.warn("Missing model key for model_detail navigation"); return; }
             } else if (view === 'question_theme_detail') {
                 const k = selectionKey || this.selectedGroupingKey;
-                if (k) basePath += `questions/${encodeURIComponent(k)}`; // Correct path construction
+                if (k) basePath += `questions/${encodeURIComponent(k)}`;
                 else { console.warn("Missing theme key for question_theme_detail navigation"); return; }
             } else if (view === 'about') {
                  basePath += 'about';
             } else {
                  console.warn("Invalid view target in navigate:", view);
-                 basePath += 'about'; // Default to about
+                 basePath += 'about';
             }
 
-            // Combine path and query parameters
             let pathAndQuery = basePath;
             if (queryParams) pathAndQuery += '?' + queryParams;
 
-            // Add anchor fragment if provided
             let finalHash = pathAndQuery;
             if (anchor) {
                 finalHash += '#' + anchor; // Append anchor correctly
@@ -496,8 +492,8 @@ document.addEventListener('alpine:init', () => {
 
             console.log(`Navigate: Target hash constructed: ${finalHash}`);
             if (location.hash !== finalHash) {
-                 console.log("Hash differs, updating history...");
-                 this.internalNavigationInProgress = true; // Set flag *before* changing history state
+                 console.log("Updating history state...");
+                 this.internalNavigationInProgress = true; // Set flag before changing history state
                  if (replaceHistory) { history.replaceState(null, '', finalHash); }
                  else { history.pushState(null, '', finalHash); }
                  // Call parseHash directly after modifying history state
@@ -508,9 +504,8 @@ document.addEventListener('alpine:init', () => {
                      this.currentThemeAnchor = anchor;
                      if(this.currentThemeDetailData) { this.$nextTick(() => this.smoothScroll(anchor)); }
                  } else if (!['model_timeline', 'question_theme_detail'].includes(view)) {
-                     // Force re-parse if clicking same link for non-dynamic views
-                     this.parseHash(true);
-                 }
+                    this.parseHash(true); // Force re-evaluation if clicking same nav link again
+                }
              }
         },
         updateTimelineUrlParams() {
@@ -524,7 +519,7 @@ document.addEventListener('alpine:init', () => {
              if (location.hash !== newHash) {
                   this.internalNavigationInProgress = true; // Set flag before changing history
                   history.replaceState(null, '', newHash);
-                  // No parseHash needed here - let hashchange handle if needed, but watcher updates chart
+                  // Let hashchange listener handle parse and potential UI update if needed
              }
         },
         selectModel(modelName) {
@@ -539,8 +534,8 @@ document.addEventListener('alpine:init', () => {
 
         initOverviewTable() {
             const t = document.getElementById("overview-table");
-            if (!t || this.currentView !== 'overview' || !this.isMetadataLoaded) { console.log("Skipping overview table init."); return; }
-            console.log("Initializing Overview Table");
+            if (!t || this.currentView !== 'overview' || !this.isMetadataLoaded) { /* console.log("Skipping overview table init."); */ return; }
+            // console.log("Initializing Overview Table");
             this.overviewTable = new Tabulator(t, {
                 data: [...this.modelSummaryData], layout: "fitDataFill", height: "60vh", placeholder: "No models.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
                 columns: [
@@ -556,8 +551,8 @@ document.addEventListener('alpine:init', () => {
         },
         initQuestionThemesTable() {
             const t = document.getElementById("question-themes-table");
-             if (!t || this.currentView !== 'question_themes' || !this.isMetadataLoaded) { console.log("Skipping question themes table init."); return; }
-            console.log("Initializing Question Themes Table");
+             if (!t || this.currentView !== 'question_themes' || !this.isMetadataLoaded) { /* console.log("Skipping question themes table init."); */ return; }
+            // console.log("Initializing Question Themes Table");
             this.questionThemesTable = new Tabulator(t, {
                 data: [...this.questionThemeSummaryData], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
                 columns: [
@@ -574,8 +569,8 @@ document.addEventListener('alpine:init', () => {
         },
         initModelDetailTable() {
             const t = document.getElementById("model-detail-table");
-            if (!t || this.currentView !== 'model_detail' || !this.selectedModel || !this.isMetadataLoaded) { console.log("Skipping model detail table init."); return; }
-            console.log("Initializing Model Detail Table");
+            if (!t || this.currentView !== 'model_detail' || !this.selectedModel || !this.isMetadataLoaded) { /* console.log("Skipping model detail table init."); */ return; }
+            // console.log("Initializing Model Detail Table");
             const d = this.selectedModelQuestionSummary;
             this.modelDetailTable = new Tabulator(t, {
                 data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Question Themes found for this model (or matching domain filter).", selectable: false, initialSort: [ {column:"pct_complete", dir:"asc"} ],
@@ -586,7 +581,7 @@ document.addEventListener('alpine:init', () => {
                             const rowData = cell.getRow().getData();
                             const key = rowData.grouping_key;
                             const anchor = `model-${this.generateSafeIdForFilename(this.selectedModel)}`;
-                            console.log(`[ModelDetailTable Click] Key: ${key}, Anchor: ${anchor}`);
+                            // console.log(`[ModelDetailTable Click] Key: ${key}, Anchor: ${anchor}`);
                             this.selectQuestionTheme(key, anchor);
                         },
                         cssClass: "clickable-cell"
@@ -601,83 +596,111 @@ document.addEventListener('alpine:init', () => {
             });
         },
         initOrUpdateTimelineChart() {
-            if (this.currentView !== 'model_timeline' || !this.isMetadataLoaded || !this.minReleaseDate || !this.maxReleaseDate) {
-                 console.warn("Timeline chart init conditions not met (view, metadata, or date range).");
+            if (this.currentView !== 'model_timeline') {
+                // console.log("View changed before chart init started, aborting.");
+                return;
+            }
+            if (!this.isMetadataLoaded || !this.minReleaseDate || !this.maxReleaseDate) {
+                 console.warn("Timeline chart init conditions not met (metadata or date range).");
                  return;
             }
-             const canvas = document.getElementById('timeline-chart-canvas');
-             if (!canvas) { console.error("Timeline canvas not found right before chart creation"); return; }
-             const ctx = canvas.getContext('2d');
-             if (!ctx) { console.error("Failed to get 2D context right before chart creation."); return; }
-             if (this.currentView !== 'model_timeline') {
-                 console.warn("View changed before timeline chart could initialize fully.");
-                 return;
-             }
-
             this.destroyChart(this.timelineChart);
+
+            const canvas = document.getElementById('timeline-chart-canvas');
+            if (!canvas) { console.error("Timeline canvas not found right before chart creation"); return; }
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { console.error("Failed to get 2D context right before chart creation."); return; }
+
+            // --- Add Init ID ---
+            this.currentChartInitId++; // Increment the global counter
+            const initId = this.currentChartInitId; // Capture the ID for this specific attempt
+            // console.log(`Attempting chart init with ID: ${initId}`);
 
             const dataPoints = this.timelineChartData;
             const judgmentInfo = JUDGMENT_KEYS[this.timelineFilterJudgment];
             const yAxisLabel = judgmentInfo ? judgmentInfo.label : 'Percentage';
 
-            console.log("Initializing Timeline Chart");
-            this.timelineChart = new Chart(ctx, {
-                type: 'scatter',
-                data: {
-                    datasets: [{
-                        label: 'Models',
-                        data: dataPoints,
-                        pointBackgroundColor: context => judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN,
-                        pointBorderColor: context => judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    onClick: (event) => {
-                        const elements = this.timelineChart.getElementsAtEventForMode(event, 'point', { intersect: true }, true);
-                        if (elements.length > 0) {
-                            const { datasetIndex, index } = elements[0];
-                            const point = this.timelineChart.config.data.datasets[datasetIndex].data[index];
-                            if (point && point.label) {
-                                this.navigate('model_detail', false, point.label);
-                            }
-                        }
+            // console.log("Initializing Timeline Chart");
+            try {
+                // Final check before instantiation using the captured ID
+                if (this.currentView !== 'model_timeline' || initId !== this.currentChartInitId) {
+                    console.warn(`Chart init ${initId} aborted: View changed or newer init started (${this.currentChartInitId}).`);
+                    return;
+                }
+
+                const chartInstance = new Chart(ctx, { // Store in temp variable first
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Models',
+                            data: dataPoints,
+                            pointBackgroundColor: context => judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN,
+                            pointBorderColor: context => judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
                     },
-                    scales: {
-                        x: {
-                            type: 'time',
-                            min: this.minReleaseDate ? this.minReleaseDate.valueOf() : undefined,
-                            max: this.maxReleaseDate ? this.maxReleaseDate.valueOf() : undefined,
-                            time: { unit: 'month', tooltipFormat: 'yyyy-MM-dd', displayFormats: { month: 'yyyy-MM', year: 'yyyy' } },
-                            title: { display: true, text: 'Model Release Date' },
-                            ticks: { source: 'auto', maxRotation: 45, minRotation: 0 }
-                        },
-                        y: {
-                            title: { display: true, text: yAxisLabel },
-                            min: 0, max: 100,
-                            ticks: { callback: function(value) { return value + '%'; } }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const point = context.raw;
-                                    let label = point.label || '';
-                                    if (label) label += ': ';
-                                    label += `${point.y.toFixed(1)}%`;
-                                    if (point.creator) { label += ` (${point.creator})`; }
-                                    return label;
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        onClick: (event) => {
+                            const elements = this.timelineChart?.getElementsAtEventForMode(event, 'point', { intersect: true }, true);
+                            if (elements && elements.length > 0) {
+                                const { datasetIndex, index } = elements[0];
+                                const point = this.timelineChart.config.data.datasets[datasetIndex].data[index];
+                                if (point && point.label) {
+                                    this.navigate('model_detail', false, point.label);
                                 }
                             }
                         },
-                        legend: { display: false }
+                        scales: {
+                            x: {
+                                type: 'time',
+                                min: this.minReleaseDate ? this.minReleaseDate.valueOf() : undefined,
+                                max: this.maxReleaseDate ? this.maxReleaseDate.valueOf() : undefined,
+                                time: { unit: 'month', tooltipFormat: 'yyyy-MM-dd', displayFormats: { month: 'yyyy-MM', year: 'yyyy' } },
+                                title: { display: true, text: 'Model Release Date' },
+                                ticks: { source: 'auto', maxRotation: 45, minRotation: 0 }
+                            },
+                            y: {
+                                title: { display: true, text: yAxisLabel },
+                                min: 0, max: 100,
+                                ticks: { callback: function(value) { return value + '%'; } }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const point = context.raw;
+                                        let label = point.label || '';
+                                        if (label) label += ': ';
+                                        label += `${point.y.toFixed(1)}%`;
+                                        if (point.creator) { label += ` (${point.creator})`; }
+                                        return label;
+                                    }
+                                }
+                            },
+                            legend: { display: false }
+                        }
                     }
+                });
+
+                // Assign to state variable only if this is the latest init attempt
+                if (initId === this.currentChartInitId) {
+                    // console.log(`Chart init ${initId} succeeded and is current.`);
+                    this.timelineChart = chartInstance;
+                } else {
+                    console.log(`Chart init ${initId} succeeded but is outdated (current is ${this.currentChartInitId}), destroying.`);
+                    chartInstance.destroy();
+                    this.timelineChart = null;
                 }
-            });
+
+            } catch (error) {
+                console.error(`Error during Chart instantiation (Init ID: ${initId}):`, error);
+                this.errorMessage = "Failed to render timeline chart.";
+                this.timelineChart = null;
+            }
         },
 
         // --- Cleanup ---
@@ -688,6 +711,7 @@ document.addEventListener('alpine:init', () => {
             this.questionThemesTable = this.destroyTable(this.questionThemesTable);
             this.modelDetailTable = this.destroyTable(this.modelDetailTable);
             this.timelineChart = this.destroyChart(this.timelineChart);
+            this.timelineChart = null; // Explicitly nullify reference after destroy
         },
 
         // --- Watchers ---
@@ -697,19 +721,23 @@ document.addEventListener('alpine:init', () => {
                      this.$nextTick(() => { this.initModelDetailTable(); });
                  }
              });
+            // Timeline filter watchers now trigger URL update AND chart redraw directly
             this.$watch('timelineFilterDomain', () => {
                 if (this.currentView === 'model_timeline') {
-                    this.updateTimelineUrlParams(); // Update URL, hashchange -> parseHash -> initChart
+                    this.updateTimelineUrlParams();
+                    this.initOrUpdateTimelineChart(); // Directly update chart
                 }
             });
             this.$watch('timelineFilterJudgment', () => {
                 if (this.currentView === 'model_timeline') {
-                    this.updateTimelineUrlParams(); // Update URL, hashchange -> parseHash -> initChart
+                    this.updateTimelineUrlParams();
+                    this.initOrUpdateTimelineChart(); // Directly update chart
                  }
             });
             this.$watch('timelineFilterCreator', () => {
                 if (this.currentView === 'model_timeline') {
-                    this.updateTimelineUrlParams(); // Update URL, hashchange -> parseHash -> initChart
+                    this.updateTimelineUrlParams();
+                    this.initOrUpdateTimelineChart(); // Directly update chart
                 }
             });
         },
@@ -730,7 +758,7 @@ document.addEventListener('alpine:init', () => {
                      const basePath = `#/questions/${encodeURIComponent(this.selectedGroupingKey)}`;
                      const newHash = `${basePath}#${anchorId}`;
                      if (location.hash !== newHash) {
-                         this.internalNavigationInProgress = true; // Set flag before changing history
+                         // this.internalNavigationInProgress = true; // Flag not needed for replaceState
                          history.replaceState(null, '', newHash);
                          this.currentThemeAnchor = anchorId;
                      }
