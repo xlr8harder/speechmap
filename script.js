@@ -39,7 +39,7 @@ document.addEventListener('alpine:init', () => {
         timelineFilterJudgment: 'pct_complete_overall',
         timelineFilterCreator: 'all',
         timelineChart: null,
-        currentChartInitId: 0, // ID to track the latest chart init request
+        currentChartInitId: 0,
         timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})),
         minReleaseDate: null,
         maxReleaseDate: null,
@@ -196,7 +196,7 @@ document.addEventListener('alpine:init', () => {
             this.minReleaseDate = null;
             this.maxReleaseDate = null;
             this.internalNavigationInProgress = false;
-            this.currentChartInitId = 0; // Initialize chart ID
+            this.currentChartInitId = 0;
 
             this.parseHash(); // Initial parse on load
             this.setupWatchers();
@@ -267,8 +267,23 @@ document.addEventListener('alpine:init', () => {
                          } catch (e) {}
                      }
                  });
-                 this.minReleaseDate = earliestDate;
-                 this.maxReleaseDate = new Date();
+
+                 // Set X-axis range with padding using standard Date methods
+                 const today = new Date();
+                 const approxMonthInMillis = 30 * 24 * 60 * 60 * 1000;
+
+                 if (earliestDate) {
+                     this.minReleaseDate = new Date(earliestDate.getTime() - approxMonthInMillis);
+                 } else {
+                     // Fallback if no dates found - maybe set to today minus X months?
+                     // Or leave null and let chart decide (though padding is preferred)
+                     this.minReleaseDate = new Date(today.getTime() - 6 * approxMonthInMillis); // Default to 6 months ago if no dates
+                     console.warn("No earliest release date found, using default min date.");
+                 }
+
+                 this.maxReleaseDate = new Date(today.getTime() + approxMonthInMillis);
+
+                 console.log("Timeline Date Range Set:", this.minReleaseDate, this.maxReleaseDate);
 
             } catch (e) {
                 console.error("Failed to load or parse metadata.json:", e);
@@ -556,7 +571,7 @@ document.addEventListener('alpine:init', () => {
             this.questionThemesTable = new Tabulator(t, {
                 data: [...this.questionThemeSummaryData], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
                 columns: [
-                    { title: "Theme Label", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell" },
+                    { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell" },
                     { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] } },
                     { title: "Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number" },
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
@@ -596,20 +611,15 @@ document.addEventListener('alpine:init', () => {
             });
         },
         initOrUpdateTimelineChart() {
-            if (this.currentView !== 'model_timeline') {
-                // console.log("View changed before chart init started, aborting.");
-                return;
-            }
-            if (!this.isMetadataLoaded || !this.minReleaseDate || !this.maxReleaseDate) {
-                 console.warn("Timeline chart init conditions not met (metadata or date range).");
-                 return;
-            }
+            if (this.currentView !== 'model_timeline') { return; }
+            if (!this.isMetadataLoaded || !this.minReleaseDate || !this.maxReleaseDate) { return; }
+
             this.destroyChart(this.timelineChart);
 
             const canvas = document.getElementById('timeline-chart-canvas');
             if (!canvas) { console.error("Timeline canvas not found right before chart creation"); return; }
             const ctx = canvas.getContext('2d');
-            if (!ctx) { console.error("Failed to get 2D context right before chart creation."); return; }
+             if (!ctx) { console.error("Failed to get 2D context right before chart creation."); return; }
 
             // --- Add Init ID ---
             this.currentChartInitId++; // Increment the global counter
@@ -628,7 +638,7 @@ document.addEventListener('alpine:init', () => {
                     return;
                 }
 
-                const chartInstance = new Chart(ctx, { // Store in temp variable first
+                const chartInstance = new Chart(ctx, {
                     type: 'scatter',
                     data: {
                         datasets: [{
@@ -686,7 +696,6 @@ document.addEventListener('alpine:init', () => {
                     }
                 });
 
-                // Assign to state variable only if this is the latest init attempt
                 if (initId === this.currentChartInitId) {
                     // console.log(`Chart init ${initId} succeeded and is current.`);
                     this.timelineChart = chartInstance;
@@ -711,7 +720,7 @@ document.addEventListener('alpine:init', () => {
             this.questionThemesTable = this.destroyTable(this.questionThemesTable);
             this.modelDetailTable = this.destroyTable(this.modelDetailTable);
             this.timelineChart = this.destroyChart(this.timelineChart);
-            this.timelineChart = null; // Explicitly nullify reference after destroy
+            this.timelineChart = null;
         },
 
         // --- Watchers ---
@@ -758,7 +767,7 @@ document.addEventListener('alpine:init', () => {
                      const basePath = `#/questions/${encodeURIComponent(this.selectedGroupingKey)}`;
                      const newHash = `${basePath}#${anchorId}`;
                      if (location.hash !== newHash) {
-                         // this.internalNavigationInProgress = true; // Flag not needed for replaceState
+                         // this.internalNavigationInProgress = true; // Flag removed for replaceState
                          history.replaceState(null, '', newHash);
                          this.currentThemeAnchor = anchorId;
                      }
