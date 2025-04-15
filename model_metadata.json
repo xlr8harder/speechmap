@@ -1,3 +1,5 @@
+{"model_identifier": "x-ai/grok-2-1212", "creator": "x-ai", "model_name": "grok-2-1212", "model_family": "grok-2", "release_date": "2024-08-14", "reasoning_model": false, "notes": ""}
+{"model_identifier": "x-ai/grok-beta", "creator": "x-ai", "model_name": "grok-beta", "model_family": "grok-1.5", "release_date": "2024-05-15", "reasoning_model": false, "notes": ""}
 {"model_identifier": "x-ai/grok-3-beta", "creator": "x-ai", "model_name": "grok-3-beta", "model_family": "grok-3", "release_date": "2025-02-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-3-mini-beta", "creator": "x-ai", "model_name": "grok-3-mini-beta", "model_family": "grok-3", "release_date": "2025-02-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "anthropic/claude-3.7-sonnet", "creator": "anthropic", "model_name": "claude-3.7-sonnet", "model_family": "claude-3.7", "release_date": "2025-02-24", "reasoning_model": true, "notes": ""}
