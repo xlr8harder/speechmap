@@ -545,22 +545,27 @@ document.addEventListener('alpine:init', () => {
              this.navigate('question_theme_detail', false, groupingKey, modelAnchorId);
         },
 
-        // Removed initializeView function
-
         initOverviewTable() {
             const t = document.getElementById("overview-table");
             if (!t || this.currentView !== 'overview' || !this.isMetadataLoaded) { /* console.log("Skipping overview table init."); */ return; }
             // console.log("Initializing Overview Table");
             this.overviewTable = new Tabulator(t, {
-                data: [...this.modelSummaryData], layout: "fitDataFill", height: "60vh", placeholder: "No models.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
+                data: [...this.modelSummaryData],
+                layout: "fitDataFill",
+                height: "60vh",
+                placeholder: "No models.",
+                selectable: false,
+                initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
+                responsiveLayout: "collapse", // Enable responsive layout
                 columns: [
-                    { title: "Model", field: "model", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectModel(c.getRow().getData().model), cssClass: "clickable-cell" },
-                    { title: "Released", field: "release_date", width: 110, sorter: dateSorterNullable, headerFilter:"input", hozAlign:"center" },
-                    { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
-                    { title: "% Comp", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
-                    { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
-                    { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL } },
-                    { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR } },
+                    // Responsive priorities: 0 = highest, higher numbers = lower priority
+                    { title: "Model", field: "model", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectModel(c.getRow().getData().model), cssClass: "clickable-cell", responsive: 0 },
+                    { title: "Released", field: "release_date", width: 110, sorter: dateSorterNullable, headerFilter:"input", hozAlign:"center", responsive: 2 },
+                    { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number", responsive: 3 },
+                    { title: "% Comp", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE }, responsive: 0 },
+                    { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE }, responsive: 1 },
+                    { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL }, responsive: 1 },
+                    { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR }, responsive: 1 },
                 ],
             });
         },
@@ -569,16 +574,23 @@ document.addEventListener('alpine:init', () => {
              if (!t || this.currentView !== 'question_themes' || !this.isMetadataLoaded) { /* console.log("Skipping question themes table init."); */ return; }
             // console.log("Initializing Question Themes Table");
             this.questionThemesTable = new Tabulator(t, {
-                data: [...this.questionThemeSummaryData], layout: "fitDataFill", height: "60vh", placeholder: "No themes found.", selectable: false, initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
+                data: [...this.questionThemeSummaryData],
+                layout: "fitDataFill",
+                height: "60vh",
+                placeholder: "No themes found.",
+                selectable: false,
+                initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
+                responsiveLayout: "collapse", // Enable responsive layout
                 columns: [
-                    { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell" },
-                    { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] } },
-                    { title: "Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number" },
-                    { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
-                    { title: "% Complete", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
-                    { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
-                    { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL } },
-                    { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR } }
+                    // Responsive priorities: 0 = highest, higher numbers = lower priority
+                    { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell", responsive: 0 },
+                    { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] }, responsive: 2 },
+                    { title: "Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number", responsive: 3 },
+                    { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number", responsive: 3 },
+                    { title: "% Complete", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE }, responsive: 0 },
+                    { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE }, responsive: 1 },
+                    { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL }, responsive: 1 },
+                    { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR }, responsive: 1 }
                 ],
             });
         },
@@ -588,8 +600,15 @@ document.addEventListener('alpine:init', () => {
             // console.log("Initializing Model Detail Table");
             const d = this.selectedModelQuestionSummary;
             this.modelDetailTable = new Tabulator(t, {
-                data: [...d], layout: "fitDataFill", height: "60vh", placeholder: "No Question Themes found for this model (or matching domain filter).", selectable: false, initialSort: [ {column:"pct_complete", dir:"asc"} ],
+                data: [...d],
+                layout: "fitDataFill",
+                height: "60vh",
+                placeholder: "No Question Themes found for this model (or matching domain filter).",
+                selectable: false,
+                initialSort: [ {column:"pct_complete", dir:"asc"} ],
+                responsiveLayout: "collapse", // Enable responsive layout
                 columns: [
+                    // Responsive priorities: 0 = highest, higher numbers = lower priority
                     {
                         title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input",
                         cellClick: (e, cell) => {
@@ -599,14 +618,15 @@ document.addEventListener('alpine:init', () => {
                             // console.log(`[ModelDetailTable Click] Key: ${key}, Anchor: ${anchor}`);
                             this.selectQuestionTheme(key, anchor);
                         },
-                        cssClass: "clickable-cell"
+                        cssClass: "clickable-cell",
+                        responsive: 0
                     },
-                    { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains.filter(dm => d.some(q => q.domain === dm))] } },
-                    { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number" },
-                    { title: "% Complete", field: "pct_complete", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE } },
-                    { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE } },
-                    { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL } },
-                    { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR } }
+                    { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains.filter(dm => d.some(q => q.domain === dm))] }, responsive: 2 },
+                    { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number", responsive: 3 },
+                    { title: "% Complete", field: "pct_complete", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE }, responsive: 0 },
+                    { title: "% Evas", field: "pct_evasive", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.EVASIVE }, responsive: 1 },
+                    { title: "% Deny", field: "pct_denial", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.DENIAL }, responsive: 1 },
+                    { title: "% Err", field: "pct_error", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.ERROR }, responsive: 1 }
                 ],
             });
         },
