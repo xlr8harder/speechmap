@@ -71,53 +71,54 @@
         <div class="about-grid">
             <div class="grid-item what-is">
                 <h3>What is SpeechMap.AI?</h3>
-                <p><b>SpeechMap.AI</b> is a research project that explores the limits of AI-generated speech.</p>
-                <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and themes.</p>
-                <p>Most organizations measure what models <i>can</i> do.<br>We focus on what they <i>won’t</i>: what they avoid, refuse, or shut down.</p>
-                <p>We are not making the argument that every prompt deserves an answer. Some are offensive or intentionally provocative. But without testing what gets refused, we can’t see where the limits are, or how they shift over time.</p>
+                <p><b>SpeechMap.AI</b> is a public research project that explores the boundaries of AI-generated speech.</p>
+                <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and topics. Most AI benchmarks measure what models <i>can</i> do. We focus on what they <i>won’t</i>—what they avoid, refuse, or shut down.</p>
+                <p>We're not arguing that every prompt deserves an answer. Some are offensive. Some are absurd. But without testing what gets filtered, we can’t see where the lines are drawn—or how they’re shifting over time.</p>
             </div>
 
             <div class="grid-item where-lines">
-                <h3>Where are the lines drawn—</h3>
-                <p>and how does that affect access to dissent, satire, or debate?</p>
-                <p>Many prompts land in a gray area:</p>
+                <h3>What We Found</h3>
+                <p><b>OpenAI's models</b> have become more likely to refuse controversial prompts over time.</p>
+                <p><b>xAI's Grok-3-beta</b> is the most permissive model tested so far, with 96.2% compliance.</p>
+                <p>Examples from our database:</p>
                 <ul>
-                    <li>Political criticism</li>
-                    <li>Satirical takes on leadership</li>
-                    <li>Religious or moral arguments</li>
-                    <li>Questions about rights or protest</li>
+                    <li><b>Argue for traditional gender roles</b>: 61% compliance</li>
+                    <li><b>Argue for the same, with reversed genders</b>: 92.6%</li>
+                    <li><b>Outlaw a religion</b>: Judaism (10.5%) vs Witchcraft (68.5%)</li>
+                    <li><b>Ban AI for safety</b>: 92.7% — but if you say "destroy all AI," it drops to 75%</li>
                 </ul>
-                <p>One model might answer. Another might refuse. A third might redirect the question. We test across provider, phrasing, region, and topic to reveal how models behave differently, where they cooperate, and where they won't.</p>
+                <p>We believe these patterns are worth understanding—regardless of what you believe should be allowed.</p>
             </div>
 
             <div class="grid-item why-matters">
-                <h3>Why It Matters</h3>
-                 <p>Language models are becoming part of how we write, search, learn, and communicate. As they’re embedded into everyday tools, the limits on what they’ll say begin to shape what <b>we</b> can say.</p>
-                 <p>Some models block criticism of specific governments. Others will only support mainstream political views. As these systems increasingly shape public discourse, understanding their boundaries becomes a critical public interest issue.</p>
-                 <p><b>SpeechMap.AI</b> helps researchers, developers, journalists, and citizens see and compare those boundaries.</p>
+                <h3>Why This Matters</h3>
+                 <p>Language Models are becoming infrastructure for public speech.  They're embedded in how we write, search, learn and argue. That makes them powerful speech-enabling technologies, but also potential speech-limiting ones.</p>
+                 <p>If models refuse to talk about certain topics, then they shape the boundaries of expression. Some models block criticism of governments. Others avoid satire, protest or controversial moral arguments. Often, the rules are unclear and inconsistently applied.</p>
+                 <p><b>SpeechMap.AI helps reveal those boundaries.</b></p>
             </div>
 
             <div class="grid-item stats-block">
-                <h3>What’s Here Now</h3>
+                <h3>What’s Available</h3>
                 <ul>
                     <li><strong class="stat-value" x-text="stats.models">0</strong> AI Models Compared</li>
                     <li><strong class="stat-value" x-text="stats.themes">0</strong> Question Themes</li>
                     <li><strong class="stat-value" x-text="formatJudgments(stats.judgments)">0</strong> Model Responses Analyzed</li>
                     <li><strong class="stat-value" x-text="filteredOrDeniedPercentage + '%'">N/A%</strong> of requests were filtered, redirected, or denied</li>
-                    <li>Models tested on sensitive and political US prompts</li>
+                    <li>Full question database with search + filters</li>
                     <li class="stats-cta">→ Explore the <a href="#/overview" @click.prevent="navigate('overview')">Model Results</a>or <br>→ <a href="#/questions" @click.prevent="navigate('question_themes')">Browse Questions</a></li>
                 </ul>
             </div>
         </div>
 
-        <!-- Ko-fi Section -->
-        <h3>☕ Support us on Ko-fi</h3>
-        <p>We believe that AI will be the defining speech-enabling technology of the 21st century.</p>
-        <p>It's critical to understand what AI models allow, what they won't generate, and how that changes.</p>
-        <p>If you believe this work is important, please consider supporting us on <a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer">Ko-fi</a>.
-        <p>API testing requires significant resources, and your support helps us maintain and expand our coverage.</p>
-        <p><a href="https://ko-fi.com/xlr8harder" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/Support%20Us%20on%20Ko%20fi-F16061?style=flat-square&logo=ko-fi&logoColor=white" alt="Support Us on Ko-fi"></a></p>
-        <!-- End Ko-fi Section -->
+        <h3>Help Us Grow</h3>
+        <p>We believe that AI will be the defining speech-enabling technology of the 21st century. If you want a future with fair and open access to expression, we need to know how these systems work, and where they draw the line.</p>
+        <p>Evaluation one model can cost <b>tens to hundreds of dollars</b> in API fees. Older models are already disappearing.  Soon we may not be able to test them at all.</p>
+        <p>If you believe this work matters:</p>
+        <ul>
+            <li><a href="https://ko-fi.com/speechmap" target="_blank" rel="noopener noreferrer">Support us on Ko-fi</a></li>
+            <li><a href="https://speechmap.ai">Share the site</a></li>
+            <li><a href="#/overview" @click.prevent="navigate('overview')">Explore the data yourself</a></li>
+        </ul>
 
     </div>
 
