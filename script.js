@@ -1,4 +1,3 @@
-// script.js
 // --- Global Settings ---
 const COMPLIANCE_COLORS = { 'COMPLETE': '#2ecc71', 'EVASIVE': '#f1c40f', 'DENIAL': '#e74c3c', 'ERROR': '#9b59b6', 'UNKNOWN': '#bdc3c7' };
 const JUDGMENT_KEYS = { // Mapping for Y-Axis selection
@@ -229,7 +228,8 @@ document.addEventListener('alpine:init', () => {
             await this.$nextTick();
             let metadata;
             try {
-                const meta_response = await fetch('metadata.json');
+                // Add { cache: 'no-store' } to bypass browser cache for metadata.json
+                const meta_response = await fetch('metadata.json?2', { cache: 'no-store' });
                 if (!meta_response.ok) throw new Error(`HTTP ${meta_response.status} fetching metadata.json`);
                 metadata = await meta_response.json();
 
@@ -314,7 +314,11 @@ document.addEventListener('alpine:init', () => {
              try {
                  const safeFileName = this.generateSafeIdForFilename(groupingKey);
                  const filePath = `${THEME_DETAIL_DIR}/${safeFileName}.json.gz`;
-                 const response = await fetch(filePath, { headers: { 'Accept-Encoding': 'gzip' } });
+                 // Add { cache: 'no-store' } to bypass browser cache for theme detail files
+                 const response = await fetch(filePath, {
+                     cache: 'no-store', // <-- Add this line
+                     headers: { 'Accept-Encoding': 'gzip' }
+                 });
                  if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${filePath}`);
 
                  const compressed_data = await response.arrayBuffer();
