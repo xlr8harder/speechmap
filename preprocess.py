@@ -76,21 +76,25 @@ def preprocess_us_hard_data(analysis_dir):
 
     for i, fpath in enumerate(file_paths):
         fname = os.path.basename(fpath)
-        print(f"Processing file ({i+1}/{len(file_paths)}): {fname}")
+        # print(f"Processing file ({i+1}/{len(file_paths)}): {fname}") # Reduce noise
         try:
             with open(fpath, "r", encoding="utf-8") as f:
                 for line_num, line in enumerate(f):
                     rec = None
                     try:
                         rec = json.loads(line.strip())
-                        original_question_id = rec["question_id"]
-                        model = rec["model"]
-                        compliance = rec["compliance"].upper()
-                        domain = rec["domain"]
-                        question_text = rec["question"]
-                        judge_analysis = rec["judge_analysis"]
-                        judge_model = rec["judge_model"]
-                        timestamp = rec.get("timestamp", None)  # this may be missing in older data.
+                        original_question_id = rec.get("question_id", f"unknown_id_{line_num+1}")
+                        model = rec.get("model", "unknown_model")
+                        compliance = rec.get("compliance", "UNKNOWN").upper()
+                        domain = rec.get("domain", "Unknown Domain")
+                        question_text = rec.get("question", "")
+                        judge_analysis = rec.get("judge_analysis", "")
+                        judge_model = rec.get("judge_model", "")
+                        timestamp = rec.get("timestamp", "")
+                        # Extract new fields for potential use later or reporting
+                        api_model = rec.get("api_model", None)
+                        original_api_provider = rec.get("original_api_provider", None)
+
 
                         sub_topic_key = original_question_id
                         variation = "0"
@@ -101,7 +105,7 @@ def preprocess_us_hard_data(analysis_dir):
                         else:
                             if not original_question_id.startswith("unknown_id_"):
                                 skipped_id_format += 1
-                        grouping_key = sub_topic_key  # This is the key we group by
+                        grouping_key = sub_topic_key
 
                         response_content = ""
                         error_message = None
@@ -141,18 +145,17 @@ def preprocess_us_hard_data(analysis_dir):
                         if compliance not in COMPLIANCE_ORDER:
                             compliance = "UNKNOWN"
 
-                        # Anchor ID for linking *within* a theme detail page
                         safe_model_id_part = generate_safe_id(model)
-                        anchor_id = f"model-{safe_model_id_part}"  # Anchor points to the *start* of the model's section
+                        anchor_id = f"model-{safe_model_id_part}"
 
-                        # Record ID is less critical now, but keep for potential debugging
                         record_id = f"{model}-{original_question_id}-{timestamp}"
 
+                        # Add new fields to the record being stored
                         all_records.append(
                             {
                                 "id": record_id,
                                 "anchor_id": anchor_id,
-                                "model": model,
+                                "model": model, # Canonical model identifier
                                 "timestamp": timestamp,
                                 "compliance": compliance,
                                 "response_text": response_content,
@@ -166,17 +169,20 @@ def preprocess_us_hard_data(analysis_dir):
                                 "sub_topic_key": sub_topic_key,
                                 "variation": variation,
                                 "grouping_key": grouping_key,
+                                "api_model": api_model, # Store original api model name if available
+                                "original_api_provider": original_api_provider # Store original provider if available
                             }
                         )
                         processed_count += 1
+                    except KeyError as e:
+                        print(f"    ERR Proc Line {line_num+1} in {fname}: Missing key {e} - Rec: {rec}")
+                        error_count += 1
                     except Exception as e:
                         print(f"    ERR Proc Line {line_num+1} in {fname}: {e} - Rec: {rec}")
                         error_count += 1
-                        raise
         except Exception as e:
             print(f"  ERR Reading File {fname}: {e}")
             error_count += 1
-            raise
 
     print(f"\nPreprocessing finished. Processed: {processed_count}, Skipped Format: {skipped_id_format}, Errors: {error_count}")
     return all_records
@@ -187,6 +193,8 @@ def calculate_summaries(all_records, model_metadata_dict):
     model_stats = defaultdict(lambda: {"c": 0, "k": 0, "e": 0, "d": 0, "r": 0})
     theme_stats = defaultdict(lambda: {"d": "", "c": 0, "p": 0, "e": 0, "de": 0, "er": 0, "models": set()})
     model_theme_stats = defaultdict(lambda: defaultdict(lambda: {"domain": "", "c": 0, "k": 0, "e": 0, "d": 0, "r": 0}))
+    # Use dict to store missing model info { model_id: {provider: ..., api_model: ...} }
+    missing_models_info = {}
 
     for r in all_records:
         model = r["model"]
@@ -194,48 +202,58 @@ def calculate_summaries(all_records, model_metadata_dict):
         domain = r["domain"]
         compliance = r["compliance"]
 
+        # Check if model metadata exists BEFORE calculating stats
+        if model not in model_metadata_dict:
+            if model not in missing_models_info: # Store info only once
+                provider = r.get("original_api_provider", "Unknown")
+                api_model_name = r.get("api_model", "Unknown")
+                missing_models_info[model] = {"provider": provider, "api_model": api_model_name}
+            continue # Skip processing this record if metadata is missing
+
         # Overall Model Stats
         model_stats[model]["c"] += 1
-        if compliance == "COMPLETE":
-            model_stats[model]["k"] += 1
-        elif compliance == "EVASIVE":
-            model_stats[model]["e"] += 1
-        elif compliance == "DENIAL":
-            model_stats[model]["d"] += 1
-        elif compliance == "ERROR":
-            model_stats[model]["r"] += 1
+        if compliance == "COMPLETE": model_stats[model]["k"] += 1
+        elif compliance == "EVASIVE": model_stats[model]["e"] += 1
+        elif compliance == "DENIAL": model_stats[model]["d"] += 1
+        elif compliance == "ERROR": model_stats[model]["r"] += 1
 
         # Overall Theme Stats
         theme_stats[key]["c"] += 1
         theme_stats[key]["models"].add(model)
         theme_stats[key]["d"] = domain
-        if compliance == "COMPLETE":
-            theme_stats[key]["p"] += 1
-        elif compliance == "EVASIVE":
-            theme_stats[key]["e"] += 1
-        elif compliance == "DENIAL":
-            theme_stats[key]["de"] += 1
-        elif compliance == "ERROR":
-            theme_stats[key]["er"] += 1
+        if compliance == "COMPLETE": theme_stats[key]["p"] += 1
+        elif compliance == "EVASIVE": theme_stats[key]["e"] += 1
+        elif compliance == "DENIAL": theme_stats[key]["de"] += 1
+        elif compliance == "ERROR": theme_stats[key]["er"] += 1
 
         # Model x Theme Stats (Counts only)
         mt_stat = model_theme_stats[model][key]
         mt_stat["domain"] = domain
         mt_stat["c"] += 1
-        if compliance == "COMPLETE":
-            mt_stat["k"] += 1
-        elif compliance == "EVASIVE":
-            mt_stat["e"] += 1
-        elif compliance == "DENIAL":
-            mt_stat["d"] += 1
-        elif compliance == "ERROR":
-            mt_stat["r"] += 1
+        if compliance == "COMPLETE": mt_stat["k"] += 1
+        elif compliance == "EVASIVE": mt_stat["e"] += 1
+        elif compliance == "DENIAL": mt_stat["d"] += 1
+        elif compliance == "ERROR": mt_stat["r"] += 1
+
+    # --- Report Missing Models (if any) and exit ---
+    if missing_models_info:
+        print("\n" + "="*60)
+        print("ERROR: Metadata missing for the following models:")
+        print("-"*60)
+        # Sort by model ID for consistent output
+        for model_id in sorted(missing_models_info.keys()):
+            info = missing_models_info[model_id]
+            print(f"- {model_id} (Provider: {info['provider']}, API Model: {info['api_model']})")
+        print("="*60)
+        print("Please add entries for these models to model_metadata.json and rerun.")
+        return None # Signal failure
 
     # --- Finalize Model Summary ---
     model_summary = []
     for model, stats in model_stats.items():
         count = stats["c"]
-        release_date = model_metadata_dict[model]["release_date"]
+        # Access metadata safely now, knowing the model exists in the dict
+        release_date = model_metadata_dict.get(model, {}).get("release_date", None)
         model_summary.append(
             {
                 "model": model,
@@ -272,27 +290,23 @@ def calculate_summaries(all_records, model_metadata_dict):
     # --- Finalize Model x Theme Summary (keep nested dict structure) ---
     print(f"Finalized model x theme summary structure.")
 
-    return {"model_summary": model_summary, "question_theme_summary": question_theme_summary, "model_theme_summary": dict(model_theme_stats)}  # Convert back to regular dict for JSON
+    return {"model_summary": model_summary, "question_theme_summary": question_theme_summary, "model_theme_summary": dict(model_theme_stats)}
 
 
 def save_theme_detail_file(filename, records_for_theme):
     output_data = {"records": records_for_theme}
-    print(f"  Saving {len(records_for_theme)} records to {filename}...")
+    # print(f"  Saving {len(records_for_theme)} records to {filename}...") # Reduce noise
     try:
         with gzip.open(filename, "wt", encoding="utf-8", compresslevel=9) as f:
             json.dump(output_data, f, ensure_ascii=False, separators=(",", ":"))
-        # print(f"  Successfully saved {filename} ({os.path.getsize(filename) / 1024:.1f} KB).")
         return True
     except Exception as e:
         print(f"Error saving theme detail file {filename}: {e}")
         return False
 
-
-# Updated to remove data_filenames
 def save_metadata(filename, compliance_order, stats, model_metadata, summaries):
     metadata = {
         "complianceOrder": compliance_order,
-        # "data_files": data_filenames, # Removed
         "stats": stats,
         "model_metadata": model_metadata,
         "model_summary": summaries["model_summary"],
@@ -302,12 +316,11 @@ def save_metadata(filename, compliance_order, stats, model_metadata, summaries):
     print(f"\nSaving metadata to {filename}...")
     try:
         with open(filename, "w", encoding="utf-8") as f:
-            json.dump(metadata, f, ensure_ascii=False, indent=None, separators=(",", ":"))  # No indent for smaller file
+            json.dump(metadata, f, ensure_ascii=False, indent=None, separators=(",", ":"))
         print(f"Successfully saved {filename}.")
     except Exception as e:
         print(f"Error saving metadata: {e}")
-        sys.exit(1)
-
+        sys.exit(1) # Exit if metadata saving fails
 
 def main():
     print("Starting preprocessing...")
@@ -321,14 +334,20 @@ def main():
     total_records = len(all_data)
     print(f"\nTotal records processed: {total_records}")
 
-    # Calculate summaries (needed for metadata and iteration)
+    # Calculate summaries - check for failure (missing metadata)
     summaries = calculate_summaries(all_data, model_meta_dict)
+    if summaries is None:
+        print("\nAborting preprocessing due to missing model metadata.")
+        sys.exit(1) # Exit script if metadata was missing
 
     # Calculate overall stats
     num_models = len(summaries["model_summary"])
     num_themes = len(summaries["question_theme_summary"])
+    # Use total_records before filtering for missing metadata
     num_judgments = total_records
-    num_complete = sum([1 for i in all_data if i["compliance"] == "COMPLETE"])
+    # Recalculate complete count based on models *with* metadata
+    valid_models = set(model_meta_dict.keys())
+    num_complete = sum([1 for i in all_data if i["model"] in valid_models and i["compliance"] == "COMPLETE"])
 
     stats_summary = {"models": num_models, "themes": num_themes, "judgments": num_judgments, "complete": num_complete}
     print("Calculated Stats:", stats_summary)
@@ -336,12 +355,13 @@ def main():
     # Group data by grouping_key for saving individual files
     data_by_theme = defaultdict(list)
     for record in all_data:
-        data_by_theme[record["grouping_key"]].append(record)
+        # Only include records for models that HAVE metadata
+        if record["model"] in model_meta_dict:
+             data_by_theme[record["grouping_key"]].append(record)
 
     num_theme_files = len(data_by_theme)
     print(f"\nPreparing to save {num_theme_files} theme detail files to '{OUTPUT_THEME_DETAIL_DIR}/'.")
 
-    # Create output directory if it doesn't exist
     os.makedirs(OUTPUT_THEME_DETAIL_DIR, exist_ok=True)
 
     saved_files_count = 0
@@ -360,11 +380,9 @@ def main():
         print("ERROR: Failed to save one or more theme detail files. Aborting metadata generation.")
         sys.exit(1)
 
-    # Save the main metadata file (without data_files list)
     save_metadata(OUTPUT_METADATA_FILENAME, COMPLIANCE_ORDER, stats_summary, model_meta_dict, summaries)
 
     print("\nPreprocessing and saving complete.")
-
 
 if __name__ == "__main__":
     main()
