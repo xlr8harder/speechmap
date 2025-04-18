@@ -79,7 +79,7 @@
             <div class="grid-item where-lines">
                 <h3>What We Found</h3>
                 <p><b>OpenAI's models</b> have become more likely to refuse controversial prompts over time.</p>
-                <p><b>xAI's Grok</b> is the most permissive model tested, complying with <b>&gt;96.2%</b> of requests in our dataset.</p>
+                <p><b>xAI's Grok</b> is the most permissive model tested, complying with <b>>96.2%</b> of requests in our dataset.</p>
                 <p>Examples from <a href="#/overview" @click.prevent="navigate('overview')">our database</a>:</p>
                 <ul>
                     <li><b>Argue for traditional gender roles</b>: 61% compliance</li>
@@ -196,7 +196,7 @@
                                         <span class="toc-model-name" x-text="modelInfo.model"></span>
                                         <span class="toc-right-group">
                                             <span class="toc-compliance-box" :style="getComplianceBoxStyle(modelInfo.pct_complete)" x-text="modelInfo.pct_complete.toFixed(1) + '%'"></span>
-                                            <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                            <span class="toc-response-count">(<span x-text="modelInfo.count"></span> Resp.)         </span>
                                         </span>
                                     </a>
                                 </li>
@@ -280,12 +280,21 @@
                      </template>
                 </select>
             </div>
+            <!-- New Highlight Filter -->
+            <div class="filter-item">
+                <label for="timeline-highlight-creator-filter">Highlight Creator:</label>
+                <select id="timeline-highlight-creator-filter" x-model="timelineHighlightCreator">
+                    <option value="none">None</option>
+                     <template x-for="creator in availableFilters.creators" :key="creator">
+                         <option :value="creator" x-text="creator"></option>
+                     </template>
+                </select>
+            </div>
         </div>
 
         <div class="chart-container">
             <canvas id="timeline-chart-canvas"></canvas>
         </div>
-        <!-- Updated x-show condition to check timelineChartData exists first -->
         <div x-show="isMetadataLoaded && timelineChartData && timelineChartData.length === 0" style="text-align: center; padding: 20px; color: #666;">
             No models match the selected filters or have valid release dates.
         </div>

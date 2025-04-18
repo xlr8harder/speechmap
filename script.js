@@ -1,3 +1,4 @@
+// script.js
 // --- Global Settings ---
 const COMPLIANCE_COLORS = { 'COMPLETE': '#2ecc71', 'EVASIVE': '#f1c40f', 'DENIAL': '#e74c3c', 'ERROR': '#9b59b6', 'UNKNOWN': '#bdc3c7' };
 const JUDGMENT_KEYS = { // Mapping for Y-Axis selection
@@ -9,6 +10,10 @@ const JUDGMENT_KEYS = { // Mapping for Y-Axis selection
 const VARIATION_MAP = { '1': 'Type 1: Draft Essay', '2': 'Type 2: Explain Benefits', '3': 'Type 3: Satirize Opponents', '4': 'Type 4: Passionate Speech' };
 const THEME_DETAIL_DIR = 'theme_details'; // Directory where theme files are stored
 const UNKNOWN_CREATOR = 'Unknown Creator'; // Constant for missing creator
+const HIGHLIGHT_COLORS = { // Colors for highlighting
+    fadedBackground: 'rgba(200, 200, 200, 0.7)', // Lighter grey for background points
+    fadedBorder: 'rgba(180, 180, 180, 0.7)'    // Slightly darker grey for border
+};
 
 // --- Alpine.js Data Store ---
 document.addEventListener('alpine:init', () => {
@@ -37,6 +42,7 @@ document.addEventListener('alpine:init', () => {
         timelineFilterDomain: 'all',
         timelineFilterJudgment: 'pct_complete_overall',
         timelineFilterCreator: 'all',
+        timelineHighlightCreator: 'none', // State for highlight dropdown
         timelineChart: null,
         currentChartInitId: 0,
         timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})),
@@ -275,15 +281,13 @@ document.addEventListener('alpine:init', () => {
                  if (earliestDate) {
                      this.minReleaseDate = new Date(earliestDate.getTime() - approxMonthInMillis);
                  } else {
-                     // Fallback if no dates found - maybe set to today minus X months?
-                     // Or leave null and let chart decide (though padding is preferred)
                      this.minReleaseDate = new Date(today.getTime() - 6 * approxMonthInMillis); // Default to 6 months ago if no dates
                      console.warn("No earliest release date found, using default min date.");
                  }
 
                  this.maxReleaseDate = new Date(today.getTime() + approxMonthInMillis);
 
-                 console.log("Timeline Date Range Set:", this.minReleaseDate, this.maxReleaseDate);
+                 // console.log("Timeline Date Range Set:", this.minReleaseDate, this.maxReleaseDate); // Quieted log
 
             } catch (e) {
                 console.error("Failed to load or parse metadata.json:", e);
@@ -308,15 +312,14 @@ document.addEventListener('alpine:init', () => {
              this.currentLoadingThemeKey = groupingKey;
              this.currentThemeAnchor = targetAnchor;
 
-             console.log(`Loading theme detail for: ${groupingKey}, Target Anchor: ${this.currentThemeAnchor}`);
+             // console.log(`Loading theme detail for: ${groupingKey}, Target Anchor: ${this.currentThemeAnchor}`); // Quieted log
              await this.$nextTick();
 
              try {
                  const safeFileName = this.generateSafeIdForFilename(groupingKey);
                  const filePath = `${THEME_DETAIL_DIR}/${safeFileName}.json.gz`;
-                 // Add { cache: 'no-store' } to bypass browser cache for theme detail files
                  const response = await fetch(filePath, {
-                     cache: 'no-store', // <-- Add this line
+                     cache: 'no-store',
                      headers: { 'Accept-Encoding': 'gzip' }
                  });
                  if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${filePath}`);
@@ -329,12 +332,12 @@ document.addEventListener('alpine:init', () => {
 
                   if (this.selectedGroupingKey === groupingKey) {
                      this.currentThemeDetailData = parsed_json;
-                     console.log(`Successfully loaded ${this.currentThemeDetailData.records.length} records for theme: ${groupingKey}`);
+                     // console.log(`Successfully loaded ${this.currentThemeDetailData.records.length} records for theme: ${groupingKey}`); // Quieted log
                      if (this.currentThemeAnchor) {
                          this.$nextTick(() => { this.smoothScroll(this.currentThemeAnchor); });
                      }
                   } else {
-                      console.log(`View changed during load for ${groupingKey}, discarding loaded data.`);
+                      // console.log(`View changed during load for ${groupingKey}, discarding loaded data.`); // Quieted log
                   }
              } catch (e) {
                  console.error(`Failed to load or process theme detail for ${groupingKey}:`, e);
@@ -390,7 +393,6 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (!this.isMetadataLoaded && !forceUpdate) {
-                // console.log("Metadata not loaded, setting tentative view:", viewTarget);
                 if (viewTarget !== previousView) this.currentView = viewTarget;
                 return;
             }
@@ -408,14 +410,9 @@ document.addEventListener('alpine:init', () => {
 
             const stateChanged = forceUpdate || viewChanged || modelChanged || keyChanged || anchorChanged || timelineFiltersChanged;
 
-            // console.log(`Parsed: view=${viewTarget}, model=${modelTarget}, key=${keyTarget}, anchor=${anchor}`);
-            // console.log(`Current: view=${previousView}, model=${previousModel}, key=${previousKey}, anchor=${previousAnchor}`);
-            // console.log(`Changes: view=${viewChanged}, model=${modelChanged}, key=${keyChanged}, anchor=${anchorChanged}, filters=${timelineFiltersChanged}, stateChanged=${stateChanged}`);
+            // console.log(`StateChanged: ${stateChanged} (force=${forceUpdate}, view=${viewChanged}, model=${modelChanged}, key=${keyChanged}, anchor=${anchorChanged}, filters=${timelineFiltersChanged})`);
 
-            if (!stateChanged) {
-                // console.log("No relevant state change detected, exiting parseHash.");
-                return;
-            }
+            if (!stateChanged) { return; } // Exit if nothing relevant changed
 
              console.log("Updating state based on parsed URL...");
              this.currentView = viewTarget;
@@ -457,14 +454,14 @@ document.addEventListener('alpine:init', () => {
 
              if (this.currentView === 'question_theme_detail') {
                  if (keyChanged || (viewChanged && !this.currentThemeDetailData) || forceUpdate ) {
-                     console.log("Key changed or data missing, loading theme data...");
+                     // console.log("Key changed or data missing, loading theme data..."); // Quieted log
                      this.loadThemeDetailData(this.selectedGroupingKey, this.currentThemeAnchor)
                          .catch(e => console.error("Error loading theme data from hash:", e));
                  } else if (anchorChanged && this.currentThemeDetailData) {
-                     console.log("Only anchor changed, scrolling...");
+                     // console.log("Only anchor changed, scrolling..."); // Quieted log
                      this.$nextTick(() => this.smoothScroll(this.currentThemeAnchor));
                  } else if (this.currentThemeAnchor && this.currentThemeDetailData) {
-                     console.log("Navigating back to theme with anchor, ensuring scroll...");
+                     // console.log("Navigating back to theme with anchor, ensuring scroll..."); // Quieted log
                      this.$nextTick(() => this.smoothScroll(this.currentThemeAnchor));
                  }
              } else if (previousView === 'question_theme_detail'){
@@ -509,16 +506,16 @@ document.addEventListener('alpine:init', () => {
                 finalHash += '#' + anchor; // Append anchor correctly
             }
 
-            console.log(`Navigate: Target hash constructed: ${finalHash}`);
+            // console.log(`Navigate: Target hash constructed: ${finalHash}`); // Quieted log
             if (location.hash !== finalHash) {
-                 console.log("Updating history state...");
+                 // console.log("Updating history state..."); // Quieted log
                  this.internalNavigationInProgress = true; // Set flag before changing history state
                  if (replaceHistory) { history.replaceState(null, '', finalHash); }
                  else { history.pushState(null, '', finalHash); }
                  // Call parseHash directly after modifying history state
                  this.parseHash();
             } else {
-                 console.log("Hash is the same, potentially scrolling or re-initializing.");
+                 // console.log("Hash is the same, potentially scrolling or re-initializing."); // Quieted log
                  if (view === 'question_theme_detail' && anchor && this.currentThemeAnchor !== anchor) {
                      this.currentThemeAnchor = anchor;
                      if(this.currentThemeDetailData) { this.$nextTick(() => this.smoothScroll(anchor)); }
@@ -545,9 +542,11 @@ document.addEventListener('alpine:init', () => {
             this.navigate('model_detail', false, modelName);
         },
         selectQuestionTheme(groupingKey, modelAnchorId = null) {
-             console.log(`[selectQuestionTheme] Key: ${groupingKey}, Anchor: ${modelAnchorId}`);
+             // console.log(`[selectQuestionTheme] Key: ${groupingKey}, Anchor: ${modelAnchorId}`); // Quieted log
              this.navigate('question_theme_detail', false, groupingKey, modelAnchorId);
         },
+
+        // Removed initializeView function
 
         initOverviewTable() {
             const t = document.getElementById("overview-table");
@@ -645,18 +644,16 @@ document.addEventListener('alpine:init', () => {
             const ctx = canvas.getContext('2d');
              if (!ctx) { console.error("Failed to get 2D context right before chart creation."); return; }
 
-            // --- Add Init ID ---
-            this.currentChartInitId++; // Increment the global counter
-            const initId = this.currentChartInitId; // Capture the ID for this specific attempt
-            // console.log(`Attempting chart init with ID: ${initId}`);
+            this.currentChartInitId++;
+            const initId = this.currentChartInitId;
 
             const dataPoints = this.timelineChartData;
             const judgmentInfo = JUDGMENT_KEYS[this.timelineFilterJudgment];
             const yAxisLabel = judgmentInfo ? judgmentInfo.label : 'Percentage';
+            const highlightCreator = this.timelineHighlightCreator; // Capture current highlight state
 
-            // console.log("Initializing Timeline Chart");
+            // console.log(`Initializing Timeline Chart (ID: ${initId})`);
             try {
-                // Final check before instantiation using the captured ID
                 if (this.currentView !== 'model_timeline' || initId !== this.currentChartInitId) {
                     console.warn(`Chart init ${initId} aborted: View changed or newer init started (${this.currentChartInitId}).`);
                     return;
@@ -668,8 +665,21 @@ document.addEventListener('alpine:init', () => {
                         datasets: [{
                             label: 'Models',
                             data: dataPoints,
-                            pointBackgroundColor: context => judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN,
-                            pointBorderColor: context => judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN,
+                            // Modify point colors based on highlight selection
+                            pointBackgroundColor: context => {
+                                const pointCreator = context.raw?.creator || UNKNOWN_CREATOR;
+                                if (highlightCreator === 'none' || pointCreator === highlightCreator) {
+                                    return judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN;
+                                }
+                                return HIGHLIGHT_COLORS.fadedBackground; // Use faded color for non-highlighted
+                            },
+                            pointBorderColor: context => {
+                                const pointCreator = context.raw?.creator || UNKNOWN_CREATOR;
+                                if (highlightCreator === 'none' || pointCreator === highlightCreator) {
+                                     return judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN;
+                                }
+                                return HIGHLIGHT_COLORS.fadedBorder; // Use faded border
+                            },
                             pointRadius: 5,
                             pointHoverRadius: 7
                         }]
@@ -758,21 +768,28 @@ document.addEventListener('alpine:init', () => {
             this.$watch('timelineFilterDomain', () => {
                 if (this.currentView === 'model_timeline') {
                     this.updateTimelineUrlParams();
-                    this.initOrUpdateTimelineChart(); // Directly update chart
+                    this.initOrUpdateTimelineChart();
                 }
             });
             this.$watch('timelineFilterJudgment', () => {
                 if (this.currentView === 'model_timeline') {
                     this.updateTimelineUrlParams();
-                    this.initOrUpdateTimelineChart(); // Directly update chart
+                    this.initOrUpdateTimelineChart();
                  }
             });
             this.$watch('timelineFilterCreator', () => {
                 if (this.currentView === 'model_timeline') {
                     this.updateTimelineUrlParams();
-                    this.initOrUpdateTimelineChart(); // Directly update chart
+                    this.initOrUpdateTimelineChart();
                 }
             });
+             // Watcher for the new highlight filter
+             this.$watch('timelineHighlightCreator', () => {
+                 if (this.currentView === 'model_timeline') {
+                     // No URL update needed for highlight, just redraw chart
+                     this.initOrUpdateTimelineChart();
+                 }
+             });
         },
 
         // --- Helper Methods ---
@@ -791,7 +808,7 @@ document.addEventListener('alpine:init', () => {
                      const basePath = `#/questions/${encodeURIComponent(this.selectedGroupingKey)}`;
                      const newHash = `${basePath}#${anchorId}`;
                      if (location.hash !== newHash) {
-                         // this.internalNavigationInProgress = true; // Flag removed for replaceState
+                         // this.internalNavigationInProgress = true; // No flag needed for replaceState
                          history.replaceState(null, '', newHash);
                          this.currentThemeAnchor = anchorId;
                      }
