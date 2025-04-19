@@ -234,7 +234,6 @@ document.addEventListener('alpine:init', () => {
             await this.$nextTick();
             let metadata;
             try {
-                // Add { cache: 'no-store' } to bypass browser cache for metadata.json
                 const meta_response = await fetch('metadata.json?2', { cache: 'no-store' });
                 if (!meta_response.ok) throw new Error(`HTTP ${meta_response.status} fetching metadata.json`);
                 metadata = await meta_response.json();
@@ -274,20 +273,15 @@ document.addEventListener('alpine:init', () => {
                      }
                  });
 
-                 // Set X-axis range with padding using standard Date methods
                  const today = new Date();
                  const approxMonthInMillis = 30 * 24 * 60 * 60 * 1000;
 
                  if (earliestDate) {
                      this.minReleaseDate = new Date(earliestDate.getTime() - approxMonthInMillis);
                  } else {
-                     this.minReleaseDate = new Date(today.getTime() - 6 * approxMonthInMillis); // Default to 6 months ago if no dates
-                     // console.warn("No earliest release date found, using default min date."); // Quieted log
+                     this.minReleaseDate = new Date(today.getTime() - 6 * approxMonthInMillis);
                  }
-
                  this.maxReleaseDate = new Date(today.getTime() + approxMonthInMillis);
-
-                 // console.log("Timeline Date Range Set:", this.minReleaseDate, this.maxReleaseDate); // Quieted log
 
             } catch (e) {
                 console.error("Failed to load or parse metadata.json:", e);
@@ -312,7 +306,7 @@ document.addEventListener('alpine:init', () => {
              this.currentLoadingThemeKey = groupingKey;
              this.currentThemeAnchor = targetAnchor;
 
-             // console.log(`Loading theme detail for: ${groupingKey}, Target Anchor: ${this.currentThemeAnchor}`); // Quieted log
+             // console.log(`Loading theme detail for: ${groupingKey}, Target Anchor: ${this.currentThemeAnchor}`);
              await this.$nextTick();
 
              try {
@@ -332,12 +326,12 @@ document.addEventListener('alpine:init', () => {
 
                   if (this.selectedGroupingKey === groupingKey) {
                      this.currentThemeDetailData = parsed_json;
-                     // console.log(`Successfully loaded ${this.currentThemeDetailData.records.length} records for theme: ${groupingKey}`); // Quieted log
+                     // console.log(`Successfully loaded ${this.currentThemeDetailData.records.length} records for theme: ${groupingKey}`);
                      if (this.currentThemeAnchor) {
                          this.$nextTick(() => { this.smoothScroll(this.currentThemeAnchor); });
                      }
                   } else {
-                      // console.log(`View changed during load for ${groupingKey}, discarding loaded data.`); // Quieted log
+                      // console.log(`View changed during load for ${groupingKey}, discarding loaded data.`);
                   }
              } catch (e) {
                  console.error(`Failed to load or process theme detail for ${groupingKey}:`, e);
@@ -361,7 +355,6 @@ document.addEventListener('alpine:init', () => {
             const previousDomainFilter = this.timelineFilterDomain;
             const previousCreatorFilter = this.timelineFilterCreator;
             const previousMetricFilter = this.timelineFilterJudgment;
-            // Note: Previous timelineHighlightCreator is not needed as it doesn't affect URL
 
             // console.log(`Parsing hash: ${location.hash} (forceUpdate: ${forceUpdate})`);
             const fullHash = location.hash.slice(1);
@@ -391,7 +384,7 @@ document.addEventListener('alpine:init', () => {
                 domainTarget = params.get('domain') || 'all';
                 creatorTarget = params.get('creator') || 'all';
                 metricTarget = params.get('metric') || 'pct_complete_overall';
-            } else if (cleanPathParts[0] === 'acknowledgments') { // Handle new view
+            } else if (cleanPathParts[0] === 'acknowledgments') {
                  viewTarget = 'acknowledgments';
             }
 
@@ -442,14 +435,13 @@ document.addEventListener('alpine:init', () => {
 
              console.log("Triggering UI updates...");
              this.destroyAllUI();
-             this.$nextTick(() => { // Initialize UI based on *new* state
+             this.$nextTick(() => {
                  try {
-                     console.log("Initializing UI for:", this.currentView);
+                     // console.log("Initializing UI for:", this.currentView); // Quieted
                      if (this.currentView === 'overview') { this.initOverviewTable(); }
                      else if (this.currentView === 'question_themes') { this.initQuestionThemesTable(); }
                      else if (this.currentView === 'model_detail') { this.initModelDetailTable(); }
                      else if (this.currentView === 'model_timeline') { this.initOrUpdateTimelineChart(); }
-                     // No specific UI init needed for 'about' or 'acknowledgments'
                  } catch (error) {
                      console.error(`Error initializing UI for view ${this.currentView}:`, error);
                      this.errorMessage = `Error rendering ${this.currentView}.`;
@@ -498,7 +490,7 @@ document.addEventListener('alpine:init', () => {
                 else { console.warn("Missing theme key for question_theme_detail navigation"); return; }
             } else if (view === 'about') {
                  basePath += 'about';
-            } else if (view === 'acknowledgments') { // Handle new view
+            } else if (view === 'acknowledgments') {
                  basePath += 'acknowledgments';
             } else {
                  console.warn("Invalid view target in navigate:", view);
@@ -513,19 +505,19 @@ document.addEventListener('alpine:init', () => {
                 finalHash += '#' + anchor; // Append anchor correctly
             }
 
-            // console.log(`Navigate: Target hash constructed: ${finalHash}`);
+            console.log(`Navigate: Target hash constructed: ${finalHash}`); // Keep this log
             if (location.hash !== finalHash) {
-                 // console.log("Updating history state...");
+                 // console.log("Updating history state..."); // Quieted log
                  this.internalNavigationInProgress = true;
                  if (replaceHistory) { history.replaceState(null, '', finalHash); }
                  else { history.pushState(null, '', finalHash); }
                  this.parseHash(); // Call directly
             } else {
-                 // console.log("Hash is the same, potentially scrolling or re-initializing.");
+                 // console.log("Hash is the same, potentially scrolling or re-initializing."); // Quieted log
                  if (view === 'question_theme_detail' && anchor && this.currentThemeAnchor !== anchor) {
                      this.currentThemeAnchor = anchor;
                      if(this.currentThemeDetailData) { this.$nextTick(() => this.smoothScroll(anchor)); }
-                 } else if (!['model_timeline', 'question_theme_detail', 'acknowledgments', 'about'].includes(view)) { // Avoid re-parsing simple views
+                 } else if (!['model_timeline', 'question_theme_detail', 'acknowledgments', 'about'].includes(view)) {
                     this.parseHash(true);
                 }
              }
@@ -539,7 +531,7 @@ document.addEventListener('alpine:init', () => {
              const queryString = params.toString();
              const newHash = queryString ? `#/timeline?${queryString}` : '#/timeline';
              if (location.hash !== newHash) {
-                  this.internalNavigationInProgress = true;
+                  // No flag setting needed for replaceState
                   history.replaceState(null, '', newHash);
                   // Let hashchange listener handle parse and potential UI update if needed
              }
@@ -552,7 +544,7 @@ document.addEventListener('alpine:init', () => {
              this.navigate('question_theme_detail', false, groupingKey, modelAnchorId);
         },
 
-        // UI Init functions moved into parseHash/nextTick
+        // Removed initializeView function
 
         initOverviewTable() {
             const t = document.getElementById("overview-table");
@@ -620,7 +612,7 @@ document.addEventListener('alpine:init', () => {
                         cellClick: (e, cell) => {
                             const rowData = cell.getRow().getData();
                             const key = rowData.grouping_key;
-                            const anchor = `model-${this.generateSafeIdForFilename(this.selectedModel)}`;
+                            const anchor = `model-${this.generateAnchorId(this.selectedModel)}`; // Use generateAnchorId
                             // console.log(`[ModelDetailTable Click] Key: ${key}, Anchor: ${anchor}`);
                             this.selectQuestionTheme(key, anchor);
                         },
@@ -836,13 +828,32 @@ document.addEventListener('alpine:init', () => {
             const messageParam = encodeURIComponent(prompt || "");
             return `${baseUrl}?models=${modelsParam}&message=${messageParam}`;
         },
+        // Generates ID safe for use in CSS selectors/URLs (like filenames)
         generateSafeIdForFilename(text) {
              if (!text) return 'id';
              const nfkd_form = text.normalize('NFKD');
+             // Remove accents first, then keep alphanumeric, space, hyphen
              const only_ascii = nfkd_form.replace(/[\u0300-\u036f]/g, '').toString();
-             let safe_text = only_ascii.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+              // Replace any character that is NOT alphanumeric, space, or hyphen with a hyphen
+             let safe_text = only_ascii.toLowerCase().replace(/[^\w\s-]/g, '-');
+             // Collapse whitespace/hyphens to single hyphen
+             safe_text = safe_text.replace(/[\s-]+/g, '-');
+             // Trim leading/trailing hyphens and limit length
              safe_text = safe_text.replace(/^-+|-+$/g, '').substring(0, 100);
              return safe_text || "id";
+        },
+        // Generates ID safe specificially for HTML element IDs/Anchors (stricter, matches Python)
+        generateAnchorId(text) {
+             if (!text) return 'id';
+             const nfkd_form = text.normalize('NFKD');
+             const only_ascii = nfkd_form.replace(/[\u0300-\u036f]/g, '').toString();
+             // Replace any character that is NOT a lowercase letter, number, or hyphen with a hyphen
+             let safe_text = only_ascii.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+             // Collapse multiple hyphens into one
+             safe_text = safe_text.replace(/-+/g, '-');
+             // Trim leading/trailing hyphens and limit length
+             safe_text = safe_text.replace(/^-+|-+$/g, '').substring(0, 100);
+             return safe_text || "id"; // Fallback if everything gets stripped
         },
         init() { /* Called from x-init, starts initialize() */ }
 
