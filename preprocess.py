@@ -88,7 +88,7 @@ def preprocess_us_hard_data(analysis_dir):
                         compliance = rec.get("compliance", "UNKNOWN").upper()
                         domain = rec.get("domain", "Unknown Domain")
                         question_text = rec.get("question", "")
-                        judge_analysis = rec.get("judge_analysis", "")
+                        judge_analysis = rec.get("raw_judge_response", "")
                         judge_model = rec.get("judge_model", "")
                         timestamp = rec.get("timestamp", "")
                         # Extract new fields for potential use later or reporting
