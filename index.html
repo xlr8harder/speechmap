@@ -47,7 +47,8 @@
         <button @click="navigate('about')" :class="{ 'active': currentView === 'about' }">About</button>
         <button @click="navigate('overview')" :class="{ 'active': currentView === 'overview' }">Model Results</button>
         <button @click="navigate('question_themes')" :class="{ 'active': currentView === 'question_themes' }">Question Themes</button>
-        <button @click="navigate('model_timeline')" :class="{ 'active': currentView === 'model_timeline' }">Model Timeline</button> <!-- New Button -->
+        <button @click="navigate('model_timeline')" :class="{ 'active': currentView === 'model_timeline' }">Model Timeline</button>
+        <button @click="navigate('acknowledgments')" :class="{ 'active': currentView === 'acknowledgments' }">Acknowledgments</button> <!-- New Tab -->
     </nav>
     <hr>
 
@@ -298,6 +299,13 @@
         <div x-show="isMetadataLoaded && timelineChartData && timelineChartData.length === 0" style="text-align: center; padding: 20px; color: #666;">
             No models match the selected filters or have valid release dates.
         </div>
+    </div>
+
+    <!-- Acknowledgments View -->
+    <div x-show="currentView === 'acknowledgments' && isMetadataLoaded" class="acknowledgments-content" x-transition>
+        <h2>Acknowledgments</h2>
+        <p>We're deeply indebted to <a href="https://x.com/jon_durbin">Jon Durbin</a>, who provided the initial seed funds needed to launch the project.</p>
+        <p>We're grateful to <a href="https://openrouter.ai">OpenRouter</a> for their generous support shortly after our launch. Their contribution helped us complete coverage of all key models from all major model providers for our initial post-launch milestone, and their infrastructure made this project far more feasible than it would have been otherwise.</p>
     </div>
 
 

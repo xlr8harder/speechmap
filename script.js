@@ -42,7 +42,7 @@ document.addEventListener('alpine:init', () => {
         timelineFilterDomain: 'all',
         timelineFilterJudgment: 'pct_complete_overall',
         timelineFilterCreator: 'all',
-        timelineHighlightCreator: 'none', // State for highlight dropdown
+        timelineHighlightCreator: 'none',
         timelineChart: null,
         currentChartInitId: 0,
         timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})),
@@ -282,7 +282,7 @@ document.addEventListener('alpine:init', () => {
                      this.minReleaseDate = new Date(earliestDate.getTime() - approxMonthInMillis);
                  } else {
                      this.minReleaseDate = new Date(today.getTime() - 6 * approxMonthInMillis); // Default to 6 months ago if no dates
-                     console.warn("No earliest release date found, using default min date.");
+                     // console.warn("No earliest release date found, using default min date."); // Quieted log
                  }
 
                  this.maxReleaseDate = new Date(today.getTime() + approxMonthInMillis);
@@ -361,6 +361,7 @@ document.addEventListener('alpine:init', () => {
             const previousDomainFilter = this.timelineFilterDomain;
             const previousCreatorFilter = this.timelineFilterCreator;
             const previousMetricFilter = this.timelineFilterJudgment;
+            // Note: Previous timelineHighlightCreator is not needed as it doesn't affect URL
 
             // console.log(`Parsing hash: ${location.hash} (forceUpdate: ${forceUpdate})`);
             const fullHash = location.hash.slice(1);
@@ -390,7 +391,10 @@ document.addEventListener('alpine:init', () => {
                 domainTarget = params.get('domain') || 'all';
                 creatorTarget = params.get('creator') || 'all';
                 metricTarget = params.get('metric') || 'pct_complete_overall';
+            } else if (cleanPathParts[0] === 'acknowledgments') { // Handle new view
+                 viewTarget = 'acknowledgments';
             }
+
 
             if (!this.isMetadataLoaded && !forceUpdate) {
                 if (viewTarget !== previousView) this.currentView = viewTarget;
@@ -412,7 +416,7 @@ document.addEventListener('alpine:init', () => {
 
             // console.log(`StateChanged: ${stateChanged} (force=${forceUpdate}, view=${viewChanged}, model=${modelChanged}, key=${keyChanged}, anchor=${anchorChanged}, filters=${timelineFiltersChanged})`);
 
-            if (!stateChanged) { return; } // Exit if nothing relevant changed
+            if (!stateChanged) { return; }
 
              console.log("Updating state based on parsed URL...");
              this.currentView = viewTarget;
@@ -445,6 +449,7 @@ document.addEventListener('alpine:init', () => {
                      else if (this.currentView === 'question_themes') { this.initQuestionThemesTable(); }
                      else if (this.currentView === 'model_detail') { this.initModelDetailTable(); }
                      else if (this.currentView === 'model_timeline') { this.initOrUpdateTimelineChart(); }
+                     // No specific UI init needed for 'about' or 'acknowledgments'
                  } catch (error) {
                      console.error(`Error initializing UI for view ${this.currentView}:`, error);
                      this.errorMessage = `Error rendering ${this.currentView}.`;
@@ -454,14 +459,14 @@ document.addEventListener('alpine:init', () => {
 
              if (this.currentView === 'question_theme_detail') {
                  if (keyChanged || (viewChanged && !this.currentThemeDetailData) || forceUpdate ) {
-                     // console.log("Key changed or data missing, loading theme data..."); // Quieted log
+                     // console.log("Key changed or data missing, loading theme data...");
                      this.loadThemeDetailData(this.selectedGroupingKey, this.currentThemeAnchor)
                          .catch(e => console.error("Error loading theme data from hash:", e));
                  } else if (anchorChanged && this.currentThemeDetailData) {
-                     // console.log("Only anchor changed, scrolling..."); // Quieted log
+                     // console.log("Only anchor changed, scrolling...");
                      this.$nextTick(() => this.smoothScroll(this.currentThemeAnchor));
                  } else if (this.currentThemeAnchor && this.currentThemeDetailData) {
-                     // console.log("Navigating back to theme with anchor, ensuring scroll..."); // Quieted log
+                     // console.log("Navigating back to theme with anchor, ensuring scroll...");
                      this.$nextTick(() => this.smoothScroll(this.currentThemeAnchor));
                  }
              } else if (previousView === 'question_theme_detail'){
@@ -493,6 +498,8 @@ document.addEventListener('alpine:init', () => {
                 else { console.warn("Missing theme key for question_theme_detail navigation"); return; }
             } else if (view === 'about') {
                  basePath += 'about';
+            } else if (view === 'acknowledgments') { // Handle new view
+                 basePath += 'acknowledgments';
             } else {
                  console.warn("Invalid view target in navigate:", view);
                  basePath += 'about';
@@ -506,21 +513,20 @@ document.addEventListener('alpine:init', () => {
                 finalHash += '#' + anchor; // Append anchor correctly
             }
 
-            // console.log(`Navigate: Target hash constructed: ${finalHash}`); // Quieted log
+            // console.log(`Navigate: Target hash constructed: ${finalHash}`);
             if (location.hash !== finalHash) {
-                 // console.log("Updating history state..."); // Quieted log
-                 this.internalNavigationInProgress = true; // Set flag before changing history state
+                 // console.log("Updating history state...");
+                 this.internalNavigationInProgress = true;
                  if (replaceHistory) { history.replaceState(null, '', finalHash); }
                  else { history.pushState(null, '', finalHash); }
-                 // Call parseHash directly after modifying history state
-                 this.parseHash();
+                 this.parseHash(); // Call directly
             } else {
-                 // console.log("Hash is the same, potentially scrolling or re-initializing."); // Quieted log
+                 // console.log("Hash is the same, potentially scrolling or re-initializing.");
                  if (view === 'question_theme_detail' && anchor && this.currentThemeAnchor !== anchor) {
                      this.currentThemeAnchor = anchor;
                      if(this.currentThemeDetailData) { this.$nextTick(() => this.smoothScroll(anchor)); }
-                 } else if (!['model_timeline', 'question_theme_detail'].includes(view)) {
-                    this.parseHash(true); // Force re-evaluation if clicking same nav link again
+                 } else if (!['model_timeline', 'question_theme_detail', 'acknowledgments', 'about'].includes(view)) { // Avoid re-parsing simple views
+                    this.parseHash(true);
                 }
              }
         },
@@ -533,7 +539,7 @@ document.addEventListener('alpine:init', () => {
              const queryString = params.toString();
              const newHash = queryString ? `#/timeline?${queryString}` : '#/timeline';
              if (location.hash !== newHash) {
-                  this.internalNavigationInProgress = true; // Set flag before changing history
+                  this.internalNavigationInProgress = true;
                   history.replaceState(null, '', newHash);
                   // Let hashchange listener handle parse and potential UI update if needed
              }
@@ -542,11 +548,11 @@ document.addEventListener('alpine:init', () => {
             this.navigate('model_detail', false, modelName);
         },
         selectQuestionTheme(groupingKey, modelAnchorId = null) {
-             // console.log(`[selectQuestionTheme] Key: ${groupingKey}, Anchor: ${modelAnchorId}`); // Quieted log
+             // console.log(`[selectQuestionTheme] Key: ${groupingKey}, Anchor: ${modelAnchorId}`);
              this.navigate('question_theme_detail', false, groupingKey, modelAnchorId);
         },
 
-        // Removed initializeView function
+        // UI Init functions moved into parseHash/nextTick
 
         initOverviewTable() {
             const t = document.getElementById("overview-table");
@@ -559,9 +565,8 @@ document.addEventListener('alpine:init', () => {
                 placeholder: "No models.",
                 selectable: false,
                 initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
-                responsiveLayout: "collapse", // Enable responsive layout
+                responsiveLayout: "collapse",
                 columns: [
-                    // Responsive priorities: 0 = highest, higher numbers = lower priority
                     { title: "Model", field: "model", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectModel(c.getRow().getData().model), cssClass: "clickable-cell", responsive: 0 },
                     { title: "Released", field: "release_date", width: 110, sorter: dateSorterNullable, headerFilter:"input", hozAlign:"center", responsive: 2 },
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number", responsive: 3 },
@@ -583,9 +588,8 @@ document.addEventListener('alpine:init', () => {
                 placeholder: "No themes found.",
                 selectable: false,
                 initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
-                responsiveLayout: "collapse", // Enable responsive layout
+                responsiveLayout: "collapse",
                 columns: [
-                    // Responsive priorities: 0 = highest, higher numbers = lower priority
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell", responsive: 0 },
                     { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] }, responsive: 2 },
                     { title: "Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number", responsive: 3 },
@@ -609,9 +613,8 @@ document.addEventListener('alpine:init', () => {
                 placeholder: "No Question Themes found for this model (or matching domain filter).",
                 selectable: false,
                 initialSort: [ {column:"pct_complete", dir:"asc"} ],
-                responsiveLayout: "collapse", // Enable responsive layout
+                responsiveLayout: "collapse",
                 columns: [
-                    // Responsive priorities: 0 = highest, higher numbers = lower priority
                     {
                         title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input",
                         cellClick: (e, cell) => {
@@ -650,7 +653,7 @@ document.addEventListener('alpine:init', () => {
             const dataPoints = this.timelineChartData;
             const judgmentInfo = JUDGMENT_KEYS[this.timelineFilterJudgment];
             const yAxisLabel = judgmentInfo ? judgmentInfo.label : 'Percentage';
-            const highlightCreator = this.timelineHighlightCreator; // Capture current highlight state
+            const highlightCreator = this.timelineHighlightCreator;
 
             // console.log(`Initializing Timeline Chart (ID: ${initId})`);
             try {
@@ -665,20 +668,19 @@ document.addEventListener('alpine:init', () => {
                         datasets: [{
                             label: 'Models',
                             data: dataPoints,
-                            // Modify point colors based on highlight selection
                             pointBackgroundColor: context => {
                                 const pointCreator = context.raw?.creator || UNKNOWN_CREATOR;
                                 if (highlightCreator === 'none' || pointCreator === highlightCreator) {
                                     return judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN;
                                 }
-                                return HIGHLIGHT_COLORS.fadedBackground; // Use faded color for non-highlighted
+                                return HIGHLIGHT_COLORS.fadedBackground;
                             },
                             pointBorderColor: context => {
                                 const pointCreator = context.raw?.creator || UNKNOWN_CREATOR;
                                 if (highlightCreator === 'none' || pointCreator === highlightCreator) {
                                      return judgmentInfo?.color || COMPLIANCE_COLORS.UNKNOWN;
                                 }
-                                return HIGHLIGHT_COLORS.fadedBorder; // Use faded border
+                                return HIGHLIGHT_COLORS.fadedBorder;
                             },
                             pointRadius: 5,
                             pointHoverRadius: 7
@@ -808,7 +810,7 @@ document.addEventListener('alpine:init', () => {
                      const basePath = `#/questions/${encodeURIComponent(this.selectedGroupingKey)}`;
                      const newHash = `${basePath}#${anchorId}`;
                      if (location.hash !== newHash) {
-                         // this.internalNavigationInProgress = true; // No flag needed for replaceState
+                         // No flag needed for replaceState
                          history.replaceState(null, '', newHash);
                          this.currentThemeAnchor = anchorId;
                      }
