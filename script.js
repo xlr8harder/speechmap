@@ -42,7 +42,7 @@ document.addEventListener('alpine:init', () => {
         timelineFilterDomain: 'all',
         timelineFilterJudgment: 'pct_complete_overall',
         timelineFilterCreator: 'all',
-        timelineHighlightCreator: 'none',
+        timelineHighlightCreator: 'none', // State for highlight dropdown
         timelineChart: null,
         currentChartInitId: 0,
         timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})),
@@ -355,6 +355,7 @@ document.addEventListener('alpine:init', () => {
             const previousDomainFilter = this.timelineFilterDomain;
             const previousCreatorFilter = this.timelineFilterCreator;
             const previousMetricFilter = this.timelineFilterJudgment;
+            const previousHighlightFilter = this.timelineHighlightCreator; // Capture previous highlight
 
             // console.log(`Parsing hash: ${location.hash} (forceUpdate: ${forceUpdate})`);
             const fullHash = location.hash.slice(1);
@@ -372,6 +373,7 @@ document.addEventListener('alpine:init', () => {
             let domainTarget = 'all';
             let creatorTarget = 'all';
             let metricTarget = 'pct_complete_overall';
+            let highlightTarget = 'none'; // Default highlight target
 
             if (cleanPathParts[0] === 'overview') { viewTarget = 'overview'; }
             else if (cleanPathParts[0] === 'model' && cleanPathParts[1]) { viewTarget = 'model_detail'; modelTarget = decodeURIComponent(cleanPathParts[1]); }
@@ -384,6 +386,7 @@ document.addEventListener('alpine:init', () => {
                 domainTarget = params.get('domain') || 'all';
                 creatorTarget = params.get('creator') || 'all';
                 metricTarget = params.get('metric') || 'pct_complete_overall';
+                highlightTarget = params.get('highlight') || 'none'; // Parse highlight param
             } else if (cleanPathParts[0] === 'acknowledgments') {
                  viewTarget = 'acknowledgments';
             }
@@ -402,7 +405,8 @@ document.addEventListener('alpine:init', () => {
                 viewTarget === 'model_timeline' &&
                 (domainTarget !== previousDomainFilter ||
                  creatorTarget !== previousCreatorFilter ||
-                 metricTarget !== previousMetricFilter)
+                 metricTarget !== previousMetricFilter ||
+                 highlightTarget !== previousHighlightFilter) // Include highlight in change check
             );
 
             const stateChanged = forceUpdate || viewChanged || modelChanged || keyChanged || anchorChanged || timelineFiltersChanged;
@@ -418,12 +422,16 @@ document.addEventListener('alpine:init', () => {
              this.currentThemeAnchor = anchor;
 
              if (viewTarget === 'model_timeline') {
+                 // Validate all timeline params before setting state
                  const validDomain = domainTarget === 'all' || this.availableFilters.domains.includes(domainTarget);
                  const validCreator = creatorTarget === 'all' || this.availableFilters.creators.includes(creatorTarget);
                  const validMetric = Object.keys(JUDGMENT_KEYS).includes(metricTarget);
+                 const validHighlight = highlightTarget === 'none' || this.availableFilters.creators.includes(highlightTarget);
+
                  this.timelineFilterDomain = validDomain ? domainTarget : 'all';
                  this.timelineFilterCreator = validCreator ? creatorTarget : 'all';
                  this.timelineFilterJudgment = validMetric ? metricTarget : 'pct_complete_overall';
+                 this.timelineHighlightCreator = validHighlight ? highlightTarget : 'none'; // Update highlight state
              }
 
              if (this.currentView === 'model_detail' && this.selectedModel && !this.availableFilters.models.includes(this.selectedModel)) {
@@ -435,9 +443,9 @@ document.addEventListener('alpine:init', () => {
 
              console.log("Triggering UI updates...");
              this.destroyAllUI();
-             this.$nextTick(() => {
+             this.$nextTick(() => { // Initialize UI based on *new* state
                  try {
-                     // console.log("Initializing UI for:", this.currentView); // Quieted
+                     // console.log("Initializing UI for:", this.currentView);
                      if (this.currentView === 'overview') { this.initOverviewTable(); }
                      else if (this.currentView === 'question_themes') { this.initQuestionThemesTable(); }
                      else if (this.currentView === 'model_detail') { this.initModelDetailTable(); }
@@ -479,6 +487,7 @@ document.addEventListener('alpine:init', () => {
                 if(this.timelineFilterDomain !== 'all') params.set('domain', this.timelineFilterDomain);
                 if(this.timelineFilterCreator !== 'all') params.set('creator', this.timelineFilterCreator);
                 if(this.timelineFilterJudgment !== 'pct_complete_overall') params.set('metric', this.timelineFilterJudgment);
+                if(this.timelineHighlightCreator !== 'none') params.set('highlight', this.timelineHighlightCreator); // Add highlight param
                 queryParams = params.toString();
             } else if (view === 'model_detail') {
                 const m = selectionKey || this.selectedModel;
@@ -505,15 +514,15 @@ document.addEventListener('alpine:init', () => {
                 finalHash += '#' + anchor; // Append anchor correctly
             }
 
-            console.log(`Navigate: Target hash constructed: ${finalHash}`); // Keep this log
+            // console.log(`Navigate: Target hash constructed: ${finalHash}`);
             if (location.hash !== finalHash) {
-                 // console.log("Updating history state..."); // Quieted log
+                 // console.log("Updating history state...");
                  this.internalNavigationInProgress = true;
                  if (replaceHistory) { history.replaceState(null, '', finalHash); }
                  else { history.pushState(null, '', finalHash); }
-                 this.parseHash(); // Call directly
+                 this.parseHash();
             } else {
-                 // console.log("Hash is the same, potentially scrolling or re-initializing."); // Quieted log
+                 // console.log("Hash is the same, potentially scrolling or re-initializing.");
                  if (view === 'question_theme_detail' && anchor && this.currentThemeAnchor !== anchor) {
                      this.currentThemeAnchor = anchor;
                      if(this.currentThemeDetailData) { this.$nextTick(() => this.smoothScroll(anchor)); }
@@ -528,10 +537,11 @@ document.addEventListener('alpine:init', () => {
              if (this.timelineFilterDomain !== 'all') params.set('domain', this.timelineFilterDomain);
              if (this.timelineFilterCreator !== 'all') params.set('creator', this.timelineFilterCreator);
              if (this.timelineFilterJudgment !== 'pct_complete_overall') params.set('metric', this.timelineFilterJudgment);
+             if (this.timelineHighlightCreator !== 'none') params.set('highlight', this.timelineHighlightCreator); // Add highlight param
              const queryString = params.toString();
              const newHash = queryString ? `#/timeline?${queryString}` : '#/timeline';
              if (location.hash !== newHash) {
-                  // No flag setting needed for replaceState
+                  this.internalNavigationInProgress = true;
                   history.replaceState(null, '', newHash);
                   // Let hashchange listener handle parse and potential UI update if needed
              }
@@ -612,7 +622,7 @@ document.addEventListener('alpine:init', () => {
                         cellClick: (e, cell) => {
                             const rowData = cell.getRow().getData();
                             const key = rowData.grouping_key;
-                            const anchor = `model-${this.generateAnchorId(this.selectedModel)}`; // Use generateAnchorId
+                            const anchor = `model-${this.generateAnchorId(this.selectedModel)}`;
                             // console.log(`[ModelDetailTable Click] Key: ${key}, Anchor: ${anchor}`);
                             this.selectQuestionTheme(key, anchor);
                         },
@@ -780,8 +790,8 @@ document.addEventListener('alpine:init', () => {
              // Watcher for the new highlight filter
              this.$watch('timelineHighlightCreator', () => {
                  if (this.currentView === 'model_timeline') {
-                     // No URL update needed for highlight, just redraw chart
-                     this.initOrUpdateTimelineChart();
+                     this.updateTimelineUrlParams(); // Update URL when highlight changes
+                     this.initOrUpdateTimelineChart(); // Redraw chart
                  }
              });
         },
