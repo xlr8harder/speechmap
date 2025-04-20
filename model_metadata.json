@@ -13,6 +13,9 @@
 {"model_identifier": "deepseek/deepseek-chat-v3-0324", "creator": "deepseek", "model_name": "deepseek-chat-v3-0324", "model_family": "deepseek-v3", "release_date": "2025-03-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-chat", "creator": "deepseek", "model_name": "deepseek-chat", "model_family": "deepseek-v3", "release_date": "2024-12-26", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-r1", "creator": "deepseek", "model_name": "deepseek-r1", "model_family": "deepseek-r1", "release_date": "2025-01-20", "reasoning_model": true, "notes": ""}
+{"model_identifier": "deepseek/deepseek-r1-zero", "creator": "deepseek", "model_name": "deepseek-r1-zero", "model_family": "deepseek-r1", "release_date": "2025-01-20", "reasoning_model": true, "notes": ""}
+{"model_identifier": "perplexity/r1-1776", "creator": "perplexity", "model_name": "r1-1776", "model_family": "r1-1776", "release_date": "2025-02-18", "reasoning_model": true, "notes": ""}
+{"model_identifier": "microsoft/MAI-DS-R1-FP8", "creator": "microsoft", "model_name": "MAI-DS-R1-FP8", "model_family": "MAI-DS-R1", "release_date": "2025-04-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "google/gemini-2.5-pro-preview-03-25", "creator": "google", "model_name": "gemini-2.5-pro-preview-03-25", "model_family": "gemini-2.5-pro", "release_date": "2025-03-25", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemini-2.5-flash-preview-04-17", "creator": "google", "model_name": "gemini-2.5-flash-preview-04-17", "model_family": "gemini-2.5-flash", "release_date": "2025-04-17", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemini-2.5-flash-preview-04-17-thinking", "creator": "google", "model_name": "gemini-2.5-flash-preview-04-17-thinking", "model_family": "gemini-2.5-flash", "release_date": "2025-04-17", "reasoning_model": true, "notes": ""}
