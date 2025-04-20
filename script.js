@@ -21,7 +21,7 @@ document.addEventListener('alpine:init', () => {
         // --- State Variables ---
         loadingMessage: 'Initializing...', errorMessage: null,
         modelSummaryData: [],
-        questionThemeSummaryData: [],
+        rawQuestionThemeSummaryData: [], // Holds original summary from metadata
         modelThemeSummaryData: {},
         complianceOrder: [],
         modelMetadata: {},
@@ -43,6 +43,7 @@ document.addEventListener('alpine:init', () => {
         timelineFilterJudgment: 'pct_complete_overall',
         timelineFilterCreator: 'all',
         timelineHighlightCreator: 'none', // State for highlight dropdown
+        questionThemeTimeFilter: 'all', // State for question theme time filter
         timelineChart: null,
         currentChartInitId: 0,
         timelineJudgmentOptions: Object.entries(JUDGMENT_KEYS).map(([value, {label}]) => ({value, label})),
@@ -53,7 +54,113 @@ document.addEventListener('alpine:init', () => {
 
         // --- Computed Properties ---
         get modelSummary() { return this.modelSummaryData; },
-        get questionThemeSummary() { return this.questionThemeSummaryData; },
+        get questionThemeSummary() {
+            // Dynamically calculate theme summary based on time filter
+            // Corrected the guard clause to check modelThemeSummaryData
+            if (!this.isMetadataLoaded || !this.modelMetadata || !this.modelThemeSummaryData) {
+                // console.log("QuestionThemeSummary: Waiting for data...");
+                return [];
+            }
+
+            const filter = this.questionThemeTimeFilter;
+            const now = new Date();
+            let cutoffDate = null;
+
+            if (filter !== 'all') {
+                const monthsAgo = { '3m': 3, '6m': 6, '12m': 12, '18m': 18, '24m': 24 }[filter];
+                if (monthsAgo) {
+                    cutoffDate = new Date(now.getFullYear(), now.getMonth() - monthsAgo, now.getDate());
+                    // console.log(`QuestionThemeSummary: Filtering models released after ${cutoffDate.toISOString().split('T')[0]}`);
+                } else {
+                    // console.log("QuestionThemeSummary: Invalid filter value, showing all.");
+                }
+            } else {
+                // console.log("QuestionThemeSummary: Filter is 'all', including all models.");
+            }
+
+            // 1. Filter models based on release date
+            const filteredModelIdentifiers = new Set();
+            for (const modelId in this.modelMetadata) {
+                const meta = this.modelMetadata[modelId];
+                if (!meta) continue;
+
+                if (filter === 'all') {
+                    filteredModelIdentifiers.add(modelId);
+                    continue;
+                }
+
+                if (cutoffDate && meta.release_date) {
+                    try {
+                        const releaseDate = new Date(Date.parse(meta.release_date));
+                        if (!isNaN(releaseDate) && releaseDate >= cutoffDate) {
+                            filteredModelIdentifiers.add(modelId);
+                        }
+                    } catch (e) {
+                        // console.warn(`Could not parse release date for model ${modelId}: ${meta.release_date}`);
+                    }
+                }
+            }
+            // console.log(`QuestionThemeSummary: ${filteredModelIdentifiers.size} models match the time filter.`);
+
+            // 2. Aggregate stats for themes from the filtered models
+            const aggregatedStats = {};
+            // Corrected to loop over this.modelThemeSummaryData (the state variable)
+            for (const modelId in this.modelThemeSummaryData) {
+                if (filteredModelIdentifiers.has(modelId)) {
+                    // Corrected to access this.modelThemeSummaryData[modelId]
+                    const modelThemes = this.modelThemeSummaryData[modelId];
+                    for (const themeKey in modelThemes) {
+                        const stats = modelThemes[themeKey];
+                        const domain = stats.domain || 'Unknown Domain';
+
+                        if (!aggregatedStats[themeKey]) {
+                            aggregatedStats[themeKey] = {
+                                grouping_key: themeKey,
+                                domain: domain,
+                                total_c: 0, total_k: 0, total_e: 0, total_d: 0, total_r: 0,
+                                models: new Set()
+                            };
+                        }
+
+                        aggregatedStats[themeKey].total_c += (stats.c || 0);
+                        aggregatedStats[themeKey].total_k += (stats.k || 0);
+                        aggregatedStats[themeKey].total_e += (stats.e || 0);
+                        aggregatedStats[themeKey].total_d += (stats.d || 0);
+                        aggregatedStats[themeKey].total_r += (stats.r || 0);
+                        aggregatedStats[themeKey].models.add(modelId);
+                         // Ensure domain is captured if first encounter wasn't perfect
+                        if (aggregatedStats[themeKey].domain === 'Unknown Domain' && domain !== 'Unknown Domain') {
+                            aggregatedStats[themeKey].domain = domain;
+                        }
+                    }
+                }
+            }
+
+            // 3. Format the aggregated data into the final list
+            const finalSummary = Object.values(aggregatedStats).map(agg => {
+                const count = agg.total_c;
+                return {
+                    grouping_key: agg.grouping_key,
+                    domain: agg.domain,
+                    num_responses: count,
+                    num_models: agg.models.size,
+                    pct_complete_overall: count > 0 ? (agg.total_k / count * 100) : 0,
+                    pct_evasive: count > 0 ? (agg.total_e / count * 100) : 0,
+                    pct_denial: count > 0 ? (agg.total_d / count * 100) : 0,
+                    pct_error: count > 0 ? (agg.total_r / count * 100) : 0,
+                };
+            });
+
+            // 4. Sort the results
+            finalSummary.sort((a, b) => {
+                 const complianceDiff = Number(a.pct_complete_overall) - Number(b.pct_complete_overall);
+                 if (complianceDiff !== 0) return complianceDiff;
+                 return a.grouping_key.localeCompare(b.grouping_key);
+             });
+
+            // console.log(`QuestionThemeSummary: Returning ${finalSummary.length} aggregated themes.`);
+            return finalSummary;
+        },
         get selectedModelQuestionSummary() {
             if (!this.selectedModel || !this.isMetadataLoaded || !this.modelThemeSummaryData) return [];
             const modelData = this.modelThemeSummaryData[this.selectedModel];
@@ -90,8 +197,14 @@ document.addEventListener('alpine:init', () => {
         },
         get selectedQuestionThemeData() {
             if (!this.selectedGroupingKey || !this.isMetadataLoaded) return null;
-            const themeInfo = this.questionThemeSummaryData.find(t => t.grouping_key === this.selectedGroupingKey);
-            if (!themeInfo) return { grouping_key: this.selectedGroupingKey, domain: 'N/A' };
+            // Use the dynamically generated summary to find the theme info
+            const themeInfo = this.questionThemeSummary.find(t => t.grouping_key === this.selectedGroupingKey);
+            // Fallback to raw data if needed, though computed should contain it
+            if (!themeInfo && this.rawQuestionThemeSummaryData) {
+                 const rawThemeInfo = this.rawQuestionThemeSummaryData.find(t => t.grouping_key === this.selectedGroupingKey);
+                 if (rawThemeInfo) return { grouping_key: this.selectedGroupingKey, domain: rawThemeInfo.domain };
+            }
+            if (!themeInfo) return { grouping_key: this.selectedGroupingKey, domain: 'N/A' }; // Fallback
             return { grouping_key: this.selectedGroupingKey, domain: themeInfo.domain };
         },
         get selectedQuestionThemeModelSummary() {
@@ -123,8 +236,12 @@ document.addEventListener('alpine:init', () => {
         },
         getDomainForSelectedTheme() {
             if (!this.selectedGroupingKey || !this.isMetadataLoaded) return null;
-            const themeInfo = this.questionThemeSummaryData.find(t => t.grouping_key === this.selectedGroupingKey);
-            return themeInfo ? themeInfo.domain : 'Unknown';
+            // Use the computed property which respects filters if possible
+            const themeInfo = this.questionThemeSummary.find(t => t.grouping_key === this.selectedGroupingKey);
+             if (themeInfo) return themeInfo.domain;
+             // Fallback to raw data if not found in filtered list (might happen if filters exclude it)
+             const rawThemeInfo = this.rawQuestionThemeSummaryData.find(t => t.grouping_key === this.selectedGroupingKey);
+             return rawThemeInfo ? rawThemeInfo.domain : 'Unknown';
         },
         get timelineChartData() {
             if (!this.isMetadataLoaded) return [];
@@ -249,12 +366,14 @@ document.addEventListener('alpine:init', () => {
                 this.modelMetadata = metadata.model_metadata;
                 this.stats = metadata.stats;
                 this.modelSummaryData = metadata.model_summary;
-                this.questionThemeSummaryData = metadata.question_theme_summary;
+                // Store the raw summary data separately
+                this.rawQuestionThemeSummaryData = metadata.question_theme_summary;
                 this.modelThemeSummaryData = metadata.model_theme_summary;
 
                 this.availableFilters.models = this.modelSummaryData.map(m => m.model).sort();
-                this.availableFilters.domains = [...new Set(this.questionThemeSummaryData.map(q => q.domain))].sort();
-                this.availableFilters.grouping_keys = this.questionThemeSummaryData.map(q => q.grouping_key).sort();
+                // Populate domains from the raw summary to ensure all possible domains are listed
+                this.availableFilters.domains = [...new Set(this.rawQuestionThemeSummaryData.map(q => q.domain))].sort();
+                this.availableFilters.grouping_keys = this.rawQuestionThemeSummaryData.map(q => q.grouping_key).sort();
                 this.availableFilters.variations = ['1', '2', '3', '4'];
 
                 const creators = new Set();
@@ -561,7 +680,7 @@ document.addEventListener('alpine:init', () => {
             if (!t || this.currentView !== 'overview' || !this.isMetadataLoaded) { /* console.log("Skipping overview table init."); */ return; }
             // console.log("Initializing Overview Table");
             this.overviewTable = new Tabulator(t, {
-                data: [...this.modelSummaryData],
+                data: [...this.modelSummaryData], // Use original model summary
                 layout: "fitDataFill",
                 height: "60vh",
                 placeholder: "No models.",
@@ -583,17 +702,19 @@ document.addEventListener('alpine:init', () => {
             const t = document.getElementById("question-themes-table");
              if (!t || this.currentView !== 'question_themes' || !this.isMetadataLoaded) { /* console.log("Skipping question themes table init."); */ return; }
             // console.log("Initializing Question Themes Table");
+            // Use the computed property which will be filtered/aggregated
+            const initialData = this.questionThemeSummary;
             this.questionThemesTable = new Tabulator(t, {
-                data: [...this.questionThemeSummaryData],
+                data: [...initialData],
                 layout: "fitDataFill",
                 height: "60vh",
-                placeholder: "No themes found.",
+                placeholder: "No themes found matching the current filters.", // Updated placeholder
                 selectable: false,
                 initialSort: [ {column:"pct_complete_overall", dir:"asc"} ],
                 responsiveLayout: "collapse",
                 columns: [
                     { title: "Grouping Key", field: "grouping_key", widthGrow: 2, frozen: true, headerFilter: "input", cellClick: (e, c) => this.selectQuestionTheme(c.getRow().getData().grouping_key), cssClass: "clickable-cell", responsive: 0 },
-                    { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] }, responsive: 2 },
+                    { title: "Domain", field: "domain", width: 150, headerFilter: "select", headerFilterParams: { values: ["", ...this.availableFilters.domains] }, responsive: 2 }, // Use all available domains for filtering
                     { title: "Models", field: "num_models", width: 100, hozAlign: "right", sorter: "number", responsive: 3 },
                     { title: "# Resp", field: "num_responses", width: 90, hozAlign: "right", sorter: "number", responsive: 3 },
                     { title: "% Complete", field: "pct_complete_overall", width: 100, hozAlign: "right", sorter: "number", formatter: percentWithBgBarFormatter, formatterParams: { color: COMPLIANCE_COLORS.COMPLETE }, responsive: 0 },
@@ -793,6 +914,25 @@ document.addEventListener('alpine:init', () => {
                      this.updateTimelineUrlParams(); // Update URL when highlight changes
                      this.initOrUpdateTimelineChart(); // Redraw chart
                  }
+             });
+             // Watcher for the NEW question theme time filter
+             this.$watch('questionThemeTimeFilter', () => {
+                if (this.currentView === 'question_themes' && this.isMetadataLoaded) {
+                    // console.log("Question Theme Time Filter changed, updating table...");
+                    this.$nextTick(() => { // Ensure computed property updates first
+                         if (this.questionThemesTable) {
+                             try {
+                                // Use the computed property which is now filtered/aggregated
+                                this.questionThemesTable.setData(this.questionThemeSummary);
+                                // console.log("Table data updated successfully.");
+                             } catch (e) {
+                                 console.error("Error setting table data on filter change:", e);
+                             }
+                         } else {
+                              // console.log("Table instance not found, skipping update.");
+                         }
+                    });
+                }
              });
         },
 

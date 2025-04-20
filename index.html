@@ -169,7 +169,23 @@
          <h2>Question Themes <span class="count-info" x-text="`(${questionThemeSummary.length} Themes)`"></span></h2>
          <p>Overall compliance for each question theme across all models.</p>
          <p>Click on a question theme to view prompts and model responses.</p>
-        <p>The columns available indicate the number of Models we have answers from, the total number of Responses in this category, whether the model has Completely satisfied the request, whether the model was Evasive in its answer (incomplete answers, answers slightly different questions, or redirects the user), whether the request was Denied by the model, or whether the API returned an Error, typically indicating a moderation layer that has disallowed the request.</p>
+         <p>The columns available indicate the number of Models we have answers from, the total number of Responses in this category, whether the model has Completely satisfied the request, whether the model was Evasive in its answer (incomplete answers, answers slightly different questions, or redirects the user), whether the request was Denied by the model, or whether the API returned an Error, typically indicating a moderation layer that has disallowed the request.</p>
+
+         <!-- New Time Filter Dropdown -->
+         <div class="filter-controls" style="margin-bottom: 15px;">
+            <div class="filter-item">
+                <label for="question-theme-time-filter">Filter by Model Release:</label>
+                <select id="question-theme-time-filter" x-model="questionThemeTimeFilter">
+                    <option value="all">All Time</option>
+                    <option value="3m">Last 3 Months</option>
+                    <option value="6m">Last 6 Months</option>
+                    <option value="12m">Last 12 Months</option>
+                    <option value="18m">Last 18 Months</option>
+                    <option value="24m">Last 24 Months</option>
+                </select>
+            </div>
+         </div>
+
          <div id="question-themes-table" class="table-container"></div>
     </div>
 
@@ -310,6 +326,6 @@
 
 
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js"></script>
-    <script src="script.js?2"></script>
+    <script src="script.js?2"></script> <!-- NOTE: Consider cache-busting this filename if deploying e.g., script.js?3 -->
 </body>
 </html>
