@@ -93,3 +93,6 @@
 {"model_identifier": "nvidia/llama-3_1-nemotron-nano-8b-v1", "creator": "nvidia", "model_name": "llama-3_1-nemotron-nano-8b-v1", "model_family": "llama-3_1-nemotron", "release_date": "2025-03-18", "reasoning_model": false, "notes": ""}
 {"model_identifier": "rekaai/reka-flash-3", "creator": "rekaai", "model_name": "reka-flash-3", "model_family": "reka-flash-3", "release_date": "2025-03-12", "reasoning_model": true, "notes": ""}
 {"model_identifier": "tngtech/deepseek-r1t-chimera", "creator": "tngtech", "model_name": "deepseek-r1t-chimera", "model_family": "deepseek-r1", "release_date": "2025-04-27", "reasoning_model": true, "notes": ""}
+{"model_identifier": "amazon/nova-lite-v1.0", "creator": "amazon", "model_name": "nova-lite-v1.0", "model_family": "nova-lite-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
+{"model_identifier": "amazon/nova-micro-v1.0", "creator": "amazon", "model_name": "nova-micro-v1.0", "model_family": "nova-micro-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
+{"model_identifier": "amazon/nova-pro-v1.0", "creator": "amazon", "model_name": "nova-pro-v1.0", "model_family": "nova-pro-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
