@@ -83,17 +83,17 @@ def preprocess_us_hard_data(analysis_dir):
                     rec = None
                     try:
                         rec = json.loads(line.strip())
-                        original_question_id = rec.get("question_id", f"unknown_id_{line_num+1}")
-                        model = rec.get("model", "unknown_model")
-                        compliance = rec.get("compliance", "UNKNOWN").upper()
-                        domain = rec.get("domain", "Unknown Domain")
-                        question_text = rec.get("question", "")
-                        judge_analysis = rec.get("raw_judge_response", "")
-                        judge_model = rec.get("judge_model", "")
-                        timestamp = rec.get("timestamp", "")
+                        original_question_id = rec.get("question_id")
+                        model = rec.get("model")
+                        compliance = rec.get("compliance")
+                        domain = rec.get("domain")
+                        question_text = rec.get("question")
+                        judge_analysis = rec.get("raw_judge_response")
+                        judge_model = rec.get("judge_model")
+                        timestamp = rec.get("timestamp")
                         # Extract new fields for potential use later or reporting
-                        api_model = rec.get("api_model", None)
-                        original_api_provider = rec.get("original_api_provider", None)
+                        #api_model = rec.get("api_model")
+                        #original_api_provider = rec.get("original_api_provider")
 
 
                         sub_topic_key = original_question_id
@@ -112,7 +112,8 @@ def preprocess_us_hard_data(analysis_dir):
                         is_partial_response = False
                         response_obj = rec.get("response")
 
-                        if compliance == "ERROR":
+                        if compliance.startswith("ERROR"):
+                            compliance = "ERROR"
                             is_partial_response = True
                             if not judge_analysis:
                                 judge_analysis = JUDGE_ANALYSIS_FOR_ERROR
@@ -143,6 +144,7 @@ def preprocess_us_hard_data(analysis_dir):
                                     judge_analysis = JUDGE_ANALYSIS_FOR_ERROR
 
                         if compliance not in COMPLIANCE_ORDER:
+                            raise(f"Unrecognized compliance result: {compliance}")
                             compliance = "UNKNOWN"
 
                         safe_model_id_part = generate_safe_id(model)
@@ -169,8 +171,6 @@ def preprocess_us_hard_data(analysis_dir):
                                 "sub_topic_key": sub_topic_key,
                                 "variation": variation,
                                 "grouping_key": grouping_key,
-                                "api_model": api_model, # Store original api model name if available
-                                "original_api_provider": original_api_provider # Store original provider if available
                             }
                         )
                         processed_count += 1
