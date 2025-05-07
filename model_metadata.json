@@ -31,6 +31,7 @@
 {"model_identifier": "mistralai/mistral-large-2411", "creator": "mistralai", "model_name": "mistral-large-2411", "model_family": "mistral-large", "release_date": "2024-11-18", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-large-2407", "creator": "mistralai", "model_name": "mistral-large-2407", "model_family": "mistral-large", "release_date": "2024-07-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-medium-2312", "creator": "mistralai", "model_name": "mistral-medium-2312", "model_family": "mistral-medium", "release_date": "2023-11-25", "reasoning_model": false, "notes": ""}
+{"model_identifier": "mistralai/mistral-medium-3-2505", "creator": "mistralai", "model_name": "mistral-medium-3-2505", "model_family": "mistral-medium-3", "release_date": "2025-05-07", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-small-2409", "creator": "mistralai", "model_name": "mistral-small-2312", "model_family": "mistral-small", "release_date": "2024-09-17", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-small-2501", "creator": "mistralai", "model_name": "mistral-small-2501", "model_family": "mistral-small", "release_date": "2025-01-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-small-2503", "creator": "mistralai", "model_name": "mistral-small-2503", "model_family": "mistral-small", "release_date": "2025-03-17", "reasoning_model": false, "notes": ""}
