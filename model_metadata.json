@@ -17,6 +17,7 @@
 {"model_identifier": "perplexity/r1-1776", "creator": "perplexity", "model_name": "r1-1776", "model_family": "deepseek-r1", "release_date": "2025-02-18", "reasoning_model": true, "notes": ""}
 {"model_identifier": "microsoft/mai-ds-r1-fp8", "creator": "microsoft", "model_name": "mai-ds-r1-fp8", "model_family": "deepseek-r1", "release_date": "2025-04-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "google/gemini-2.5-pro-preview-03-25", "creator": "google", "model_name": "gemini-2.5-pro-preview-03-25", "model_family": "gemini-2.5-pro", "release_date": "2025-03-25", "reasoning_model": false, "notes": ""}
+{"model_identifier": "google/gemini-2.5-pro-preview-05-06", "creator": "google", "model_name": "gemini-2.5-pro-preview-05-06", "model_family": "gemini-2.5-pro", "release_date": "2025-05-06", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemini-2.5-flash-preview-04-17", "creator": "google", "model_name": "gemini-2.5-flash-preview-04-17", "model_family": "gemini-2.5-flash", "release_date": "2025-04-17", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemini-2.5-flash-preview-04-17-thinking", "creator": "google", "model_name": "gemini-2.5-flash-preview-04-17-thinking", "model_family": "gemini-2.5-flash", "release_date": "2025-04-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "google/gemini-2.0-flash-001", "creator": "google", "model_name": "gemini-2.0-flash-001", "model_family": "gemini-2.0-flash", "release_date": "2025-02-05", "reasoning_model": false, "notes": ""}
