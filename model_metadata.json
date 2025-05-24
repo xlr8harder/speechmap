@@ -10,6 +10,8 @@
 {"model_identifier": "anthropic/claude-3-5-sonnet-20241022", "creator": "anthropic", "model_name": "claude-3.5-sonnet-20241022", "model_family": "claude-3.5-sonnet", "release_date": "2024-10-22", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-3-7-sonnet-20250219", "creator": "anthropic", "model_name": "claude-3.7-sonnet-20250219", "model_family": "claude-3.7-sonnet", "release_date": "2025-02-19", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-3-7-sonnet-20250219-thinking", "creator": "anthropic", "model_name": "claude-3.7-sonnet-20250219-thinking", "model_family": "claude-3.7-sonnet", "release_date": "2025-02-19", "reasoning_model": true, "notes": ""}
+{"model_identifier": "anthropic/claude-opus-4", "creator": "anthropic", "model_name": "claude-opus-4", "model_family": "claude-opus-4", "release_date": "2025-05-22", "reasoning_model": false, "notes": ""}
+{"model_identifier": "anthropic/claude-sonnet-4", "creator": "anthropic", "model_name": "claude-sonnet-4", "model_family": "claude-sonnet-4", "release_date": "2025-05-22", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-chat-v3-0324", "creator": "deepseek", "model_name": "deepseek-chat-v3-0324", "model_family": "deepseek-v3", "release_date": "2025-03-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-chat", "creator": "deepseek", "model_name": "deepseek-chat", "model_family": "deepseek-v3", "release_date": "2024-12-26", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-r1", "creator": "deepseek", "model_name": "deepseek-r1", "model_family": "deepseek-r1", "release_date": "2025-01-20", "reasoning_model": true, "notes": ""}
@@ -64,6 +66,7 @@
 {"model_identifier": "meta-llama/llama-4-scout", "creator": "meta-llama", "model_name": "llama-4-scout", "model_family": "llama-4", "release_date": "2025-04-05", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meta-llama/llama-4-maverick", "creator": "meta-llama", "model_name": "llama-4-maverick", "model_family": "llama-4", "release_date": "2025-04-05", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meta-llama/llama-3.3-70b-instruct", "creator": "meta-llama", "model_name": "llama-3.3-70b-instruct", "model_family": "llama-3.3", "release_date": "2024-12-05", "reasoning_model": false, "notes": ""}
+{"model_identifier": "meta-llama/llama-3.3-8b-instruct", "creator": "meta-llama", "model_name": "llama-3.3-8b-instruct", "model_family": "llama-3.3", "release_date": "2025-04-29", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meta-llama/llama-3.2-1b-instruct", "creator": "meta-llama", "model_name": "llama-3.2-1b-instruct", "model_family": "llama-3.2", "release_date": "2024-09-25", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meta-llama/llama-3.2-3b-instruct", "creator": "meta-llama", "model_name": "llama-3.2-3b-instruct", "model_family": "llama-3.2", "release_date": "2024-09-25", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meta-llama/llama-3.2-11b-vision-instruct", "creator": "meta-llama", "model_name": "llama-3.2-11b-vision-instruct", "model_family": "llama-3.2", "release_date": "2024-09-25", "reasoning_model": false, "notes": ""}
