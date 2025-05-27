@@ -98,6 +98,7 @@
 {"model_identifier": "openai/o4-mini-2025-04-16", "creator": "openai", "model_name": "o4-mini-2025-04-16", "model_family": "o4-mini", "release_date": "2025-04-16", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/o3-2025-04-16", "creator": "openai", "model_name": "o3-2025-04-16", "model_family": "o3", "release_date": "2025-04-16", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-4.5-preview", "creator": "openai", "model_name": "gpt-4.5-preview-2025-02-27", "model_family": "gpt-4.5", "release_date": "2025-02-27", "reasoning_model": false, "notes": ""}
+{"model_identifier": "google/gemma-3n-e4b-it", "creator": "google", "model_name": "gemma-3n-e4b-it", "model_family": "gemma-3n-e4b", "release_date": "2025-05-20", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemma-3-27b-it", "creator": "google", "model_name": "gemma-3-27b-it", "model_family": "gemma-3-27b", "release_date": "2025-03-10", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemma-3-4b-it", "creator": "google", "model_name": "gemma-3-4b-it", "model_family": "gemma-3-4b", "release_date": "2025-03-10", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemma-3-12b-it", "creator": "google", "model_name": "gemma-3-12b-it", "model_family": "gemma-3-12b", "release_date": "2025-03-10", "reasoning_model": false, "notes": ""}
