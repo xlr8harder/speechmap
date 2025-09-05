@@ -149,6 +149,7 @@
 {"model_identifier": "microsoft/phi-3-medium-128k-instruct", "creator": "microsoft", "model_name": "phi-3-medium-128k-instruct", "model_family": "phi-3-medium-128k", "release_date": "2024-05-21", "reasoning_model": false, "notes": ""}
 {"model_identifier": "moonshotai/kimi-vl-a3b-thinking", "creator": "moonshotai", "model_name": "kimi-vl-a3b-thinking", "model_family": "kimi-vl", "release_date": "2025-04-15", "reasoning_model": false, "notes": ""}
 {"model_identifier": "moonshotai/kimi-k2-instruct", "creator": "moonshotai", "model_name": "kimi-k2-instruct", "model_family": "kimi-k2", "release_date": "2025-07-11", "reasoning_model": false, "notes": ""}
+{"model_identifier": "moonshotai/kimi-k2-0905", "creator": "moonshotai", "model_name": "kimi-k2-0905", "model_family": "kimi-k2", "release_date": "2025-09-05", "reasoning_model": false, "notes": ""}
 {"model_identifier": "baidu/ernie-4.5-300b-a47b", "creator": "baidu", "model_name": "ernie-4.5-300b-a47b", "model_family": "ernie-4.5-300b-a47b", "release_date": "2025-06-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-oss-120b", "creator": "openai", "model_name": "gpt-oss-120b", "model_family": "gpt-oss-120b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-oss-20b", "creator": "openai", "model_name": "gpt-oss-20b", "model_family": "gpt-oss-20b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
