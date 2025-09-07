@@ -1,1 +1,1 @@
-markdown-it-py>=3.0.0
+cmarkgfm>=2024.11.20

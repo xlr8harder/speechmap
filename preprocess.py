@@ -557,16 +557,17 @@ def _pct_color_style(pct):
 
 
 # --- Markdown rendering (single implementation) ---
-# Use markdown-it-py exclusively for Markdown -> HTML. No fallbacks.
+# Use cmarkgfm (fast, C-backed). Keep HTML unsafe features disabled.
 try:
-    from markdown_it import MarkdownIt
+    import cmarkgfm
+    from cmarkgfm import Options as _COptions
 except Exception:
-    print("ERROR: markdown-it-py is not installed. Please run 'pip install -r requirements.txt' and retry.")
+    print("ERROR: cmarkgfm is not installed. Please run 'pip install -r requirements.txt' and retry.")
     sys.exit(1)
-_MD = MarkdownIt("commonmark", options_update={"html": False, "linkify": True, "typographer": False})
 
 def md_to_html(text):
-    return _MD.render(str(text or ""))
+    # Do not pass CMARK_OPT_UNSAFE; tagfilter extension is applied to strip raw HTML.
+    return cmarkgfm.github_flavored_markdown_to_html(str(text or ""), options=_COptions.CMARK_OPT_DEFAULT)
 
 
 def _write_file(path, content):
@@ -915,7 +916,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
             comp = r.get("compliance") or ""
             q = r.get("question_text") or ""
             ans = md_to_html(r.get("response_text") or "")
-            jtxt = md_to_html(r.get("judge_analysis") or "")
+            jtxt = _html_escape(r.get("judge_analysis") or "")
             var = r.get("variation") or ""
             openrouter = f"https://openrouter.ai/chat?models={quote_plus(r.get('model') or '')}&message={quote_plus(q)}"
             cards.append(
@@ -924,7 +925,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
   <div class=\"response-header nested-header\"><strong>Variation: %s</strong> · <span class=\"compliance-label compliance-%s\">%s</span></div>
   <div class=\"response-content-area nested-content\">\n    <div class=\"detail-section question-section\"><strong>Question:</strong><pre class=\"text-display\">%s</pre></div>
   <div class=\"detail-section\"><strong>Model Response:</strong><div class=\"text-display markdown-content\">%s</div></div>
-  <div class=\"detail-section\"><strong>Judge Analysis:</strong><div class=\"text-display markdown-content\">%s</div></div>
+  <div class=\"detail-section\"><strong>Judge Analysis:</strong><pre class=\"text-display\">%s</pre></div>
   <div class=\"detail-section action-section\">\n    <a class=\"openrouter-link\" href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">\n      <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n        <path d=\"M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/>\n        <polyline points=\"15 3 21 3 21 9\"/>\n        <line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/>\n      </svg>\n      <span>Try on OpenRouter →</span>\n    </a>\n  </div>\n  </div>
 </div>
 """ % (
