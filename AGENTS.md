@@ -32,7 +32,6 @@
   - Models/Themes: Tabulator hydrates once (no duplicate static + dynamic tables).
   - Bar colors: Denial red, Evasive yellow, Error purple; Complete green.
   - Theme detail: padded content area; OpenRouter link + external icon present.
-  - Markdown: model responses render via markdown-it-py with HTML disabled.
   - Timeline loads from `/data/` and renders.
   - Deep links: from a model view to a theme page, the `#model` anchor loads and focuses the correct section.
 
@@ -40,6 +39,12 @@
 - Commits: short, imperative subject (max ~72 chars), scoped when helpful (e.g., `preprocess:`).
 - PRs: clear description, rationale, before/after screenshots for UI, link issues.
 - Limit scope; keep unrelated refactors out. Note any data or build changes.
+
+## Agent Workflow & Commit Policy
+- Before any `git add`/`git commit`, post a brief summary of intended changes and findings (benchmarks, impacts) and ask for approval.
+- Keep exploratory/performance-testing changes local until approved; revert prototypes after profiling if not proceeding.
+- Commit minimal, scoped changes. Avoid bundling unrelated edits.
+- Generated pages: only commit regenerated static HTML when approved or paired with approved generator updates.
 
 ## Security & Agent Notes
 - Do not introduce client-side HTML-enabled markdown. Keep linkify only.
