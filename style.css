@@ -414,6 +414,13 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .openrouter-link { display: inline-flex; align-items: center; padding: 2px 6px; background-color: #eee; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: #333; font-size: 0.8em; vertical-align: middle; transition: background-color 0.2s ease; }
 .openrouter-link:hover { background-color: #ddd; text-decoration: none; color: #000; }
 .openrouter-link img { height: 0.9em; width: 0.9em; margin-left: 4px; margin-right: 2px; vertical-align: text-bottom; }
+/* Support inline SVG icon as well */
+.openrouter-link svg { height: 0.9em; width: 0.9em; margin-right: 6px; vertical-align: text-bottom; }
+
+/* Ensure padding inside response cards even for direct children */
+.response-card-nested > .detail-section { padding: 12px; }
+.response-card-nested > .detail-section + .detail-section { border-top: 1px solid #eee; }
+.response-card-nested > div:last-child.detail-section { padding-bottom: 14px; }
 
 /* --- Simple static table fallback --- */
 .simple-table { border-collapse: collapse; width: 100%; margin-top: 10px; }

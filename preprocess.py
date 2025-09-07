@@ -8,6 +8,7 @@ import gzip
 import math
 from collections import defaultdict
 import unicodedata
+import html as htmlmod
 from urllib.parse import quote_plus
 from datetime import date
 import argparse
@@ -536,6 +537,38 @@ def _pct(v):
         return "0.0%"
 
 
+def _pct_color_style(pct):
+    try:
+        p = float(pct)
+    except Exception:
+        p = 0.0
+    # Thresholds aligned with SPA
+    if p >= 90:
+        bg = "#2ecc71"  # green
+    elif p >= 25:
+        bg = "#f1c40f"  # yellow
+    else:
+        bg = "#e74c3c"  # red
+    text = "#333" if bg in ("#f1c40f", "#bdc3c7") else "white"
+    return f"background-color:{bg};color:{text};"
+
+
+# Removed fallbacks and legacy minimal renderer per request.
+
+
+# --- Markdown rendering (single implementation) ---
+# Use markdown-it-py exclusively for Markdown -> HTML. No fallbacks.
+try:
+    from markdown_it import MarkdownIt
+except Exception:
+    print("ERROR: markdown-it-py is not installed. Please run 'pip install -r requirements.txt' and retry.")
+    sys.exit(1)
+_MD = MarkdownIt("commonmark", options_update={"html": False, "linkify": True, "typographer": False})
+
+def md_to_html(text):
+    return _MD.render(str(text or ""))
+
+
 def _write_file(path, content):
     dirpath = os.path.dirname(path)
     if dirpath:
@@ -547,7 +580,6 @@ def _write_file(path, content):
 
 def _page_head(title, canonical_url, depth=0, active_tab=None):
     desc = "SpeechMap.AI — Explore model compliance across sensitive prompts."
-    # Use absolute OG image for social sharing
     ogimg = f"{SITE_BASE_URL}/og-image.png"
     prefix = "../" * depth
     return f"""<!DOCTYPE html>
@@ -563,31 +595,115 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
 <link href=\"https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css\" rel=\"stylesheet\">
-<link href=\"{prefix}style.css\" rel=\"stylesheet\">
+<link href=\"/style.css\" rel=\"stylesheet\">
 </head><body>
-<div class=\"site-header\"><img src=\"{prefix}speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\">\n<h1>SpeechMap.AI <span class=\"subtitle\">The Free Speech Dashboard for AI.</span></h1></div>
+<div class=\"site-header\"><img src=\"/speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\">\n<h1>SpeechMap.AI <span class=\"subtitle\">The Free Speech Dashboard for AI.</span></h1></div>
 <nav class=\"view-selector\">
-  <button onclick=\"location.assign('{prefix}index.html')\" class=\"{ 'active' if active_tab=='about' else '' }\">About</button>
-  <button onclick=\"location.assign('{prefix}models/')\" class=\"{ 'active' if active_tab=='models' else '' }\">Model Results</button>
-  <button onclick=\"location.assign('{prefix}themes/')\" class=\"{ 'active' if active_tab=='themes' else '' }\">Question Themes</button>
-  <button onclick=\"location.assign('{prefix}index.html#/timeline')\" class=\"{ 'active' if active_tab=='timeline' else '' }\">Model Timeline</button>
-  <button onclick=\"location.assign('{prefix}index.html#/acknowledgments')\" class=\"{ 'active' if active_tab=='ack' else '' }\">Acknowledgments</button>
+  <button onclick=\"location.assign('/index.html')\" class=\"{ 'active' if active_tab=='about' else '' }\">About</button>
+  <button onclick=\"location.assign('/models/')\" class=\"{ 'active' if active_tab=='models' else '' }\">Model Results</button>
+  <button onclick=\"location.assign('/themes/')\" class=\"{ 'active' if active_tab=='themes' else '' }\">Question Themes</button>
+  <button onclick=\"location.assign('/timeline/')\" class=\"{ 'active' if active_tab=='timeline' else '' }\">Model Timeline</button>
+  <button onclick=\"location.assign('/acknowledgments/')\" class=\"{ 'active' if active_tab=='ack' else '' }\">Acknowledgments</button>
 </nav>
 <hr>
 """
 
 
 def _page_foot(depth=0):
-    prefix = "../" * depth
     return (
         f"\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js\"></script>\n"
-        + f"<script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script>\n"
-        + f"<script src=\"https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js\"></script>\n"
-        + f"<script src=\"https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js\"></script>\n"
-        + f"<script src=\"{prefix}script.js?3\"></script>\n"
-        + "<script>window.speechmapHydrate && window.speechmapHydrate();</script>\n"
+        + f"<script src=\"/script.js?4\"></script>\n"
+        + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
         + "</body></html>"
     )
+
+def render_home_page(stats):
+    title = "SpeechMap.AI Explorer"
+    canon = f"{SITE_BASE_URL}/"
+    head = _page_head(title, canon, depth=0, active_tab='about')
+    # Stats
+    models = int((stats or {}).get('models', 0))
+    themes = int((stats or {}).get('themes', 0))
+    judgments = int((stats or {}).get('judgments', 0))
+    # Derived percentage of filtered/denied (non-complete)
+    filtered_pct = 0.0
+    try:
+        if judgments > 0:
+            complete = int((stats or {}).get('complete', 0))
+            filtered_pct = (100.0 * (judgments - complete) / judgments)
+    except Exception:
+        pass
+
+    stats_ul = (
+        f"      <ul><li><strong class=\"stat-value\">{models}</strong> AI Models Compared</li>"
+        f"          <li><strong class=\"stat-value\">{themes}</strong> Question Themes</li>"
+        f"          <li><strong class=\"stat-value\">{judgments:,}</strong> Model Responses Analyzed</li></ul>"
+    )
+
+    body = (
+        "<div class=\"about-content\">"
+        "  <div class=\"about-hero\">"
+        "    <div class=\"hero-text\">"
+        "      <h2>We map the invisible<br>boundaries of AI speech</h2>"
+        "    </div>"
+        "    <div class=\"hero-image\">"
+        "      <img src=\"/graphic.png\" alt=\"Map showing AI model responses across regions\" class=\"hero-graphic\">"
+        "    </div>"
+        "  </div>"
+        "  <div class=\"about-grid\">"
+        "    <div class=\"grid-item what-is\">"
+        "      <h3>What is SpeechMap.AI?</h3>"
+        "      <p><b>SpeechMap.AI</b> is a public research project that explores the boundaries of AI-generated speech.</p>"
+        "      <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and topics. Most AI benchmarks measure what models <i>can</i> do. We focus on what they <i>won’t</i>: what they avoid, refuse, or shut down.</p>"
+        "      <p>We're not arguing that every prompt deserves an answer. Some are offensive. Some are absurd. But without testing what gets filtered, we can’t see where the lines are drawn—or how they’re shifting over time.</p>"
+        "    </div>"
+        "    <div class=\"grid-item where-lines\">"
+        "      <h3>What We Found</h3>"
+        "      <p><b>OpenAI's models</b> have become more likely to refuse controversial prompts over time.</p>"
+        "      <p><b>xAI's Grok</b> is the most permissive model tested, complying with <b>&gt;96.2%</b> of requests in our dataset.</p>"
+        "      <p>Examples from our database:</p>"
+        "      <ul>"
+        "        <li><b>Argue for traditional gender roles</b>: 61% compliance</li>"
+        "        <li><b>Argue for the same, with reversed genders</b>: 92.6%</li>"
+        "        <li><b>Outlaw a religion</b>: Judaism (10.5%) vs Witchcraft (68.5%)</li>"
+        "        <li><b>Ban AI for safety</b>: 92.7% — but if you say \"destroy all AI,\" it drops to 75%</li>"
+        "      </ul>"
+        "      <p>We believe these patterns are worth understanding—regardless of what you believe should be allowed.</p>"
+        "    </div>"
+        
+        "    <div class=\"grid-item why-matters\">"
+        "      <h3>Why This Matters</h3>"
+        "      <p>Language Models are becoming infrastructure for public speech. They're embedded in how we write, search, learn and argue. That makes them powerful speech-enabling technologies, but also potential speech-limiting ones.</p>"
+        "      <p>If models refuse to talk about certain topics, then they shape the boundaries of expression. Some models block criticism of governments. Others avoid satire, protest or controversial moral arguments. Often, the rules are unclear and inconsistently applied.</p>"
+        "      <p><b>SpeechMap.AI helps reveal those boundaries.</b></p>"
+        "    </div>"
+        "    <div class=\"grid-item stats-block\">"
+        "      <h3>What we've measured so far</h3>"
+        + ("      <ul>"
+           f"<li><strong class=\"stat-value\">{models}</strong> AI Models Compared</li>"
+           f"<li><strong class=\"stat-value\">{themes}</strong> Question Themes</li>"
+           f"<li><strong class=\"stat-value\">{judgments:,}</strong> Model Responses Analyzed</li>"
+           f"<li><strong class=\"stat-value\">{filtered_pct:.1f}%</strong> of requests were filtered, redirected, or denied</li>"
+           "<li>Full question database with search + filters</li>"
+           "<li class=\"stats-cta\">→ Explore the <a href=\"/models/\">Model Results</a> <br>→ <a href=\"/themes/\">Browse Questions</a></li>"
+           "</ul>"
+          ) +
+        
+        "    </div>"
+        "  </div>"
+        "  <h3>Help Us Grow</h3>"
+        "  <p>We believe that AI will be the defining speech-enabling technology of the 21st century. If you want a future with fair and open access to expression, we need to know how these systems work, and where they draw the line.</p>"
+        "  <p>Evaluating one model can cost <b>tens to hundreds of dollars</b> in API fees. Older models are already disappearing. Soon we may not be able to test them at all.</p>"
+        "  <p>If you believe this work matters:</p>"
+        "  <ul>"
+        "    <li><a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\">Support us on Ko-fi</a></li>"
+        "    <li><a href=\"https://speechmap.substack.com/\">Subscribe to our Substack for updates</a></li>"
+        "    <li><a href=\"/models/\">Explore the data yourself</a></li>"
+        "    <li><a href=\"https://speechmap.ai\">Share the site</a></li>"
+        "  </ul>"
+        "</div>"
+    )
+    return head + body + _page_foot(depth=0)
 
 
 def render_models_index(model_summary):
@@ -758,41 +874,66 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     canon = f"{SITE_BASE_URL}/themes/{generate_safe_id(theme_key)}/"
     depth = 2
     head = _page_head(title, canon, depth=depth, active_tab='themes')
-    head += f"<p><a href=\"../\">← Back to Themes</a> · <a href=\"{'../' * depth}index.html#/questions/{quote_plus(theme_key)}\">Open Interactive</a></p>"
+    head += f"<p><a href=\"../\">← Back to Themes</a></p>"
     head += f"<h2>Question Theme</h2><p><strong>Theme:</strong> {_html_escape(theme_key)}<br><strong>Domain:</strong> {_html_escape(domain or 'N/A')}</p>"
 
-    # (No per-model table; TOC will be hydrated client-side)
-    toc_html = """
-<details class=\"toc-details\" open>
-  <summary>Model Compliance Summary & Links</summary>
-  <ul class=\"toc-links model-toc vertical\" id=\"theme-models-toc\"></ul>
-</details>
-"""
-
-    # Sample responses
-    cards = []
-    for r in sample_records:
-        model = r.get("model")
-        comp = r.get("compliance")
-        q = r.get("question_text") or ""
-        ans = r.get("response_text") or ""
-        jtxt = r.get("judge_analysis") or ""
-        var = r.get("variation") or ""
-        openrouter = f"https://openrouter.ai/chat?models={quote_plus(model or '')}&message={quote_plus(q)}"
-        cards.append(
-            """
+    # Build per-model groups from provided sample_records (for full static, pass all records)
+    groups = {}
+    for r in sample_records or []:
+        m = r.get("model") or "Unknown"
+        groups.setdefault(m, []).append(r)
+    # TOC with percent per model
+    toc_items = []
+    for m in sorted(groups.keys()):
+        arr = groups[m]
+        total = len(arr)
+        k = sum(1 for rec in arr if rec.get("compliance") == "COMPLETE")
+        pct = (k / total * 100.0) if total > 0 else 0.0
+        safe = generate_safe_id(m)
+        style = _pct_color_style(pct)
+        toc_items.append(
+            f"<li><a href=\"#model-{safe}\" class=\"toc-link-item\">"
+            f"<span class=\"toc-model-name\">{_html_escape(m)}</span>"
+            f"<span class=\"toc-right-group\"><span class=\"toc-compliance-box\" style=\"{style}\">{pct:.1f}%</span>"
+            f"<span class=\"toc-response-count\">({total} Resp.)</span></span></a></li>"
+        )
+    toc_html = (
+        "<details class=\"toc-details\" open><summary>Model Compliance Summary & Links</summary>"
+        + "<ul class=\"toc-links model-toc vertical\">" + "\n".join(toc_items) + "</ul></details>"
+    )
+    # Grouped responses by model
+    sections = []
+    for m in sorted(groups.keys()):
+        safe = generate_safe_id(m)
+        arr = sorted(groups[m], key=lambda r: int(r.get("variation") or 0))
+        cards = []
+        for r in arr:
+            comp = r.get("compliance") or ""
+            q = r.get("question_text") or ""
+            ans = md_to_html(r.get("response_text") or "")
+            jtxt = md_to_html(r.get("judge_analysis") or "")
+            var = r.get("variation") or ""
+            openrouter = f"https://openrouter.ai/chat?models={quote_plus(r.get('model') or '')}&message={quote_plus(q)}"
+            cards.append(
+                """
 <div class=\"response-card-nested\">
   <div class=\"response-header nested-header\"><strong>Variation: %s</strong> · <span class=\"compliance-label compliance-%s\">%s</span></div>
-  <div class=\"detail-section question-section\"><strong>Question:</strong><pre class=\"text-display\">%s</pre></div>
-  <div class=\"detail-section\"><strong>Model Response:</strong><pre class=\"text-display\">%s</pre></div>
-  <div class=\"detail-section\"><strong>Judge Analysis:</strong><pre class=\"text-display\">%s</pre></div>
-  <div><a class=\"openrouter-link\" href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Try on OpenRouter →</a></div>
+  <div class=\"response-content-area nested-content\">\n    <div class=\"detail-section question-section\"><strong>Question:</strong><pre class=\"text-display\">%s</pre></div>
+  <div class=\"detail-section\"><strong>Model Response:</strong><div class=\"text-display markdown-content\">%s</div></div>
+  <div class=\"detail-section\"><strong>Judge Analysis:</strong><div class=\"text-display markdown-content\">%s</div></div>
+  <div class=\"detail-section action-section\">\n    <a class=\"openrouter-link\" href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">\n      <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n        <path d=\"M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/>\n        <polyline points=\"15 3 21 3 21 9\"/>\n        <line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/>\n      </svg>\n      <span>Try on OpenRouter →</span>\n    </a>\n  </div>\n  </div>
 </div>
-""" % (_html_escape(var), _html_escape(comp or ''), _html_escape(comp), _html_escape(q), _html_escape(ans[:2000]), _html_escape(jtxt[:2000]), _html_escape(openrouter))
+""" % (
+                    _html_escape(var), _html_escape(comp), _html_escape(comp),
+                    _html_escape(q), ans, jtxt, _html_escape(openrouter)
+                )
+            )
+        sections.append(
+            f"<section class=\"model-section\" id=\"model-{safe}\"><h4 class=\"model-section-header\"><span>{_html_escape(m)}</span></h4>"
+            + "\n".join(cards) + "</section>"
         )
-    sample_html = "<h3>Responses</h3><div class=\"response-list\" id=\"theme-responses\">" + "\n".join(cards) + "</div>"
-
-    return head + toc_html + sample_html + _page_foot(depth=depth)
+    body_html = toc_html + "<div class=\"response-list\">" + "\n".join(sections) + "</div>"
+    return head + body_html + _page_foot(depth=depth)
 
 
 def generate_static_pages(model_meta_dict, summaries, data_by_theme):
@@ -827,8 +968,8 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme):
                 domain_guess = s.get("domain")
                 break
         per_model_rows = _summarize_theme_across_models(theme_key, summaries["model_theme_summary"])
-        sample = _theme_sample_from_records(records, THEME_SAMPLE_LIMIT)
-        _write_file(path, render_theme_detail(theme_key, domain_guess, per_model_rows, sample))
+        # Render ALL records for full static detail (include all variations per model)
+        _write_file(path, render_theme_detail(theme_key, domain_guess, per_model_rows, records))
 
 
 def generate_sitemap_and_robots(model_summary, theme_keys):
@@ -881,6 +1022,7 @@ def load_core_artifacts():
         qts_all = json.load(f)
     model_meta_dict = core.get("model_metadata", {})
     model_summary = core.get("model_summary", [])
+    stats = core.get("stats", {})
     # Build model_theme_summary by loading per-model jsons
     model_theme_summary = {}
     for m in model_summary:
@@ -895,12 +1037,15 @@ def load_core_artifacts():
                 print(f"Warning: Failed to load model themes for {mid}: {e}")
         else:
             print(f"Warning: Missing model theme breakdown for {mid}: {p}")
-    return model_meta_dict, model_summary, qts_all, model_theme_summary
+    return model_meta_dict, model_summary, qts_all, model_theme_summary, stats
 
 
 def generate_static_pages_from_artifacts():
     print("Regenerating static pages from existing artifacts...")
-    model_meta_dict, model_summary, qts_all, model_theme_summary = load_core_artifacts()
+    model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats = load_core_artifacts()
+
+    # Root index (About) page — overwrite with correct static content
+    _write_file("index.html", render_home_page(core_stats))
 
     # Models index and detail pages
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
@@ -939,9 +1084,46 @@ def generate_static_pages_from_artifacts():
             if s and s.get("domain"):
                 domain_guess = s.get("domain")
                 break
-        sample = _theme_sample_from_records(records, THEME_SAMPLE_LIMIT)
         out_path = os.path.join(STATIC_THEMES_DIR, safe, "index.html")
-        _write_file(out_path, render_theme_detail(key, domain_guess, None, sample))
+        # Render ALL records for full static detail
+        _write_file(out_path, render_theme_detail(key, domain_guess, None, records))
+
+    # Acknowledgments static page
+    ack_html = _page_head("Acknowledgments", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
+        "<div class=\"acknowledgments-content\"><h2>Acknowledgments</h2>"
+        "<p>We're deeply indebted to <a href=\"https://x.com/jon_durbin\">Jon Durbin</a>, who provided the initial seed funds needed to launch the project.</p>"
+        "<p>We're grateful to <a href=\"https://openrouter.ai\">OpenRouter</a> for their generous support shortly after our launch. Their contribution helped us complete coverage of all key models from all major model providers for our initial post-launch milestone, and their infrastructure made this project far more feasible than it would have been otherwise.</p>"
+        "</div>"
+    ) + _page_foot(depth=0)
+    _write_file(os.path.join("acknowledgments", "index.html"), ack_html)
+
+    # Timeline static shell (Chart hydration allowed to load data/*)
+    timeline_head = _page_head("Model Timeline", f"{SITE_BASE_URL}/timeline/", depth=0, active_tab='timeline')
+    timeline_body = (
+        "<div class=\"timeline-view-container\">"
+        "<h2>Model Timeline</h2>"
+        "<p>Scatter plot showing model release dates against their compliance percentage. Click points to view model details.</p>"
+        "<div class=\"timeline-filters filter-controls\">"
+        "  <div class=\"filter-item\"><label for=\"timeline-domain-filter\">Domain:</label>"
+        "    <select id=\"timeline-domain-filter\"></select></div>"
+        "  <div class=\"filter-item\"><label for=\"timeline-metric-filter\">Y-Axis Metric:</label>"
+        "    <select id=\"timeline-metric-filter\"></select></div>"
+        "  <div class=\"filter-item\"><label for=\"timeline-creator-filter\">Creator:</label>"
+        "    <select id=\"timeline-creator-filter\"></select></div>"
+        "  <div class=\"filter-item\"><label for=\"timeline-highlight-creator-filter\">Highlight Creator:</label>"
+        "    <select id=\"timeline-highlight-creator-filter\"></select></div>"
+        "</div>"
+        "<div class=\"chart-container\"><canvas id=\"timeline-chart-canvas\"></canvas></div>"
+        "</div>"
+    )
+    # Include Chart.js for this page only
+    timeline_foot = (
+        "\n<script src=\"https://cdn.jsdelivr.net/npm/chart.js@^4\"></script>\n"
+        "<script src=\"https://cdn.jsdelivr.net/npm/date-fns@^2\"></script>\n"
+        "<script src=\"https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@^3\"></script>\n"
+        + _page_foot(depth=0)
+    )
+    _write_file(os.path.join("timeline", "index.html"), timeline_head + timeline_body + timeline_foot)
 
 def main():
     print("Starting preprocessing...")
@@ -1032,6 +1214,8 @@ def main():
     print("\nGenerating static pages (Phase 2)...")
     generate_static_pages(model_meta_dict, summaries, data_by_theme)
     generate_sitemap_and_robots(summaries["model_summary"], list(data_by_theme.keys()))
+    # Overwrite root About page with static content using real stats
+    _write_file("index.html", render_home_page(stats_summary))
 
     print("\nPreprocessing and saving complete (Phase 1 split outputs).")
 
