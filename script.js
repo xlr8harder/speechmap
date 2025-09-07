@@ -13,6 +13,39 @@ function atPath(re){ try{ return re.test(window.location.pathname); }catch(e){ r
 function safeName(t){ if(!t) return 'id'; const n=t.normalize('NFKD').replace(/[\u0300-\u036f]/g,''); let s=n.toLowerCase().replace(/[^\w\s-]/g,'-').replace(/[\s-]+/g,'-'); s=s.replace(/^-+|-+$/g,'').substring(0,100); return s||'id'; }
 async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); if(!r.ok) throw new Error(`HTTP ${r.status} ${path}`); return await r.json(); }
 (function(){
+  // Ensure hash anchors (e.g., #model-...) land correctly after layout
+  function reanchorIfNeeded(){
+    try {
+      if (!location.hash) return;
+      // Only handle model anchors to avoid interfering with other pages
+      if (!/^#model-/i.test(location.hash)) return;
+      const id = decodeURIComponent(location.hash.slice(1));
+      const el = document.getElementById(id);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      // If not near the top of the viewport, re-scroll to align
+      const nearTopBand = 80; // px
+      const isNearTop = r.top >= 0 && r.top <= nearTopBand;
+      if (!isNearTop) {
+        try { el.scrollIntoView({ block: 'start', behavior: 'auto' }); }
+        catch (_) { el.scrollIntoView(true); }
+      }
+    } catch (e) { /* no-op */ }
+  }
+
+  function setupAnchorFix(){
+    if (setupAnchorFix._done) return; // idempotent
+    setupAnchorFix._done = true;
+    // After full load (images/CSS/fonts), re-jump to correct for any layout shift
+    window.addEventListener('load', () => {
+      // Do a couple of passes to be safe against late layout shifts
+      setTimeout(reanchorIfNeeded, 0);
+      setTimeout(reanchorIfNeeded, 250);
+    });
+    // Also handle in-page TOC navigation
+    window.addEventListener('hashchange', () => { setTimeout(reanchorIfNeeded, 0); });
+  }
+
   function percentWithBgBarFormatter(cell){
     const v = parseFloat(cell.getValue());
     const pct = isNaN(v) ? 0 : v;
@@ -244,6 +277,8 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
     }catch(e){ console.error('Timeline hydrate failed:', e); }
   }
   window.speechmapHydrate = function(){
+    // Set up anchor fix on all pages; it runs only when a model hash exists
+    setupAnchorFix();
     if(atPath(/^\/models\/$/)) { hydrateModelsIndex(); return; }
     if(atPath(/^\/models\/[^/]+\/?$/)) { hydrateModelDetail(); return; }
     if(atPath(/^\/themes\/$/)) { hydrateThemesIndex(); return; }
