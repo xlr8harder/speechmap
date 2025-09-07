@@ -8,6 +8,8 @@ import gzip
 import math
 from collections import defaultdict
 import unicodedata
+from urllib.parse import quote_plus
+from datetime import date
 
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
@@ -21,6 +23,12 @@ OUTPUT_CORE_METADATA_FILE = os.path.join(DATA_DIR, "metadata-core.json")
 OUTPUT_QTHEME_SUMMARY_DIR = os.path.join(DATA_DIR, "question-theme-summary")
 OUTPUT_MODEL_THEMES_DIR = os.path.join(DATA_DIR, "model-themes")
 OUTPUT_MODEL_DOMAIN_SUMMARY_FILE = os.path.join(DATA_DIR, "model-domain-summary.json")
+
+# Phase 2 static site generation
+SITE_BASE_URL = "https://speechmap.ai"
+STATIC_MODELS_DIR = "models"
+STATIC_THEMES_DIR = "themes"
+THEME_SAMPLE_LIMIT = 16
 # MAX_RECORDS_PER_FILE = 20000 # No longer needed
 COMPLIANCE_ORDER = ["COMPLETE", "EVASIVE", "DENIAL", "ERROR", "UNKNOWN"]
 ID_REGEX = re.compile(r"^(.*?)(\d)$")
@@ -505,6 +513,340 @@ def save_metadata(filename, compliance_order, stats, model_metadata, summaries):
         print(f"Error saving metadata: {e}")
         sys.exit(1) # Exit if metadata saving fails
 
+# ------------------ Phase 2: Static Page Rendering ------------------
+
+def _html_escape(s):
+    if s is None:
+        return ""
+    return (
+        str(s)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&#39;")
+    )
+
+
+def _pct(v):
+    try:
+        return f"{float(v):.1f}%"
+    except Exception:
+        return "0.0%"
+
+
+def _write_file(path, content):
+    dirpath = os.path.dirname(path)
+    if dirpath:
+        os.makedirs(dirpath, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f"Wrote {path}")
+
+
+def _page_head(title, canonical_url, depth=0):
+    desc = "SpeechMap.AI — Explore model compliance across sensitive prompts."
+    # Use absolute OG image for social sharing
+    ogimg = f"{SITE_BASE_URL}/og-image.png"
+    prefix = "../" * depth
+    return f"""<!DOCTYPE html>
+<html lang=\"en\"><head>
+<meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+<title>{_html_escape(title)}</title>
+<meta name=\"description\" content=\"{_html_escape(desc)}\">
+<link rel=\"canonical\" href=\"{_html_escape(canonical_url)}\">
+<meta property=\"og:title\" content=\"{_html_escape(title)}\">
+<meta property=\"og:description\" content=\"{_html_escape(desc)}\">
+<meta property=\"og:image\" content=\"{_html_escape(ogimg)}\">
+<meta property=\"og:url\" content=\"{_html_escape(canonical_url)}\">
+<meta property=\"og:type\" content=\"website\">
+<meta name=\"twitter:card\" content=\"summary_large_image\">
+<link href=\"{prefix}style.css\" rel=\"stylesheet\">
+</head><body>
+<div class=\"site-header\"><a href=\"{prefix}\"><img src=\"{prefix}speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\"></a>
+<h1><a href=\"{prefix}\" style=\"text-decoration:none;color:inherit\">SpeechMap.AI</a></h1></div>
+<nav class=\"view-selector\">
+  <a href=\"{prefix}index.html#/overview\">Interactive Results</a>
+  <a href=\"{prefix}models/\">Models (Static)</a>
+  <a href=\"{prefix}themes/\">Themes (Static)</a>
+</nav>
+<hr>
+"""
+
+
+def _page_foot():
+    return """<footer style=\"margin:30px 0;color:#666;font-size:0.9em\">Static render for SEO. For full interactivity, use the Interactive Results.
+</footer></body></html>"""
+
+
+def render_models_index(model_summary):
+    title = "Model Results (Static)"
+    canon = f"{SITE_BASE_URL}/models/"
+    depth = 1
+    rows = []
+    for m in model_summary:
+        model = m.get("model", "")
+        safe = generate_safe_id(model)
+        link = f"/models/{safe}/"
+        rows.append(
+            f"<tr>"
+            f"<td><a href=\"{link}\">{_html_escape(model)}</a></td>"
+            f"<td>{_html_escape(m.get('release_date','') or '')}</td>"
+            f"<td class=\"num\">{m.get('num_responses',0)}</td>"
+            f"<td class=\"num\">{_pct(m.get('pct_complete_overall',0))}</td>"
+            f"<td class=\"num\">{_pct(m.get('pct_evasive',0))}</td>"
+            f"<td class=\"num\">{_pct(m.get('pct_denial',0))}</td>"
+            f"<td class=\"num\">{_pct(m.get('pct_error',0))}</td>"
+            f"</tr>"
+        )
+    table = """
+<h2>Model Results</h2>
+<p>This is a static, indexable version. For interactive sorting/filtering, use the Interactive Results.</p>
+<table class=\"simple-table\">
+  <thead><tr><th>Model</th><th>Released</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
+  <tbody>
+""" + "\n".join(rows) + "\n  </tbody>\n</table>\n"
+    return _page_head(title, canon, depth=depth) + table + _page_foot()
+
+
+def render_model_detail(model_id, meta, theme_stats_for_model):
+    title = f"Model: {model_id}"
+    canon = f"{SITE_BASE_URL}/models/{generate_safe_id(model_id)}/"
+    depth = 2
+    meta_rows = []
+    for k, v in (meta or {}).items():
+        if k == "model_identifier":
+            continue
+        if v is None or v == "":
+            continue
+        meta_rows.append(f"<tr><td>{_html_escape(k.replace('_',' ').title())}</td><td>{_html_escape(v)}</td></tr>")
+    meta_html = """
+<h2>Model Details</h2>
+<p><a href=\"../\">← Back to Models</a> · <a href=\"%sindex.html#/model/%s\">Open Interactive</a></p>
+<table class=\"simple-table\"><tbody>
+%s
+</tbody></table>
+""" % ("../" * (depth), quote_plus(model_id), "\n".join(meta_rows) or "<tr><td colspan=2><em>No additional metadata.</em></td></tr>")
+
+    # Build theme rows
+    rows = []
+    items = []
+    for key, s in (theme_stats_for_model or {}).items():
+        c = int(s.get("c", 0))
+        pct_c = (s.get("k", 0) / c * 100) if c > 0 else 0
+        items.append((key, s.get("domain") or "N/A", c, pct_c, s))
+    items.sort(key=lambda x: (x[3], x[0]))
+    for key, dom, c, pct_c, s in items:
+        theme_link = f"../../themes/{generate_safe_id(key)}/"
+        rows.append(
+            f"<tr>"
+            f"<td><a href=\"{theme_link}\">{_html_escape(key)}</a></td>"
+            f"<td>{_html_escape(dom)}</td>"
+            f"<td class=\"num\">{c}</td>"
+            f"<td class=\"num\">{_pct(pct_c)}</td>"
+            f"<td class=\"num\">{_pct((s.get('e',0)/c*100) if c>0 else 0)}</td>"
+            f"<td class=\"num\">{_pct((s.get('d',0)/c*100) if c>0 else 0)}</td>"
+            f"<td class=\"num\">{_pct((s.get('r',0)/c*100) if c>0 else 0)}</td>"
+            f"</tr>"
+        )
+    table = """
+<h3>Compliance by Question Theme</h3>
+<table class=\"simple-table\">
+  <thead><tr><th>Theme</th><th>Domain</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
+  <tbody>
+""" + "\n".join(rows) + "\n  </tbody>\n</table>\n"
+    return _page_head(title, canon, depth=depth) + meta_html + table + _page_foot()
+
+
+def render_themes_index(theme_summary_all):
+    title = "Question Themes (Static)"
+    canon = f"{SITE_BASE_URL}/themes/"
+    depth = 1
+    rows = []
+    for t in theme_summary_all:
+        key = t.get("grouping_key", "")
+        link = f"/themes/{generate_safe_id(key)}/"
+        rows.append(
+            f"<tr>"
+            f"<td><a href=\"{link}\">{_html_escape(key)}</a></td>"
+            f"<td>{_html_escape(t.get('domain','') or '')}</td>"
+            f"<td class=\"num\">{t.get('num_models',0)}</td>"
+            f"<td class=\"num\">{t.get('num_responses',0)}</td>"
+            f"<td class=\"num\">{_pct(t.get('pct_complete_overall',0))}</td>"
+            f"<td class=\"num\">{_pct(t.get('pct_evasive',0))}</td>"
+            f"<td class=\"num\">{_pct(t.get('pct_denial',0))}</td>"
+            f"<td class=\"num\">{_pct(t.get('pct_error',0))}</td>"
+            f"</tr>"
+        )
+    table = """
+<h2>Question Themes</h2>
+<p>Static, indexable list for search engines. For dynamic filtering or per-model views, use the Interactive Results.</p>
+<table class=\"simple-table\">
+  <thead><tr><th>Theme</th><th>Domain</th><th>Models</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
+  <tbody>
+""" + "\n".join(rows) + "\n  </tbody>\n</table>\n"
+    return _page_head(title, canon, depth=depth) + table + _page_foot()
+
+
+def _summarize_theme_across_models(theme_key, model_theme_summary):
+    # Build per-model summary rows for one theme
+    rows = []
+    for model, themes in model_theme_summary.items():
+        s = themes.get(theme_key)
+        if not s:
+            continue
+        c = int(s.get("c", 0))
+        if c <= 0:
+            continue
+        pct_c = (s.get("k", 0) / c * 100) if c > 0 else 0
+        rows.append((model, s.get("domain") or "N/A", c, pct_c, s))
+    rows.sort(key=lambda x: (x[3], x[0]))
+    return rows
+
+
+def _theme_sample_from_records(records, limit=THEME_SAMPLE_LIMIT):
+    # Diverse sample: one per model round-robin until limit
+    from collections import defaultdict
+    by_model = defaultdict(list)
+    for r in records:
+        by_model[r.get("model")].append(r)
+    # simple round robin
+    sample = []
+    models = sorted(by_model.keys())
+    idx = 0
+    while len(sample) < limit and models:
+        m = models[idx % len(models)]
+        lst = by_model[m]
+        if lst:
+            sample.append(lst.pop(0))
+        models = [mm for mm in models if by_model[mm]]
+        idx += 1
+    return sample
+
+
+def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
+    title = f"Theme: {theme_key}"
+    canon = f"{SITE_BASE_URL}/themes/{generate_safe_id(theme_key)}/"
+    depth = 2
+    head = _page_head(title, canon, depth=depth)
+    head += f"<p><a href=\"../\">← Back to Themes</a> · <a href=\"{'../' * depth}index.html#/questions/{quote_plus(theme_key)}\">Open Interactive</a></p>"
+    head += f"<h2>Question Theme</h2><p><strong>Theme:</strong> {_html_escape(theme_key)}<br><strong>Domain:</strong> {_html_escape(domain or 'N/A')}</p>"
+
+    # Per-model summary table
+    rows_html = []
+    for model, dom, c, pct_c, s in per_model_rows:
+        model_link = f"../../models/{generate_safe_id(model)}/"
+        rows_html.append(
+            f"<tr><td><a href=\"{model_link}\">{_html_escape(model)}</a></td>"
+            f"<td>{_html_escape(dom)}</td>"
+            f"<td class=\"num\">{c}</td>"
+            f"<td class=\"num\">{_pct(pct_c)}</td>"
+            f"<td class=\"num\">{_pct((s.get('e',0)/c*100) if c>0 else 0)}</td>"
+            f"<td class=\"num\">{_pct((s.get('d',0)/c*100) if c>0 else 0)}</td>"
+            f"<td class=\"num\">{_pct((s.get('r',0)/c*100) if c>0 else 0)}</td></tr>"
+        )
+    table = """
+<h3>Models Summary</h3>
+<table class=\"simple-table\">
+ <thead><tr><th>Model</th><th>Domain</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
+ <tbody>
+""" + "\n".join(rows_html) + "\n </tbody>\n</table>\n"
+
+    # Sample responses
+    cards = []
+    for r in sample_records:
+        model = r.get("model")
+        comp = r.get("compliance")
+        q = r.get("question_text") or ""
+        ans = r.get("response_text") or ""
+        jtxt = r.get("judge_analysis") or ""
+        var = r.get("variation") or ""
+        openrouter = f"https://openrouter.ai/chat?models={quote_plus(model or '')}&message={quote_plus(q)}"
+        cards.append(
+            """
+<div class=\"response-card-nested\">
+  <div class=\"response-header nested-header\"><strong>Variation: %s</strong> · <span class=\"compliance-label\">%s</span></div>
+  <div class=\"detail-section question-section\"><strong>Question:</strong><pre class=\"text-display\">%s</pre></div>
+  <div class=\"detail-section\"><strong>Model Response:</strong><pre class=\"text-display\">%s</pre></div>
+  <div class=\"detail-section\"><strong>Judge Analysis:</strong><pre class=\"text-display\">%s</pre></div>
+  <div><a class=\"openrouter-link\" href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Try on OpenRouter →</a></div>
+</div>
+""" % (_html_escape(var), _html_escape(comp), _html_escape(q), _html_escape(ans[:2000]), _html_escape(jtxt[:2000]), _html_escape(openrouter))
+        )
+    sample_html = "<h3>Sample Responses</h3>" + "\n".join(cards)
+
+    return head + table + sample_html + _page_foot()
+
+
+def generate_static_pages(model_meta_dict, summaries, data_by_theme):
+    # Models index
+    os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
+    models_index_path = os.path.join(STATIC_MODELS_DIR, "index.html")
+    _write_file(models_index_path, render_models_index(summaries["model_summary"]))
+
+    # Per-model pages
+    for model in summaries["model_summary"]:
+        mid = model.get("model")
+        safe = generate_safe_id(mid)
+        path = os.path.join(STATIC_MODELS_DIR, safe, "index.html")
+        meta = model_meta_dict.get(mid, {})
+        theme_stats_for_model = summaries["model_theme_summary"].get(mid, {})
+        _write_file(path, render_model_detail(mid, meta, theme_stats_for_model))
+
+    # Themes index (use all-time summary already computed)
+    os.makedirs(STATIC_THEMES_DIR, exist_ok=True)
+    themes_index_path = os.path.join(STATIC_THEMES_DIR, "index.html")
+    _write_file(themes_index_path, render_themes_index(summaries["question_theme_summary"]))
+
+    # Per-theme pages (use per-model stats + sample records from data_by_theme)
+    for theme_key, records in data_by_theme.items():
+        safe = generate_safe_id(theme_key)
+        path = os.path.join(STATIC_THEMES_DIR, safe, "index.html")
+        # Determine domain: prefer from per-model stats
+        domain_guess = None
+        for model, tm in summaries["model_theme_summary"].items():
+            s = tm.get(theme_key)
+            if s and s.get("domain"):
+                domain_guess = s.get("domain")
+                break
+        per_model_rows = _summarize_theme_across_models(theme_key, summaries["model_theme_summary"])
+        sample = _theme_sample_from_records(records, THEME_SAMPLE_LIMIT)
+        _write_file(path, render_theme_detail(theme_key, domain_guess, per_model_rows, sample))
+
+
+def generate_sitemap_and_robots(model_summary, theme_keys):
+    # Build sitemap.xml
+    today_iso = date.today().isoformat()
+    urls = []
+    # Base sections
+    urls.append((f"{SITE_BASE_URL}/", today_iso))
+    urls.append((f"{SITE_BASE_URL}/models/", today_iso))
+    urls.append((f"{SITE_BASE_URL}/themes/", today_iso))
+    # Model pages with release dates if available
+    for m in model_summary:
+        mid = m.get("model")
+        safe = generate_safe_id(mid)
+        lastmod = (m.get("release_date") or today_iso)
+        urls.append((f"{SITE_BASE_URL}/models/{safe}/", lastmod))
+    # Theme pages
+    for key in theme_keys:
+        safe = generate_safe_id(key)
+        urls.append((f"{SITE_BASE_URL}/themes/{safe}/", today_iso))
+    # Render XML
+    body = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+            "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"]
+    for loc, lm in urls:
+        body.append("  <url>")
+        body.append(f"    <loc>{_html_escape(loc)}</loc>")
+        body.append(f"    <lastmod>{_html_escape(lm)}</lastmod>")
+        body.append("  </url>")
+    body.append("</urlset>\n")
+    _write_file("sitemap.xml", "\n".join(body))
+
+    # robots.txt
+    robots = f"User-agent: *\nAllow: /\nSitemap: {SITE_BASE_URL}/sitemap.xml\n"
+    _write_file("robots.txt", robots)
+
 def main():
     print("Starting preprocessing...")
     model_meta_dict = load_model_metadata(MODEL_METADATA_FILE)
@@ -576,6 +918,11 @@ def main():
 
     # 4) Per-model theme breakdowns (lazy-loaded by model detail view)
     save_per_model_theme_breakdowns(OUTPUT_MODEL_THEMES_DIR, summaries["model_theme_summary"])
+
+    # Phase 2: Generate static pages for SEO
+    print("\nGenerating static pages (Phase 2)...")
+    generate_static_pages(model_meta_dict, summaries, data_by_theme)
+    generate_sitemap_and_robots(summaries["model_summary"], list(data_by_theme.keys()))
 
     print("\nPreprocessing and saving complete (Phase 1 split outputs).")
 
