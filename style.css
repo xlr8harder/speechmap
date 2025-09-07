@@ -24,7 +24,7 @@ code { background-color: #eee; padding: 2px 5px; border-radius: 3px; font-family
 pre { background-color: #eee; padding: 12px; border-radius: 4px; overflow-x: auto; font-family: monospace; margin-top: 0.8em; margin-bottom: 1em; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
 a { color: #0056b3; text-decoration: none; }
 a:hover { text-decoration: underline; }
-[x-cloak] { display: none !important; }
+/* Removed Alpine.js cloak rule (no SPA) */
 
 /* --- Header & Logo --- */
 .site-header {
@@ -40,10 +40,7 @@ a:hover { text-decoration: underline; }
 }
 
 
-/* Loading/Error */
-.loading-indicator, .error-message { padding: 15px; margin: 20px auto; border-radius: 4px; max-width: 800px; text-align: center; }
-.loading-indicator { background-color: #e9ecef; color: #495057; }
-.error-message { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; font-weight: bold; }
+/* Removed SPA loading/error boxes (no longer used) */
 
 /* --- Navigation & Views --- */
 nav.view-selector { margin-bottom: 15px; }

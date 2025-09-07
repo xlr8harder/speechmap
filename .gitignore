@@ -1,3 +1,5 @@
-analysis
-*.sw?
-.DS_Store
+# Build artifacts and caches
+__pycache__/
+
+# Generated artifacts to exclude
+theme_details/
