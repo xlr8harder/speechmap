@@ -728,6 +728,8 @@ def render_models_index(model_summary):
         )
     table = """
 <h2>Model Results</h2>
+<p>Compare models by how often they fully answer sensitive prompts. Click a model name to see per-theme details and example responses.</p>
+<p>Columns show: Complete (answered), Evasive (partial/off-topic/redirect), Denial (refusal), and Error (API/moderation block).</p>
 <div id=\"overview-table\" class=\"table-container\"></div>
 <div id=\"static-fallback-overview\">
 <table class=\"simple-table\">
@@ -824,6 +826,8 @@ def render_themes_index(theme_summary_all):
         )
     table = """
 <h2>Question Themes</h2>
+<p>Explore overall compliance by question theme across all models. Click a theme to view prompts and model responses.</p>
+<p>Columns show: Models (with responses), # Resp (total judgments), and the share that were Complete, Evasive, Denial, and Error.</p>
 <div id=\"question-themes-table\" class=\"table-container\"></div>
 <div id=\"static-fallback-themes\">
 <table class=\"simple-table\">
