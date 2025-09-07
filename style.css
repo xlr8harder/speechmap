@@ -47,9 +47,32 @@ a:hover { text-decoration: underline; }
 
 /* --- Navigation & Views --- */
 nav.view-selector { margin-bottom: 15px; }
-nav.view-selector button { padding: 8px 15px; margin-right: 5px; cursor: pointer; border: 1px solid #ccc; background-color: #f0f0f0; border-radius: 4px; font-size: 1em; transition: background-color 0.2s ease, border-color 0.2s ease; }
-nav.view-selector button.active { background-color: #007bff; color: white; border-color: #007bff; }
-nav.view-selector button:hover:not(.active) { background-color: #e2e6ea; border-color: #adb5bd;}
+/* Unify nav button/link styling */
+nav.view-selector button,
+nav.view-selector a {
+    display: inline-block;
+    padding: 8px 15px;
+    margin-right: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+    color: #333;
+}
+nav.view-selector button.active,
+nav.view-selector a.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+nav.view-selector button:hover:not(.active),
+nav.view-selector a:hover:not(.active) {
+    background-color: #e2e6ea;
+    border-color: #adb5bd;
+}
 
 /* --- About View --- */
 .about-content {
@@ -391,6 +414,12 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .openrouter-link { display: inline-flex; align-items: center; padding: 2px 6px; background-color: #eee; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: #333; font-size: 0.8em; vertical-align: middle; transition: background-color 0.2s ease; }
 .openrouter-link:hover { background-color: #ddd; text-decoration: none; color: #000; }
 .openrouter-link img { height: 0.9em; width: 0.9em; margin-left: 4px; margin-right: 2px; vertical-align: text-bottom; }
+
+/* --- Simple static table fallback --- */
+.simple-table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+.simple-table th, .simple-table td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; }
+.simple-table th { background-color: #f8f9fa; font-weight: 600; color: #495057; }
+.simple-table td.num, .simple-table th.num { text-align: right; }
 
 /* --- Model Timeline View --- */
 .timeline-view-container { /* New rule for max-width and centering */

@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Question Themes (Static)</title>
+<title>Question Themes</title>
 <meta name="description" content="SpeechMap.AI — Explore model compliance across sensitive prompts.">
 <link rel="canonical" href="https://speechmap.ai/themes/">
-<meta property="og:title" content="Question Themes (Static)">
+<meta property="og:title" content="Question Themes">
 <meta property="og:description" content="SpeechMap.AI — Explore model compliance across sensitive prompts.">
 <meta property="og:image" content="https://speechmap.ai/og-image.png">
 <meta property="og:url" content="https://speechmap.ai/themes/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<link href="https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css" rel="stylesheet">
 <link href="../style.css" rel="stylesheet">
 </head><body>
-<div class="site-header"><a href="../"><img src="../speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo"></a>
-<h1><a href="../" style="text-decoration:none;color:inherit">SpeechMap.AI</a></h1></div>
+<div class="site-header"><img src="../speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo">
+<h1>SpeechMap.AI <span class="subtitle">The Free Speech Dashboard for AI.</span></h1></div>
 <nav class="view-selector">
-  <a href="../index.html#/overview">Interactive Results</a>
-  <a href="../models/">Models (Static)</a>
-  <a href="../themes/">Themes (Static)</a>
+  <button onclick="location.assign('../index.html')" class="">About</button>
+  <button onclick="location.assign('../models/')" class="">Model Results</button>
+  <button onclick="location.assign('../themes/')" class="active">Question Themes</button>
+  <button onclick="location.assign('../index.html#/timeline')" class="">Model Timeline</button>
+  <button onclick="location.assign('../index.html#/acknowledgments')" class="">Acknowledgments</button>
 </nav>
 <hr>
 
 <h2>Question Themes</h2>
-<p>Static, indexable list for search engines. For dynamic filtering or per-model views, use the Interactive Results.</p>
+<div id="question-themes-table" class="table-container"></div>
+<div id="static-fallback-themes">
 <table class="simple-table">
   <thead><tr><th>Theme</th><th>Domain</th><th>Models</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
   <tbody>
@@ -558,5 +562,12 @@
 <tr><td><a href="/themes/ideology_transhumanism_mind_uploading/">ideology_transhumanism_mind_uploading</a></td><td>Science, Technology &amp; Bioethics</td><td class="num">158</td><td class="num">632</td><td class="num">94.8%</td><td class="num">2.8%</td><td class="num">2.2%</td><td class="num">0.2%</td></tr>
   </tbody>
 </table>
-<footer style="margin:30px 0;color:#666;font-size:0.9em">Static render for SEO. For full interactivity, use the Interactive Results.
-</footer></body></html>
+</div>
+
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+<script src="../script.js?3"></script>
+<script>window.speechmapHydrate && window.speechmapHydrate();</script>
+</body></html>

@@ -3,12 +3,12 @@
 const COMPLIANCE_COLORS = { 'COMPLETE': '#2ecc71', 'EVASIVE': '#f1c40f', 'DENIAL': '#e74c3c', 'ERROR': '#9b59b6', 'UNKNOWN': '#bdc3c7' };
 const JUDGMENT_KEYS = { 'pct_complete_overall': { label: '% Complete', key: 'k', color: COMPLIANCE_COLORS.COMPLETE }, 'pct_evasive': { label: '% Evasive', key: 'e', color: COMPLIANCE_COLORS.EVASIVE }, 'pct_denial': { label: '% Denial', key: 'd', color: COMPLIANCE_COLORS.DENIAL }, 'pct_error': { label: '% Error', key: 'r', color: COMPLIANCE_COLORS.ERROR } };
 const VARIATION_MAP = { '1': 'Type 1: Draft Essay', '2': 'Type 2: Explain Benefits', '3': 'Type 3: Satirize Opponents', '4': 'Type 4: Passionate Speech' };
-const THEME_DETAIL_DIR = 'theme_details'; const UNKNOWN_CREATOR = 'Unknown Creator'; const HIGHLIGHT_COLORS = { fadedBackground: 'rgba(200, 200, 200, 0.7)', fadedBorder: 'rgba(180, 180, 180, 0.7)' };
-// Phase 1 data split paths
-const CORE_META_PATH = 'data/metadata-core.json?1';
-const QTHEME_SUMMARY_DIR = 'data/question-theme-summary';
-const MODEL_THEMES_DIR = 'data/model-themes';
-const MODEL_DOMAIN_SUMMARY_PATH = 'data/model-domain-summary.json?1';
+const THEME_DETAIL_DIR = '/theme_details'; const UNKNOWN_CREATOR = 'Unknown Creator'; const HIGHLIGHT_COLORS = { fadedBackground: 'rgba(200, 200, 200, 0.7)', fadedBorder: 'rgba(180, 180, 180, 0.7)' };
+// Phase 1/3 data split paths (absolute to work on subpaths)
+const CORE_META_PATH = '/data/metadata-core.json?1';
+const QTHEME_SUMMARY_DIR = '/data/question-theme-summary';
+const MODEL_THEMES_DIR = '/data/model-themes';
+const MODEL_DOMAIN_SUMMARY_PATH = '/data/model-domain-summary.json?1';
 
 // --- Alpine.js Data Store ---
 document.addEventListener('alpine:init', () => {
@@ -303,3 +303,175 @@ function formatDate(d){if(!d)return"N/A";try{return new Date(d).toLocaleString('
 function sanitize(s){if(s==null)return'';const t=document.createElement('div');t.textContent=String(s);return t.innerHTML;}
 function percentWithBgBarFormatter(c,p,o){ const v=c.getValue(); if(typeof v!=='number'||isNaN(v))return""; const clr=p.color||'#bdc3c7'; const ct=document.createElement('div'); ct.classList.add('percent-bar-container'); const b=document.createElement('div'); b.classList.add('percent-bar-bg'); b.style.width=`${v}%`; b.style.backgroundColor=clr; const tx=document.createElement('span'); tx.classList.add('percent-bar-text'); tx.textContent=v.toFixed(1)+'%'; ct.appendChild(b); ct.appendChild(tx); return ct; }
 function dateSorterNullable(a,b,aR,bR,col,dir,sorterParams){ const an=a==null||a===undefined||a===''; const bn=b==null||b===undefined||b===''; if(an&&bn)return 0; if(an)return dir==="asc"?1:-1; if(bn)return dir==="asc"?-1:1; try{const dA=new Date(a);const dB=new Date(b);if(!isNaN(dA)&&!isNaN(dB))return dA-dB;}catch(e){} return String(a).localeCompare(String(b)); }
+
+// --- Phase 3: Simple hydration for static pages ---
+(function(){
+  function byId(id){ return document.getElementById(id); }
+  function hideId(id){ const el=byId(id); if(el) el.style.display='none'; }
+  function atPath(re){ try{ return re.test(window.location.pathname); }catch(e){ return false; } }
+  function safeName(t){ if(!t) return 'id'; const n=t.normalize('NFKD').replace(/[\u0300-\u036f]/g,''); let s=n.toLowerCase().replace(/[^\w\s-]/g,'-').replace(/[\s-]+/g,'-'); s=s.replace(/^-+|-+$/g,'').substring(0,100); return s||'id'; }
+
+  async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); if(!r.ok) throw new Error(`HTTP ${r.status} ${path}`); return await r.json(); }
+
+  async function hydrateModelsIndex(){
+    const cont = byId('overview-table'); if(!cont) return;
+    try{
+      const core = await fetchJSON(CORE_META_PATH);
+      const data = core && Array.isArray(core.model_summary)? core.model_summary: [];
+      new Tabulator(cont,{
+        data:[...data], layout:"fitDataFill", height:"60vh", placeholder:"No models.", selectable:false,
+        initialSort:[{column:"pct_complete_overall",dir:"asc"}], responsiveLayout:"collapse",
+        columns:[
+          {title:"Model",field:"model",widthGrow:2,frozen:true,headerFilter:"input",cellClick:(e,c)=>{const m=c.getRow().getData().model; window.location.assign(`/models/${safeName(m)}/`);},cssClass:"clickable-cell",responsive:0},
+          {title:"Released",field:"release_date",width:110,sorter:dateSorterNullable,headerFilter:"input",hozAlign:"center",responsive:2},
+          {title:"# Resp",field:"num_responses",width:90,hozAlign:"right",sorter:"number",responsive:3},
+          {title:"% Comp",field:"pct_complete_overall",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.COMPLETE},responsive:0},
+          {title:"% Evas",field:"pct_evasive",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.EVASIVE},responsive:1},
+          {title:"% Deny",field:"pct_denial",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.DENIAL},responsive:1},
+          {title:"% Err",field:"pct_error",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.ERROR},responsive:1},
+        ]
+      });
+      hideId('static-fallback-overview');
+    }catch(e){ console.error('Hydrate models index failed:', e); }
+  }
+
+  async function hydrateModelDetail(){
+    const cont = byId('model-detail-table'); if(!cont) return;
+    try{
+      const title = document.title||''; const prefix='Model: ';
+      const idx=title.indexOf(prefix); let modelId=null; if(idx!==-1){ modelId=title.substring(idx+prefix.length).trim(); }
+      if(!modelId){ console.warn('Cannot detect model id from title'); return; }
+      const core = await fetchJSON(CORE_META_PATH);
+      const mt = await (async ()=>{ const s=safeName(modelId); return await fetchJSON(`${MODEL_THEMES_DIR}/${s}.json`); })();
+      const d = mt || {}; const rows = Object.entries(d).map(([k,s])=>{const c=s.c||0; return {grouping_key:k, domain:s.domain||'N/A', num_responses:c, pct_complete:c>0?((s.k||0)/c*100):0, pct_evasive:c>0?((s.e||0)/c*100):0, pct_denial:c>0?((s.d||0)/c*100):0, pct_error:c>0?((s.r||0)/c*100):0};});
+      new Tabulator(cont,{
+        data:[...rows], layout:"fitDataFill", height:"60vh", placeholder:"No themes for model.", selectable:false,
+        initialSort:[{column:"pct_complete",dir:"asc"}], responsiveLayout:"collapse",
+        columns:[
+          {title:"Grouping Key",field:"grouping_key",widthGrow:2,frozen:true,headerFilter:"input",cellClick:(e,c)=>{const k=c.getRow().getData().grouping_key; window.location.assign(`/themes/${safeName(k)}/#model-${safeName(modelId)}`);},cssClass:"clickable-cell",responsive:0},
+          {title:"Domain",field:"domain",width:150,headerFilter:"input",responsive:2},
+          {title:"# Resp",field:"num_responses",width:90,hozAlign:"right",sorter:"number",responsive:3},
+          {title:"% Complete",field:"pct_complete",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.COMPLETE},responsive:0},
+          {title:"% Evas",field:"pct_evasive",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.EVASIVE},responsive:1},
+          {title:"% Deny",field:"pct_denial",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.DENIAL},responsive:1},
+          {title:"% Err",field:"pct_error",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.ERROR},responsive:1},
+        ]
+      });
+      hideId('static-fallback-model-detail');
+    }catch(e){ console.error('Hydrate model detail failed:', e); }
+  }
+
+  async function hydrateThemesIndex(){
+    const cont = byId('question-themes-table'); if(!cont) return;
+    try{
+      const data = await fetchJSON(`${QTHEME_SUMMARY_DIR}/all.json`);
+      new Tabulator(cont,{
+        data:[...data], layout:"fitDataFill", height:"60vh", placeholder:"No themes.", selectable:false,
+        initialSort:[{column:"pct_complete_overall",dir:"asc"}], responsiveLayout:"collapse",
+        columns:[
+          {title:"Theme",field:"grouping_key",widthGrow:2,frozen:true,headerFilter:"input",cellClick:(e,c)=>{const k=c.getRow().getData().grouping_key; window.location.assign(`/themes/${safeName(k)}/`);},cssClass:"clickable-cell",responsive:0},
+          {title:"Domain",field:"domain",width:150,headerFilter:"input",responsive:2},
+          {title:"Models",field:"num_models",width:100,hozAlign:"right",sorter:"number",responsive:3},
+          {title:"# Resp",field:"num_responses",width:90,hozAlign:"right",sorter:"number",responsive:3},
+          {title:"% Complete",field:"pct_complete_overall",width:110,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.COMPLETE},responsive:0},
+          {title:"% Evas",field:"pct_evasive",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.EVASIVE},responsive:1},
+          {title:"% Deny",field:"pct_denial",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.DENIAL},responsive:1},
+          {title:"% Err",field:"pct_error",width:100,hozAlign:"right",sorter:"number",formatter:percentWithBgBarFormatter,formatterParams:{color:COMPLIANCE_COLORS.ERROR},responsive:1},
+        ]
+      });
+      hideId('static-fallback-themes');
+    }catch(e){ console.error('Hydrate themes index failed:', e); }
+  }
+
+  async function hydrateThemeDetail(){
+    // On /themes/{slug}/, hydrate model TOC and full responses grouped by model
+    const toc = byId('theme-models-toc');
+    const respContainer = byId('theme-responses');
+    if(!toc && !respContainer) return;
+    // derive theme key from title or path
+    let themeKey = null;
+    try{
+      const t=document.title||''; const pfx='Theme: ';
+      const i=t.indexOf(pfx); if(i!==-1){ themeKey=t.substring(i+pfx.length).trim(); }
+      if(!themeKey){ const m=window.location.pathname.match(/^\/themes\/([^\/]+)\/$/); if(m&&m[1]) themeKey=decodeURIComponent(m[1]); }
+    }catch(e){}
+    if(!themeKey) { console.warn('Theme detail: cannot detect key'); return; }
+    const safe = (s=>{ if(!s)return'id'; const n=s.normalize('NFKD').replace(/[\u0300-\u036f]/g,''); let x=n.toLowerCase().replace(/[^\w\s-]/g,'-').replace(/[\s-]+/g,'-'); x=x.replace(/^-+|-+$/g,'').substring(0,100); return x||'id'; })(themeKey);
+    try{
+      // Fetch gzipped records
+      const fp = `${THEME_DETAIL_DIR}/${safe}.json.gz`;
+      const r = await fetch(fp, { cache:'no-store', headers:{'Accept-Encoding':'gzip'} });
+      if(!r.ok) throw new Error(`HTTP ${r.status} ${fp}`);
+      const ab = await r.arrayBuffer();
+      const txt = pako.inflate(new Uint8Array(ab), { to:'string' });
+      const data = JSON.parse(txt);
+      const records = Array.isArray(data.records)? data.records: [];
+      // Build per-model summary and grouped sections
+      const groups = {};
+      for(const rec of records){ const m = rec.model || 'Unknown'; (groups[m]||(groups[m]=[])).push(rec); }
+      // Compute pct and build TOC items
+      const tocItems = Object.keys(groups).sort().map(m => {
+        const arr = groups[m]; const c = arr.length; let k=0; for(const r of arr){ if(r.compliance==='COMPLETE') k++; }
+        const pct = c>0 ? (k/c*100) : 0;
+        const safe = safeName(m);
+        return { model:m, safe, pct, count:c };
+      });
+      function complianceBoxStyleFromPct(p){ let c='#bdc3c7'; if(typeof p==='number'&&!isNaN(p)){ c = p>=90?'#2ecc71':(p>=25?'#f1c40f':'#e74c3c'); } const t=(c==='#f1c40f'||c==='#bdc3c7')?'#333':'white'; return `background-color:${c};color:${t};`; }
+      function renderMarkdownHTML(text){ try{ if (window.marked && window.DOMPurify){ return window.DOMPurify.sanitize(window.marked.parse(text||''), {USE_PROFILES:{html:true}}); } }catch(e){} const esc = sanitize; return `<pre class="text-display">${esc(text||'')}</pre>`; }
+      if(toc){
+        toc.innerHTML = tocItems.map(it => `
+  <li>
+    <a href="#model-${it.safe}" class="toc-link-item">
+      <span class="toc-model-name">${sanitize(it.model)}</span>
+      <span class="toc-right-group">
+        <span class="toc-compliance-box" style="${complianceBoxStyleFromPct(it.pct)}">${it.pct.toFixed(1)}%</span>
+        <span class="toc-response-count">(${it.count} Resp.)</span>
+      </span>
+    </a>
+  </li>`).join('\n');
+      }
+      // Render grouped responses
+      if(respContainer){
+        const esc = sanitize;
+        const sectionFor = (m, arr) => {
+          arr.sort((a,b)=> (parseInt(a.variation||'0')-parseInt(b.variation||'0')));
+          const safe = safeName(m);
+          const cards = arr.map(rec => {
+            const c = esc(rec.compliance||'');
+            const q = esc(rec.question_text||'');
+            const a = renderMarkdownHTML(rec.response_text||'');
+            const j = renderMarkdownHTML(rec.judge_analysis||'');
+            const v = esc(rec.variation||'');
+            const or = `https://openrouter.ai/chat?models=${encodeURIComponent(rec.model||'')}&message=${encodeURIComponent(rec.question_text||'')}`;
+            return `
+  <div class="response-card-nested">
+    <div class="response-header nested-header"><strong>Variation: ${v}</strong> · <span class="compliance-label compliance-${c}">${c}</span></div>
+    <div class="detail-section question-section"><strong>Question:</strong><pre class="text-display">${q}</pre></div>
+    <div class="detail-section"><strong>Model Response:</strong><div class="text-display markdown-content">${a}</div></div>
+    <div class="detail-section"><strong>Judge Analysis:</strong><div class="text-display markdown-content">${j}</div></div>
+    <div><a class="openrouter-link" href="${or}" target="_blank" rel="noopener noreferrer">Try on OpenRouter →</a></div>
+  </div>`;
+          }).join('\n');
+          return `
+<section class="model-section" id="model-${safe}">
+  <h4 class="model-section-header"><span>${esc(m)}</span></h4>
+  ${cards}
+</section>`;
+        };
+        const sections = Object.keys(groups).sort().map(m => sectionFor(m, groups[m])).join('\n');
+        respContainer.innerHTML = sections;
+        // After rendering, if a hash anchor is present, scroll to it
+        const h = window.location.hash; if (h && h.startsWith('#')) {
+          const id = h.substring(1);
+          setTimeout(() => { const el = document.getElementById(id); if (el) { el.scrollIntoView({behavior:'smooth', block:'start'}); } }, 50);
+        }
+      }
+    }catch(e){ console.error('Hydrate theme detail failed:', e); }
+  }
+  window.speechmapHydrate = function(){
+    if(atPath(/^\/models\/$/)) { hydrateModelsIndex(); return; }
+    if(atPath(/^\/models\/[\w\-\.]+\/$/)) { hydrateModelDetail(); return; }
+    if(atPath(/^\/themes\/$/)) { hydrateThemesIndex(); return; }
+    if(atPath(/^\/themes\/[\w\-\.]+\/$/)) { hydrateThemeDetail(); return; }
+  };
+})();

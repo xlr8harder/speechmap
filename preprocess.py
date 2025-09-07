@@ -10,6 +10,7 @@ from collections import defaultdict
 import unicodedata
 from urllib.parse import quote_plus
 from datetime import date
+import argparse
 
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
@@ -544,7 +545,7 @@ def _write_file(path, content):
     print(f"Wrote {path}")
 
 
-def _page_head(title, canonical_url, depth=0):
+def _page_head(title, canonical_url, depth=0, active_tab=None):
     desc = "SpeechMap.AI — Explore model compliance across sensitive prompts."
     # Use absolute OG image for social sharing
     ogimg = f"{SITE_BASE_URL}/og-image.png"
@@ -561,26 +562,36 @@ def _page_head(title, canonical_url, depth=0):
 <meta property=\"og:url\" content=\"{_html_escape(canonical_url)}\">
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
+<link href=\"https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css\" rel=\"stylesheet\">
 <link href=\"{prefix}style.css\" rel=\"stylesheet\">
 </head><body>
-<div class=\"site-header\"><a href=\"{prefix}\"><img src=\"{prefix}speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\"></a>
-<h1><a href=\"{prefix}\" style=\"text-decoration:none;color:inherit\">SpeechMap.AI</a></h1></div>
+<div class=\"site-header\"><img src=\"{prefix}speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\">\n<h1>SpeechMap.AI <span class=\"subtitle\">The Free Speech Dashboard for AI.</span></h1></div>
 <nav class=\"view-selector\">
-  <a href=\"{prefix}index.html#/overview\">Interactive Results</a>
-  <a href=\"{prefix}models/\">Models (Static)</a>
-  <a href=\"{prefix}themes/\">Themes (Static)</a>
+  <button onclick=\"location.assign('{prefix}index.html')\" class=\"{ 'active' if active_tab=='about' else '' }\">About</button>
+  <button onclick=\"location.assign('{prefix}models/')\" class=\"{ 'active' if active_tab=='models' else '' }\">Model Results</button>
+  <button onclick=\"location.assign('{prefix}themes/')\" class=\"{ 'active' if active_tab=='themes' else '' }\">Question Themes</button>
+  <button onclick=\"location.assign('{prefix}index.html#/timeline')\" class=\"{ 'active' if active_tab=='timeline' else '' }\">Model Timeline</button>
+  <button onclick=\"location.assign('{prefix}index.html#/acknowledgments')\" class=\"{ 'active' if active_tab=='ack' else '' }\">Acknowledgments</button>
 </nav>
 <hr>
 """
 
 
-def _page_foot():
-    return """<footer style=\"margin:30px 0;color:#666;font-size:0.9em\">Static render for SEO. For full interactivity, use the Interactive Results.
-</footer></body></html>"""
+def _page_foot(depth=0):
+    prefix = "../" * depth
+    return (
+        f"\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js\"></script>\n"
+        + f"<script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script>\n"
+        + f"<script src=\"https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js\"></script>\n"
+        + f"<script src=\"https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js\"></script>\n"
+        + f"<script src=\"{prefix}script.js?3\"></script>\n"
+        + "<script>window.speechmapHydrate && window.speechmapHydrate();</script>\n"
+        + "</body></html>"
+    )
 
 
 def render_models_index(model_summary):
-    title = "Model Results (Static)"
+    title = "Model Results"
     canon = f"{SITE_BASE_URL}/models/"
     depth = 1
     rows = []
@@ -601,12 +612,13 @@ def render_models_index(model_summary):
         )
     table = """
 <h2>Model Results</h2>
-<p>This is a static, indexable version. For interactive sorting/filtering, use the Interactive Results.</p>
+<div id=\"overview-table\" class=\"table-container\"></div>
+<div id=\"static-fallback-overview\">
 <table class=\"simple-table\">
   <thead><tr><th>Model</th><th>Released</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
   <tbody>
-""" + "\n".join(rows) + "\n  </tbody>\n</table>\n"
-    return _page_head(title, canon, depth=depth) + table + _page_foot()
+""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n"
+    return _page_head(title, canon, depth=depth, active_tab='models') + table + _page_foot(depth=depth)
 
 
 def render_model_detail(model_id, meta, theme_stats_for_model):
@@ -620,13 +632,27 @@ def render_model_detail(model_id, meta, theme_stats_for_model):
         if v is None or v == "":
             continue
         meta_rows.append(f"<tr><td>{_html_escape(k.replace('_',' ').title())}</td><td>{_html_escape(v)}</td></tr>")
-    meta_html = """
-<h2>Model Details</h2>
-<p><a href=\"../\">← Back to Models</a> · <a href=\"%sindex.html#/model/%s\">Open Interactive</a></p>
-<table class=\"simple-table\"><tbody>
-%s
-</tbody></table>
-""" % ("../" * (depth), quote_plus(model_id), "\n".join(meta_rows) or "<tr><td colspan=2><em>No additional metadata.</em></td></tr>")
+    # Build meta info using the same classes as the interactive view
+    def _fmt_key(k):
+        try:
+            return str(k).replace("_", " ").title()
+        except Exception:
+            return str(k)
+    meta_items = []
+    if meta:
+        for k, v in meta.items():
+            if k == "model_identifier" or v is None or v == "":
+                continue
+            meta_items.append(f"<div class=\"meta-item\"><span class=\"meta-key\">{_html_escape(_fmt_key(k))}:</span> <span class=\"meta-value\">{_html_escape(v)}</span></div>")
+    meta_section = (
+        "<div class=\"model-meta-box\">"
+        + "<h3>Model Information</h3>"
+        + "<div class=\"meta-grid\">"
+        + ("\n".join(meta_items) if meta_items else "<div class=\"meta-item\"><em>(No additional metadata available for this model.)</em></div>")
+        + "</div></div>"
+    )
+
+    header_html = f"<h2>Model Details: {_html_escape(model_id)}</h2><p><a href=\"../\">← Back to Models</a></p>"
 
     # Build theme rows
     rows = []
@@ -637,7 +663,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model):
         items.append((key, s.get("domain") or "N/A", c, pct_c, s))
     items.sort(key=lambda x: (x[3], x[0]))
     for key, dom, c, pct_c, s in items:
-        theme_link = f"../../themes/{generate_safe_id(key)}/"
+        theme_link = f"../../themes/{generate_safe_id(key)}/#model-{generate_safe_id(model_id)}"
         rows.append(
             f"<tr>"
             f"<td><a href=\"{theme_link}\">{_html_escape(key)}</a></td>"
@@ -651,15 +677,17 @@ def render_model_detail(model_id, meta, theme_stats_for_model):
         )
     table = """
 <h3>Compliance by Question Theme</h3>
+<div id=\"model-detail-table\" class=\"table-container\"></div>
+<div id=\"static-fallback-model-detail\">
 <table class=\"simple-table\">
   <thead><tr><th>Theme</th><th>Domain</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
   <tbody>
-""" + "\n".join(rows) + "\n  </tbody>\n</table>\n"
-    return _page_head(title, canon, depth=depth) + meta_html + table + _page_foot()
+""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n"
+    return _page_head(title, canon, depth=depth, active_tab='models') + header_html + meta_section + table + _page_foot(depth=depth)
 
 
 def render_themes_index(theme_summary_all):
-    title = "Question Themes (Static)"
+    title = "Question Themes"
     canon = f"{SITE_BASE_URL}/themes/"
     depth = 1
     rows = []
@@ -680,12 +708,13 @@ def render_themes_index(theme_summary_all):
         )
     table = """
 <h2>Question Themes</h2>
-<p>Static, indexable list for search engines. For dynamic filtering or per-model views, use the Interactive Results.</p>
+<div id=\"question-themes-table\" class=\"table-container\"></div>
+<div id=\"static-fallback-themes\">
 <table class=\"simple-table\">
   <thead><tr><th>Theme</th><th>Domain</th><th>Models</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
   <tbody>
-""" + "\n".join(rows) + "\n  </tbody>\n</table>\n"
-    return _page_head(title, canon, depth=depth) + table + _page_foot()
+""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n"
+    return _page_head(title, canon, depth=depth, active_tab='themes') + table + _page_foot(depth=depth)
 
 
 def _summarize_theme_across_models(theme_key, model_theme_summary):
@@ -728,29 +757,17 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     title = f"Theme: {theme_key}"
     canon = f"{SITE_BASE_URL}/themes/{generate_safe_id(theme_key)}/"
     depth = 2
-    head = _page_head(title, canon, depth=depth)
+    head = _page_head(title, canon, depth=depth, active_tab='themes')
     head += f"<p><a href=\"../\">← Back to Themes</a> · <a href=\"{'../' * depth}index.html#/questions/{quote_plus(theme_key)}\">Open Interactive</a></p>"
     head += f"<h2>Question Theme</h2><p><strong>Theme:</strong> {_html_escape(theme_key)}<br><strong>Domain:</strong> {_html_escape(domain or 'N/A')}</p>"
 
-    # Per-model summary table
-    rows_html = []
-    for model, dom, c, pct_c, s in per_model_rows:
-        model_link = f"../../models/{generate_safe_id(model)}/"
-        rows_html.append(
-            f"<tr><td><a href=\"{model_link}\">{_html_escape(model)}</a></td>"
-            f"<td>{_html_escape(dom)}</td>"
-            f"<td class=\"num\">{c}</td>"
-            f"<td class=\"num\">{_pct(pct_c)}</td>"
-            f"<td class=\"num\">{_pct((s.get('e',0)/c*100) if c>0 else 0)}</td>"
-            f"<td class=\"num\">{_pct((s.get('d',0)/c*100) if c>0 else 0)}</td>"
-            f"<td class=\"num\">{_pct((s.get('r',0)/c*100) if c>0 else 0)}</td></tr>"
-        )
-    table = """
-<h3>Models Summary</h3>
-<table class=\"simple-table\">
- <thead><tr><th>Model</th><th>Domain</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
- <tbody>
-""" + "\n".join(rows_html) + "\n </tbody>\n</table>\n"
+    # (No per-model table; TOC will be hydrated client-side)
+    toc_html = """
+<details class=\"toc-details\" open>
+  <summary>Model Compliance Summary & Links</summary>
+  <ul class=\"toc-links model-toc vertical\" id=\"theme-models-toc\"></ul>
+</details>
+"""
 
     # Sample responses
     cards = []
@@ -765,17 +782,17 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
         cards.append(
             """
 <div class=\"response-card-nested\">
-  <div class=\"response-header nested-header\"><strong>Variation: %s</strong> · <span class=\"compliance-label\">%s</span></div>
+  <div class=\"response-header nested-header\"><strong>Variation: %s</strong> · <span class=\"compliance-label compliance-%s\">%s</span></div>
   <div class=\"detail-section question-section\"><strong>Question:</strong><pre class=\"text-display\">%s</pre></div>
   <div class=\"detail-section\"><strong>Model Response:</strong><pre class=\"text-display\">%s</pre></div>
   <div class=\"detail-section\"><strong>Judge Analysis:</strong><pre class=\"text-display\">%s</pre></div>
   <div><a class=\"openrouter-link\" href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Try on OpenRouter →</a></div>
 </div>
-""" % (_html_escape(var), _html_escape(comp), _html_escape(q), _html_escape(ans[:2000]), _html_escape(jtxt[:2000]), _html_escape(openrouter))
+""" % (_html_escape(var), _html_escape(comp or ''), _html_escape(comp), _html_escape(q), _html_escape(ans[:2000]), _html_escape(jtxt[:2000]), _html_escape(openrouter))
         )
-    sample_html = "<h3>Sample Responses</h3>" + "\n".join(cards)
+    sample_html = "<h3>Responses</h3><div class=\"response-list\" id=\"theme-responses\">" + "\n".join(cards) + "</div>"
 
-    return head + table + sample_html + _page_foot()
+    return head + toc_html + sample_html + _page_foot(depth=depth)
 
 
 def generate_static_pages(model_meta_dict, summaries, data_by_theme):
@@ -847,8 +864,100 @@ def generate_sitemap_and_robots(model_summary, theme_keys):
     robots = f"User-agent: *\nAllow: /\nSitemap: {SITE_BASE_URL}/sitemap.xml\n"
     _write_file("robots.txt", robots)
 
+
+# ------------------ Static-only generation from Phase 1 artifacts ------------------
+
+def load_core_artifacts():
+    # Load core metadata and summaries from data/* artifacts
+    core_path = OUTPUT_CORE_METADATA_FILE
+    qts_all_path = os.path.join(OUTPUT_QTHEME_SUMMARY_DIR, "all.json")
+    if not os.path.exists(core_path):
+        raise RuntimeError(f"Missing core metadata: {core_path}")
+    if not os.path.exists(qts_all_path):
+        raise RuntimeError(f"Missing question theme summary: {qts_all_path}")
+    with open(core_path, "r", encoding="utf-8") as f:
+        core = json.load(f)
+    with open(qts_all_path, "r", encoding="utf-8") as f:
+        qts_all = json.load(f)
+    model_meta_dict = core.get("model_metadata", {})
+    model_summary = core.get("model_summary", [])
+    # Build model_theme_summary by loading per-model jsons
+    model_theme_summary = {}
+    for m in model_summary:
+        mid = m.get("model")
+        safe = generate_safe_id(mid)
+        p = os.path.join(OUTPUT_MODEL_THEMES_DIR, f"{safe}.json")
+        if os.path.exists(p):
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    model_theme_summary[mid] = json.load(f)
+            except Exception as e:
+                print(f"Warning: Failed to load model themes for {mid}: {e}")
+        else:
+            print(f"Warning: Missing model theme breakdown for {mid}: {p}")
+    return model_meta_dict, model_summary, qts_all, model_theme_summary
+
+
+def generate_static_pages_from_artifacts():
+    print("Regenerating static pages from existing artifacts...")
+    model_meta_dict, model_summary, qts_all, model_theme_summary = load_core_artifacts()
+
+    # Models index and detail pages
+    os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
+    _write_file(os.path.join(STATIC_MODELS_DIR, "index.html"), render_models_index(model_summary))
+    for m in model_summary:
+        mid = m.get("model")
+        safe = generate_safe_id(mid)
+        path = os.path.join(STATIC_MODELS_DIR, safe, "index.html")
+        meta = model_meta_dict.get(mid, {})
+        mt = model_theme_summary.get(mid, {})
+        _write_file(path, render_model_detail(mid, meta, mt))
+
+    # Themes index
+    os.makedirs(STATIC_THEMES_DIR, exist_ok=True)
+    _write_file(os.path.join(STATIC_THEMES_DIR, "index.html"), render_themes_index(qts_all))
+
+    # Per-theme pages (load gz on demand)
+    for t in qts_all:
+        key = t.get("grouping_key")
+        if not key:
+            continue
+        safe = generate_safe_id(key)
+        gz_path = os.path.join(OUTPUT_THEME_DETAIL_DIR, f"{safe}.json.gz")
+        records = []
+        try:
+            if os.path.exists(gz_path):
+                with gzip.open(gz_path, "rt", encoding="utf-8") as f:
+                    j = json.load(f)
+                records = j.get("records", [])
+        except Exception as e:
+            print(f"Warning: Failed to read {gz_path}: {e}")
+        # Domain guess from model_theme_summary
+        domain_guess = None
+        for mid, themes in model_theme_summary.items():
+            s = themes.get(key)
+            if s and s.get("domain"):
+                domain_guess = s.get("domain")
+                break
+        sample = _theme_sample_from_records(records, THEME_SAMPLE_LIMIT)
+        out_path = os.path.join(STATIC_THEMES_DIR, safe, "index.html")
+        _write_file(out_path, render_theme_detail(key, domain_guess, None, sample))
+
 def main():
     print("Starting preprocessing...")
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('--static-only', action='store_true')
+    args, _ = parser.parse_known_args()
+
+    if args.static_only:
+        try:
+            generate_static_pages_from_artifacts()
+            print("Static regeneration complete.")
+        except Exception as e:
+            print(f"Static regeneration failed: {e}")
+            sys.exit(1)
+        return
+
     model_meta_dict = load_model_metadata(MODEL_METADATA_FILE)
     all_data = preprocess_us_hard_data(ANALYSIS_DIR)
 
