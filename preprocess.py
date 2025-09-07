@@ -612,7 +612,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 def _page_foot(depth=0):
     return (
         f"\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js\"></script>\n"
-        + f"<script src=\"/script.js?4\"></script>\n"
+        + f"<script src=\"/script.js?5\"></script>\n"
         + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
         + "</body></html>"
     )

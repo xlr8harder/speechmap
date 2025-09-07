@@ -79,6 +79,57 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
     container.dataset.hydrated = '1';
   }
 
+  function hydrateModelDetail(){
+    const container = document.getElementById('model-detail-table');
+    const fallback = document.querySelector('#static-fallback-model-detail table.simple-table');
+    if (!container || !fallback) return;
+    if (container.dataset.hydrated === '1') return;
+    // Parse static rows
+    const rows = [];
+    fallback.querySelectorAll('tbody tr').forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      if (tds.length < 7) return;
+      const a = tds[0].querySelector('a');
+      const theme = a ? a.textContent.trim() : tds[0].textContent.trim();
+      const href = a ? a.getAttribute('href') : `/themes/${safeName(theme)}/`;
+      rows.push({
+        theme, href,
+        domain: tds[1].textContent.trim() || '',
+        num_responses: parseInt((tds[2].textContent||'0').replace(/[^\d]/g,'')) || 0,
+        pct_complete_overall: parseFloat((tds[3].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
+        pct_evasive: parseFloat((tds[4].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
+        pct_denial: parseFloat((tds[5].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
+        pct_error: parseFloat((tds[6].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
+      });
+    });
+    // Build Tabulator table
+    new Tabulator(container, {
+      data: rows,
+      layout: 'fitDataFill',
+      height: '65vh',
+      placeholder: 'No themes.',
+      initialSort: [{column:'pct_complete_overall', dir:'asc'}],
+      columns: [
+        { title:'Theme', field:'theme', widthGrow:2, formatter:(cell)=>{
+            const r = cell.getRow().getData();
+            const name = r.theme;
+            const link = r.href || `/themes/${safeName(name)}/`;
+            return `<a href="${link}">${name}</a>`;
+          }
+        },
+        { title:'Domain', field:'domain', width:220 },
+        { title:'# Resp', field:'num_responses', width:90, hozAlign:'right', sorter:'number' },
+        { title:'% Comp', field:'pct_complete_overall', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
+        { title:'% Evas', field:'pct_evasive', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
+        { title:'% Deny', field:'pct_denial', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
+        { title:'% Err', field:'pct_error', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
+      ],
+    });
+    const fbWrap = document.getElementById('static-fallback-model-detail');
+    if (fbWrap) fbWrap.style.display = 'none';
+    container.dataset.hydrated = '1';
+  }
+
   function hydrateThemesIndex(){
     const container = document.getElementById('question-themes-table');
     const fallback = document.querySelector('#static-fallback-themes table.simple-table');
@@ -194,6 +245,7 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
   }
   window.speechmapHydrate = function(){
     if(atPath(/^\/models\/$/)) { hydrateModelsIndex(); return; }
+    if(atPath(/^\/models\/[^/]+\/?$/)) { hydrateModelDetail(); return; }
     if(atPath(/^\/themes\/$/)) { hydrateThemesIndex(); return; }
     if(atPath(/^\/timeline\/$/)) { hydrateTimeline(); return; }
   };
