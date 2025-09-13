@@ -92,7 +92,7 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       placeholder: 'No models.',
       initialSort: [{column:'pct_complete_overall', dir:'asc'}],
       columns: [
-        { title:'Model', field:'model', widthGrow:2, formatter:(cell)=>{
+        { title:'Model', field:'model', widthGrow:2, headerFilter:'input', headerFilterPlaceholder:'Filter models…', formatter:(cell)=>{
             const name = cell.getValue();
             const link = `/models/${safeName(name)}/`;
             return `<a href="${link}">${name}</a>`;
