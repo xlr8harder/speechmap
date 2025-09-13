@@ -173,4 +173,3 @@
 {"model_identifier": "nousresearch/hermes-4-70b", "creator": "nousresearch", "model_name": "hermes-4-70b", "model_family": "hermes-4-70b", "release_date": "2025-08-27", "reasoning_model": false, "notes": ""}
 {"model_identifier": "nousresearch/hermes-4-70b-thinking", "creator": "nousresearch", "model_name": "hermes-4-70b", "model_family": "hermes-4-70b", "release_date": "2025-08-27", "reasoning_model": true, "notes": ""}
 {"model_identifier": "meituan/longcat-flash-chat", "creator": "meituan", "model_name": "longcat-flash-chat", "model_family": "longcat-flash", "release_date": "2025-09-01", "reasoning_model": false, "notes": ""}
-
