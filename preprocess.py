@@ -16,15 +16,21 @@ import argparse
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
 MODEL_METADATA_FILE = "model_metadata.json"
-OUTPUT_THEME_DETAIL_DIR = "theme_details"  # New directory for theme files
-OUTPUT_METADATA_FILENAME = "metadata.json"  # Legacy, no longer written in Phase 1
+
+# Cache directory for build-only artifacts (not needed at runtime; not committed)
+CACHE_DIR = ".cache"
+
 
 # Phase 1 split-output locations
 DATA_DIR = "data"
+# Runtime JSON used by the client at runtime (keep under /data)
 OUTPUT_CORE_METADATA_FILE = os.path.join(DATA_DIR, "metadata-core.json")
-OUTPUT_QTHEME_SUMMARY_DIR = os.path.join(DATA_DIR, "question-theme-summary")
-OUTPUT_MODEL_THEMES_DIR = os.path.join(DATA_DIR, "model-themes")
 OUTPUT_MODEL_DOMAIN_SUMMARY_FILE = os.path.join(DATA_DIR, "model-domain-summary.json")
+
+# Build-only artifacts moved under /.cache
+OUTPUT_QTHEME_SUMMARY_DIR = os.path.join(CACHE_DIR, "question-theme-summary")
+OUTPUT_MODEL_THEMES_DIR = os.path.join(CACHE_DIR, "model-themes")
+OUTPUT_THEME_DETAIL_DIR = os.path.join(CACHE_DIR, "theme_details")
 
 # Phase 2 static site generation
 SITE_BASE_URL = "https://speechmap.ai"
@@ -1014,20 +1020,32 @@ def generate_sitemap_and_robots(model_summary, theme_keys):
 # ------------------ Static-only generation from Phase 1 artifacts ------------------
 
 def load_core_artifacts():
-    # Load core metadata and summaries from data/* artifacts
+    """
+    Load core metadata and summaries from artifacts in the /.cache layout.
+    Expects:
+      - /data/metadata-core.json (runtime JSON)
+      - /.cache/question-theme-summary/all.json
+      - /.cache/model-themes/<model>.json
+      - /.cache/theme_details/<theme>.json.gz (optional per-theme details)
+    """
+    # Core metadata is runtime JSON under /data
     core_path = OUTPUT_CORE_METADATA_FILE
-    qts_all_path = os.path.join(OUTPUT_QTHEME_SUMMARY_DIR, "all.json")
     if not os.path.exists(core_path):
         raise RuntimeError(f"Missing core metadata: {core_path}")
+
+    qts_all_path = os.path.join(OUTPUT_QTHEME_SUMMARY_DIR, "all.json")
     if not os.path.exists(qts_all_path):
         raise RuntimeError(f"Missing question theme summary: {qts_all_path}")
+
     with open(core_path, "r", encoding="utf-8") as f:
         core = json.load(f)
     with open(qts_all_path, "r", encoding="utf-8") as f:
         qts_all = json.load(f)
+
     model_meta_dict = core.get("model_metadata", {})
     model_summary = core.get("model_summary", [])
     stats = core.get("stats", {})
+
     # Build model_theme_summary by loading per-model jsons
     model_theme_summary = {}
     for m in model_summary:
