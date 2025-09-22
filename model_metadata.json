@@ -2,6 +2,8 @@
 {"model_identifier": "x-ai/grok-beta", "creator": "x-ai", "model_name": "grok-beta", "model_family": "grok-1.5", "release_date": "2024-05-15", "reasoning_model": false, "notes": ""}
 {"model_identifier": "x-ai/grok-3-beta", "creator": "x-ai", "model_name": "grok-3-beta", "model_family": "grok-3", "release_date": "2025-02-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-4-07-09", "creator": "x-ai", "model_name": "grok-4-0709", "model_family": "grok-4", "release_date": "2025-07-12", "reasoning_model": true, "notes": ""}
+{"model_identifier": "x-ai/grok-4-fast-non-reasoning", "creator": "x-ai", "model_name": "grok-4-fast-non-reasoning", "model_family": "grok-4-fast", "release_date": "2025-09-15", "reasoning_model": false, "notes": ""}
+{"model_identifier": "x-ai/grok-4-fast-reasoning", "creator": "x-ai", "model_name": "grok-4-fast-reasoning", "model_family": "grok-4-fast", "release_date": "2025-09-15", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-3-mini-beta", "creator": "x-ai", "model_name": "grok-3-mini-beta", "model_family": "grok-3", "release_date": "2025-02-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "anthropic/claude-3-opus-20240229", "creator": "anthropic", "model_name": "claude-3-opus-20240229", "model_family": "claude-3-opus", "release_date": "2024-02-29", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-3-sonnet-20240229", "creator": "anthropic", "model_name": "claude-3.5-sonnet-20240229", "model_family": "claude-3-sonnet", "release_date": "2024-02-29", "reasoning_model": false, "notes": ""}
