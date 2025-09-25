@@ -21,6 +21,8 @@
 {"model_identifier": "deepseek/deepseek-chat-v3-0324", "creator": "deepseek", "model_name": "deepseek-chat-v3-0324", "model_family": "deepseek-v3", "release_date": "2025-03-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-v3.1", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-08-22", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-v3.1-thinking", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-08-22", "reasoning_model": true, "notes": ""}
+{"model_identifier": "deepseek/deepseek-v3.1-terminus", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-09-24", "reasoning_model": false, "notes": ""}
+{"model_identifier": "deepseek/deepseek-v3.1-terminus-thinking", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-09-24", "reasoning_model": true, "notes": ""}
 {"model_identifier": "deepseek/deepseek-chat", "creator": "deepseek", "model_name": "deepseek-chat", "model_family": "deepseek-v3", "release_date": "2024-12-26", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-r1", "creator": "deepseek", "model_name": "deepseek-r1", "model_family": "deepseek-r1", "release_date": "2025-01-20", "reasoning_model": true, "notes": ""}
 {"model_identifier": "deepseek/deepseek-r1-0528", "creator": "deepseek", "model_name": "deepseek-r1", "model_family": "deepseek-r1", "release_date": "2025-05-28", "reasoning_model": true, "notes": ""}
