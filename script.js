@@ -256,7 +256,13 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
         if (domain === 'all'){ for (const d in perDom){ const s = perDom[d]; c += (s.c||0); ycount += (s[jsk]||0); } }
         else { const s = perDom[domain] || {}; c += (s.c||0); ycount += (s[jsk]||0); }
         if (c === 0) continue;
-        points.push({ x: rd, y: (ycount / c) * 100.0, label: mid, creator: cr });
+        const isoDay = (meta && meta.release_date) ? String(meta.release_date) : (function(dt){
+          const y = dt.getUTCFullYear();
+          const m = String(dt.getUTCMonth() + 1).padStart(2, '0');
+          const da = String(dt.getUTCDate()).padStart(2, '0');
+          return `${y}-${m}-${da}`;
+        })(rd);
+        points.push({ x: rd, y: (ycount / c) * 100.0, label: mid, creator: cr, dateStr: isoDay });
       }
       points.sort((a,b)=>a.x-b.x);
       if (window.__timelineChart) { try { window.__timelineChart.destroy(); } catch (e) {} }
@@ -271,7 +277,29 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
           responsive: true, maintainAspectRatio: false, animation: false,
           onClick: (e)=>{ const ch=e.chart; const els=ch.getElementsAtEventForMode(e,'point',{intersect:true},true); if(els&&els.length){ const p=ch.config.data.datasets[els[0].datasetIndex].data[els[0].index]; if(p&&p.label) location.assign(`/models/${safeName(p.label)}/`);} },
           scales: { x:{ type:'time', time:{unit:'month'}, title:{display:true,text:'Model Release Date'} }, y:{ title:{display:true,text: ji.label}, min:0,max:100, ticks:{ callback:(v)=>v+'%' } } },
-          plugins: { legend: { display:false } }
+          plugins: {
+            legend: { display:false },
+            tooltip: {
+              callbacks: {
+                // Hide the default title (which is the x-value)
+                title: () => [],
+                // Show: "Model Name (YYYY-MM-DD, 12.3%)"
+                label: (ctx) => {
+                  const raw = ctx.raw || {};
+                  const name = raw.label || ctx.dataset?.label || 'Model';
+                  const day = raw.dateStr || (function(ts){
+                    const d = new Date(ts);
+                    const y = d.getUTCFullYear();
+                    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getUTCDate()).padStart(2, '0');
+                    return `${y}-${m}-${dd}`;
+                  })(ctx.parsed.x);
+                  const yv = (typeof ctx.parsed?.y === 'number') ? `${ctx.parsed.y.toFixed(1)}%` : '';
+                  return `${name} (${day}, ${yv})`;
+                }
+              }
+            }
+          }
         }
       });
     }catch(e){ console.error('Timeline hydrate failed:', e); }
