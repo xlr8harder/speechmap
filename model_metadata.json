@@ -18,6 +18,8 @@
 {"model_identifier": "anthropic/claude-sonnet-4", "creator": "anthropic", "model_name": "claude-sonnet-4", "model_family": "claude-sonnet-4", "release_date": "2025-05-22", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-opus-4-thinking", "creator": "anthropic", "model_name": "claude-opus-4", "model_family": "claude-opus-4", "release_date": "2025-05-22", "reasoning_model": true, "notes": "reasoning_tokens: 512"}
 {"model_identifier": "anthropic/claude-sonnet-4-thinking", "creator": "anthropic", "model_name": "claude-sonnet-4", "model_family": "claude-sonnet-4", "release_date": "2025-05-22", "reasoning_model": true, "notes": "reasoning_tokens: 512"}
+{"model_identifier": "anthropic/claude-sonnet-4.5", "creator": "anthropic", "model_name": "claude-sonnet-4.5", "model_family": "claude-sonnet-4.5", "release_date": "2025-09-29", "reasoning_model": false, "notes": ""}
+{"model_identifier": "anthropic/claude-sonnet-4.5-thinking", "creator": "anthropic", "model_name": "claude-sonnet-4.5", "model_family": "claude-sonnet-4.5", "release_date": "2025-09-29", "reasoning_model": true, "notes": ""}
 {"model_identifier": "deepseek/deepseek-chat-v3-0324", "creator": "deepseek", "model_name": "deepseek-chat-v3-0324", "model_family": "deepseek-v3", "release_date": "2025-03-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-v3.1", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-08-22", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-v3.1-thinking", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-08-22", "reasoning_model": true, "notes": ""}
