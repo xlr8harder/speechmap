@@ -5,6 +5,8 @@
 {"model_identifier": "x-ai/grok-4-fast-non-reasoning", "creator": "x-ai", "model_name": "grok-4-fast-non-reasoning", "model_family": "grok-4-fast", "release_date": "2025-09-15", "reasoning_model": false, "notes": ""}
 {"model_identifier": "x-ai/grok-4-fast-reasoning", "creator": "x-ai", "model_name": "grok-4-fast-reasoning", "model_family": "grok-4-fast", "release_date": "2025-09-15", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-3-mini-beta", "creator": "x-ai", "model_name": "grok-3-mini-beta", "model_family": "grok-3", "release_date": "2025-02-17", "reasoning_model": true, "notes": ""}
+{"model_identifier": "x-ai/grok-4-fast-non-reasoning-20251029", "creator": "x-ai", "model_name": "grok-4-fast-non-reasoning-20251029", "model_family": "grok-4-fast", "release_date": "2025-10-29", "reasoning_model": false, "notes": ""}
+{"model_identifier": "x-ai/grok-4-fast-reasoning-20251029", "creator": "x-ai", "model_name": "grok-4-fast-reasoning-20251029", "model_family": "grok-4-fast", "release_date": "2025-10-29", "reasoning_model": true, "notes": ""}
 {"model_identifier": "anthropic/claude-3-opus-20240229", "creator": "anthropic", "model_name": "claude-3-opus-20240229", "model_family": "claude-3-opus", "release_date": "2024-02-29", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-3-sonnet-20240229", "creator": "anthropic", "model_name": "claude-3.5-sonnet-20240229", "model_family": "claude-3-sonnet", "release_date": "2024-02-29", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-3-haiku-20240307", "creator": "anthropic", "model_name": "claude-3-haiku-20240307", "model_family": "claude-3-haiku", "release_date": "2024-03-07", "reasoning_model": false, "notes": ""}
@@ -25,6 +27,8 @@
 {"model_identifier": "deepseek/deepseek-v3.1-thinking", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-08-22", "reasoning_model": true, "notes": ""}
 {"model_identifier": "deepseek/deepseek-v3.1-terminus", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-09-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-v3.1-terminus-thinking", "creator": "deepseek", "model_name": "deepseek-v3.1", "model_family": "deepseek-v3", "release_date": "2025-09-24", "reasoning_model": true, "notes": ""}
+{"model_identifier": "deepseek/deepseek-v3.2-exp", "creator": "deepseek", "model_name": "deepseek-v3.2-exp", "model_family": "deepseek-v3", "release_date": "2025-09-29", "reasoning_model": false, "notes": ""}
+{"model_identifier": "deepseek/deepseek-v3.2-exp-thinking", "creator": "deepseek", "model_name": "deepseek-v3.2-exp-thinking", "model_family": "deepseek-v3", "release_date": "2025-09-29", "reasoning_model": true, "notes": ""}
 {"model_identifier": "deepseek/deepseek-chat", "creator": "deepseek", "model_name": "deepseek-chat", "model_family": "deepseek-v3", "release_date": "2024-12-26", "reasoning_model": false, "notes": ""}
 {"model_identifier": "deepseek/deepseek-r1", "creator": "deepseek", "model_name": "deepseek-r1", "model_family": "deepseek-r1", "release_date": "2025-01-20", "reasoning_model": true, "notes": ""}
 {"model_identifier": "deepseek/deepseek-r1-0528", "creator": "deepseek", "model_name": "deepseek-r1", "model_family": "deepseek-r1", "release_date": "2025-05-28", "reasoning_model": true, "notes": ""}
@@ -144,6 +148,8 @@
 {"model_identifier": "thudm/glm-4-32b-0414", "creator": "thudm", "model_name": "glm-4-32b-0414", "model_family": "glm-4-32b", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
 {"model_identifier": "z-ai/glm-4.5-air", "creator": "z-ai", "model_name": "glm-4.5-air", "model_family": "glm-4.5-air", "release_date": "2025-07-28", "reasoning_model": false, "notes": ""}
 {"model_identifier": "z-ai/glm-4.5", "creator": "z-ai", "model_name": "glm-4.5", "model_family": "glm-4.5", "release_date": "2025-07-28", "reasoning_model": false, "notes": ""}
+{"model_identifier": "z-ai/glm-4.6", "creator": "z-ai", "model_name": "glm-4.6", "model_family": "glm-4.6", "release_date": "2025-09-30", "reasoning_model": false, "notes": ""}
+{"model_identifier": "z-ai/glm-4.6-thinking", "creator": "z-ai", "model_name": "glm-4.6-thinking", "model_family": "glm-4.6-thinking", "release_date": "2025-09-30", "reasoning_model": true, "notes": ""}
 {"model_identifier": "thudm/glm-4-9b-0414", "creator": "thudm", "model_name": "glm-4-9b-0414", "model_family": "glm-4-9b", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
 {"model_identifier": "thudm/glm-4-z1-32b-0414", "creator": "thudm", "model_name": "glm-4-z1-32b-0414", "model_family": "glm-4-32b", "release_date": "2025-04-14", "reasoning_model": true, "notes": ""}
 {"model_identifier": "nvidia/nemotron-nano-9b-v2", "creator": "nvidia", "model_name": "nemotron-nano-9b", "model_family": "nemotron-nano-9b", "release_date": "2025-08-18", "reasoning_model": false, "notes": ""}
