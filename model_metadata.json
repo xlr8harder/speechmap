@@ -165,6 +165,7 @@
 {"model_identifier": "amazon/nova-lite-v1.0", "creator": "amazon", "model_name": "nova-lite-v1.0", "model_family": "nova-lite-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
 {"model_identifier": "amazon/nova-micro-v1.0", "creator": "amazon", "model_name": "nova-micro-v1.0", "model_family": "nova-micro-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
 {"model_identifier": "amazon/nova-pro-v1.0", "creator": "amazon", "model_name": "nova-pro-v1.0", "model_family": "nova-pro-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
+{"model_identifier": "amazon/nova-premier-v1", "creator": "amazon", "model_name": "nova-premier-v1", "model_family": "nova-premier-v1", "release_date": "2025-10-31", "reasoning_model": false, "notes": ""}
 {"model_identifier": "microsoft/phi-4", "creator": "microsoft", "model_name": "phi-4", "model_family": "phi-4", "release_date": "2025-04-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "microsoft/phi-4-multimodal-instruct", "creator": "microsoft", "model_name": "phi-4-multimodal-instruct", "model_family": "phi-4", "release_date": "2025-04-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "microsoft/phi-4-reasoning", "creator": "microsoft", "model_name": "phi-4-reasoning", "model_family": "phi-4", "release_date": "2025-04-30", "reasoning_model": true, "notes": ""}
@@ -180,8 +181,10 @@
 {"model_identifier": "baidu/ernie-4.5-300b-a47b", "creator": "baidu", "model_name": "ernie-4.5-300b-a47b", "model_family": "ernie-4.5-300b-a47b", "release_date": "2025-06-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-oss-120b", "creator": "openai", "model_name": "gpt-oss-120b", "model_family": "gpt-oss-120b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-oss-20b", "creator": "openai", "model_name": "gpt-oss-20b", "model_family": "gpt-oss-20b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
-{"model_identifier": "openai/gpt-5-chat-2025-08-07", "creator": "openai", "model_name": "gpt-5-chat-2025-08-07", "model_family": "gpt-5-chat", "release_date": "2025-08-07", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-5-chat-2025-08-07", "creator": "openai", "model_name": "gpt-5-chat-2025-08-07", "model_family": "gpt-5-chat", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5.1-chat-2025-11-13", "creator": "openai", "model_name": "gpt-5.1-chat-2025-11-13", "model_family": "gpt-5-chat", "release_date": "2025-11-13", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-5-2025-08-07", "creator": "openai", "model_name": "gpt-5-2025-08-07", "model_family": "gpt-5", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5.1-2025-11-13", "creator": "openai", "model_name": "gpt-5.1-2025-11-13", "model_family": "gpt-5", "release_date": "2025-11-13", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-5-mini-2025-08-07", "creator": "openai", "model_name": "gpt-5-mini-2025-08-07", "model_family": "gpt-5-mini", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-5-nano-2025-08-07", "creator": "openai", "model_name": "gpt-5-nano-2025-08-07", "model_family": "gpt-5-nano", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
 {"model_identifier": "minimax/minimax-m1-40k", "creator": "minimax", "model_name": "minimax-m1-40k", "model_family": "minimax-m1", "release_date": "2025-06-18", "reasoning_model": true, "notes": ""}
