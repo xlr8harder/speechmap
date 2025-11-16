@@ -706,6 +706,7 @@ def render_home_page(stats):
         "    <li><a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\">Support us on Ko-fi</a></li>"
         "    <li><a href=\"https://speechmap.substack.com/\">Subscribe to our Substack for updates</a></li>"
         "    <li><a href=\"/models/\">Explore the data yourself</a></li>"
+        "    <li><a href=\"https://github.com/xlr8harder/llm-compliance\" target=\"_blank\" rel=\"noopener noreferrer\">View the raw data on GitHub</a></li>"
         "    <li><a href=\"https://speechmap.ai\">Share the site</a></li>"
         "  </ul>"
         "</div>"
