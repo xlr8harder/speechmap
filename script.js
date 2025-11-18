@@ -92,7 +92,24 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       placeholder: 'No models.',
       initialSort: [{column:'pct_complete_overall', dir:'asc'}],
       columns: [
-        { title:'Model', field:'model', widthGrow:2, headerFilter:'input', headerFilterPlaceholder:'Filter models…', formatter:(cell)=>{
+        { title:'Model', field:'model', widthGrow:2, headerFilter:'input', headerFilterPlaceholder:'Filter models… (supports /regex/)', headerFilterFunc:(headerValue, rowValue)=>{
+            if (!headerValue) return true;
+            const v = String(rowValue || '');
+            const raw = String(headerValue).trim();
+            const m = raw.match(/^\/(.+)\/([a-z]*)$/i);
+            if (m) {
+              try {
+                const re = new RegExp(m[1], m[2] || 'i');
+                return re.test(v);
+              } catch (e) {
+                // Fall through to substring search on regex errors
+              }
+            }
+            const parts = raw.toLowerCase().split(/\s+/).filter(Boolean);
+            if (!parts.length) return true;
+            const lower = v.toLowerCase();
+            return parts.every(p => lower.includes(p));
+          }, formatter:(cell)=>{
             const name = cell.getValue();
             const link = `/models/${safeName(name)}/`;
             return `<a href="${link}">${name}</a>`;
