@@ -4,6 +4,8 @@
 {"model_identifier": "x-ai/grok-4-07-09", "creator": "x-ai", "model_name": "grok-4-0709", "model_family": "grok-4", "release_date": "2025-07-12", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-4-fast-non-reasoning", "creator": "x-ai", "model_name": "grok-4-fast-non-reasoning", "model_family": "grok-4-fast", "release_date": "2025-09-15", "reasoning_model": false, "notes": ""}
 {"model_identifier": "x-ai/grok-4-fast-reasoning", "creator": "x-ai", "model_name": "grok-4-fast-reasoning", "model_family": "grok-4-fast", "release_date": "2025-09-15", "reasoning_model": true, "notes": ""}
+{"model_identifier": "x-ai/grok-4.1-fast", "creator": "x-ai", "model_name": "grok-4.1-fast", "model_family": "grok-4.1-fast", "release_date": "2025-11-19", "reasoning_model": true, "notes": ""}
+{"model_identifier": "x-ai/grok-4.1-fast-thinking", "creator": "x-ai", "model_name": "grok-4.1-fast-thinking", "model_family": "grok-4.1-fast", "release_date": "2025-11-19", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-3-mini-beta", "creator": "x-ai", "model_name": "grok-3-mini-beta", "model_family": "grok-3", "release_date": "2025-02-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-4-fast-non-reasoning-20251029", "creator": "x-ai", "model_name": "grok-4-fast-non-reasoning-20251029", "model_family": "grok-4-fast", "release_date": "2025-10-29", "reasoning_model": false, "notes": ""}
 {"model_identifier": "x-ai/grok-4-fast-reasoning-20251029", "creator": "x-ai", "model_name": "grok-4-fast-reasoning-20251029", "model_family": "grok-4-fast", "release_date": "2025-10-29", "reasoning_model": true, "notes": ""}
@@ -196,3 +198,6 @@
 {"model_identifier": "nousresearch/hermes-4-70b", "creator": "nousresearch", "model_name": "hermes-4-70b", "model_family": "hermes-4-70b", "release_date": "2025-08-27", "reasoning_model": false, "notes": ""}
 {"model_identifier": "nousresearch/hermes-4-70b-thinking", "creator": "nousresearch", "model_name": "hermes-4-70b", "model_family": "hermes-4-70b", "release_date": "2025-08-27", "reasoning_model": true, "notes": ""}
 {"model_identifier": "meituan/longcat-flash-chat", "creator": "meituan", "model_name": "longcat-flash-chat", "model_family": "longcat-flash", "release_date": "2025-09-01", "reasoning_model": false, "notes": ""}
+{"model_identifier": "allenai/olmo-3-7b-instruct", "creator": "allenai", "model_name": "olmo-3-7b-instruct", "model_family": "olmo-3-7b", "release_date": "2025-11-20", "reasoning_model": false, "notes": ""}
+{"model_identifier": "allenai/olmo-3-7b-think", "creator": "allenai", "model_name": "olmo-3-7b-think", "model_family": "olmo-3-7b", "release_date": "2025-11-20", "reasoning_model": true, "notes": ""}
+{"model_identifier": "allenai/olmo-3-32b-think", "creator": "allenai", "model_name": "olmo-3-32b-thinking", "model_family": "olmo-3-32bb", "release_date": "2025-11-20", "reasoning_model": true, "notes": ""}
