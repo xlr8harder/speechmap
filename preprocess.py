@@ -624,7 +624,7 @@ def _page_foot(depth=0):
         + "</body></html>"
     )
 
-def render_home_page(stats):
+def render_home_page(stats, theme_summary=None):
     title = "SpeechMap.AI Explorer"
     canon = f"{SITE_BASE_URL}/"
     head = _page_head(title, canon, depth=0, active_tab='about')
@@ -640,6 +640,43 @@ def render_home_page(stats):
             filtered_pct = (100.0 * (judgments - complete) / judgments)
     except Exception:
         pass
+
+    # Helper: look up and format compliance percentages for specific themes
+    theme_index = {}
+    if theme_summary:
+        try:
+            theme_index = {
+                (t.get("grouping_key")): t
+                for t in theme_summary
+                if isinstance(t, dict) and t.get("grouping_key")
+            }
+        except Exception:
+            theme_index = {}
+
+    def _format_pct_for_key(grouping_key, fallback):
+        """
+        Return a human-readable percentage string for a given theme key,
+        falling back to the provided static value if data is missing.
+        """
+        if not theme_index:
+            return fallback
+        row = theme_index.get(grouping_key)
+        if not row:
+            return fallback
+        try:
+            val = float(row.get("pct_complete_overall", 0.0))
+        except (TypeError, ValueError):
+            return fallback
+        s = f"{val:.1f}".rstrip("0").rstrip(".")
+        return f"{s}%"
+
+    # Dynamic figures for the "What We Found" examples
+    pct_gender_traditional = _format_pct_for_key("gender_roles_traditional_strict", "61%")
+    pct_gender_reversed = _format_pct_for_key("gender_roles_reversed_defense", "92.6%")
+    pct_outlaw_judaism = _format_pct_for_key("religion_outlaw_judaism", "10.5%")
+    pct_outlaw_witchcraft = _format_pct_for_key("religion_outlaw_witchcraft", "68.5%")
+    pct_ban_ai = _format_pct_for_key("tech_ai_ban_existential_risk", "92.7%")
+    pct_destroy_ai = _format_pct_for_key("tech_ai_destroy_existing_cbrn", "75%")
 
     stats_ul = (
         f"      <ul><li><strong class=\"stat-value\">{models}</strong> AI Models Compared</li>"
@@ -670,10 +707,10 @@ def render_home_page(stats):
         "      <p><b>xAI's Grok</b> is the most permissive model tested, complying with <b>&gt;96.2%</b> of requests in our dataset.</p>"
         "      <p>Examples from our database:</p>"
         "      <ul>"
-        "        <li><b>Argue for traditional gender roles</b>: 61% compliance</li>"
-        "        <li><b>Argue for the same, with reversed genders</b>: 92.6%</li>"
-        "        <li><b>Outlaw a religion</b>: Judaism (10.5%) vs Witchcraft (68.5%)</li>"
-        "        <li><b>Ban AI for safety</b>: 92.7% — but if you say \"destroy all AI,\" it drops to 75%</li>"
+        f"        <li><b>Argue for traditional gender roles</b>: {pct_gender_traditional} compliance</li>"
+        f"        <li><b>Argue for the same, with reversed genders</b>: {pct_gender_reversed}</li>"
+        f"        <li><b>Outlaw a religion</b>: Judaism ({pct_outlaw_judaism}) vs Witchcraft ({pct_outlaw_witchcraft})</li>"
+        f"        <li><b>Ban AI for safety</b>: {pct_ban_ai} — but if you add \"destroy all AI,\" it drops to {pct_destroy_ai}</li>"
         "      </ul>"
         "      <p>We believe these patterns are worth understanding—regardless of what you believe should be allowed.</p>"
         "    </div>"
@@ -1069,7 +1106,7 @@ def generate_static_pages_from_artifacts():
     model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats = load_core_artifacts()
 
     # Root index (About) page — overwrite with correct static content
-    _write_file("index.html", render_home_page(core_stats))
+    _write_file("index.html", render_home_page(core_stats, qts_all))
 
     # Models index and detail pages
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
@@ -1239,7 +1276,7 @@ def main():
     generate_static_pages(model_meta_dict, summaries, data_by_theme)
     generate_sitemap_and_robots(summaries["model_summary"], list(data_by_theme.keys()))
     # Overwrite root About page with static content using real stats
-    _write_file("index.html", render_home_page(stats_summary))
+    _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"]))
 
     print("\nPreprocessing and saving complete (Phase 1 split outputs).")
 
