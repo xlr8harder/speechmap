@@ -842,7 +842,7 @@ def render_home_page(stats, theme_summary=None, lab_standings=None):
         "    <div class=\"grid-item why-matters\">"
         "      <h3>Why This Matters</h3>"
         "      <p>AI models are becoming infrastructure for public speech. They're embedded in how we write, search, learn and argue. That makes them powerful speech-enabling technologies, but also potential speech-limiting ones.</p>"
-        "      <p>If models refuse to talk about certain topics, then they shape the boundaries of expression. Some models avoid restricting certain governments. Others resist satire, protest or controversial moral arguments. Often, the rules are unclear and inconsistently applied.</p>"
+        "      <p>If models refuse to talk about certain topics, then they shape the boundaries of expression. Some models avoid criticizing certain governments. Others resist satire, protest or controversial moral arguments. Often, the rules are unclear and inconsistently applied.</p>"
         "      <p><b>SpeechMap.AI reveals where the boundaries of model-generated speech lie.</b></p>"
         "    </div>"
         "    <div class=\"grid-item stats-block\">"
