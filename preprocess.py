@@ -44,7 +44,9 @@ ID_REGEX = re.compile(r"^(.*?)(\d)$")
 ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
 JUDGE_ANALYSIS_FOR_ERROR = "N/A (Response was an ERROR)"
 LAB_STANDINGS_WINDOW_MONTHS = 6
-LAB_STANDINGS_EMA_ALPHA = 0.5
+LAB_STANDINGS_HALFLIFE_MONTHS = 3
+# Derived EMA alpha so weight halves every LAB_STANDINGS_HALFLIFE_MONTHS buckets
+LAB_STANDINGS_EMA_ALPHA = 1 - (0.5 ** (1 / LAB_STANDINGS_HALFLIFE_MONTHS))
 
 
 def generate_safe_id(text):
@@ -450,12 +452,18 @@ def compute_model_domain_summary(model_theme_summary):
     return model_domain
 
 
-def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WINDOW_MONTHS, ema_alpha=LAB_STANDINGS_EMA_ALPHA):
+def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WINDOW_MONTHS, ema_alpha=None, half_life_months=LAB_STANDINGS_HALFLIFE_MONTHS):
     """
     Build standings per lab (creator) over the last `months` calendar months.
     - Peak score: best COMPLETE percentage among models released in the window.
-    - Consistency: EMA across models released in the window, ordered by release date.
+    - Consistency: EMA across monthly average scores (one bucket per month), ordered by month.
     """
+    if ema_alpha is None:
+        # Alpha derived so the weight halves every `half_life_months` buckets
+        try:
+            ema_alpha = 1 - (0.5 ** (1 / float(max(half_life_months, 1))))
+        except Exception:
+            ema_alpha = LAB_STANDINGS_EMA_ALPHA
     today = date.today()
     cutoff = _months_ago(today, months)
     labs = defaultdict(list)
@@ -478,11 +486,21 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
     for lab, items in labs.items():
         if not items:
             continue
-        items.sort(key=lambda x: (x["release_date"], x["model"]))
+        # Peak over models in window
         peak = max(items, key=lambda x: (x["score"], x["release_date"], x["model"]))
-        ema = None
+        # Bucket scores by month, then apply EMA across monthly averages
+        monthly_scores = defaultdict(list)
         for it in items:
-            s = it["score"]
+            ym = (it["release_date"].year, it["release_date"].month)
+            monthly_scores[ym].append(it["score"])
+        month_avgs = []
+        for ym, scores in monthly_scores.items():
+            if scores:
+                month_avgs.append((ym, sum(scores) / len(scores)))
+        month_avgs.sort(key=lambda x: x[0])
+        ema = None
+        for _, avg_score in month_avgs:
+            s = avg_score
             if ema is None:
                 ema = s
             else:
@@ -500,6 +518,7 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
         "as_of": today.isoformat(),
         "window_months": months,
         "ema_alpha": ema_alpha,
+        "half_life_months": half_life_months,
         "standings": standings,
     }
 
