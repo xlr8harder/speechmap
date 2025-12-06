@@ -36,12 +36,15 @@ OUTPUT_THEME_DETAIL_DIR = os.path.join(CACHE_DIR, "theme_details")
 SITE_BASE_URL = "https://speechmap.ai"
 STATIC_MODELS_DIR = "models"
 STATIC_THEMES_DIR = "themes"
+STATIC_LABS_DIR = "labs"
 THEME_SAMPLE_LIMIT = 16
 # MAX_RECORDS_PER_FILE = 20000 # No longer needed
 COMPLIANCE_ORDER = ["COMPLETE", "EVASIVE", "DENIAL", "ERROR", "UNKNOWN"]
 ID_REGEX = re.compile(r"^(.*?)(\d)$")
 ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
 JUDGE_ANALYSIS_FOR_ERROR = "N/A (Response was an ERROR)"
+LAB_STANDINGS_WINDOW_MONTHS = 6
+LAB_STANDINGS_EMA_ALPHA = 0.5
 
 
 def generate_safe_id(text):
@@ -447,6 +450,60 @@ def compute_model_domain_summary(model_theme_summary):
     return model_domain
 
 
+def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WINDOW_MONTHS, ema_alpha=LAB_STANDINGS_EMA_ALPHA):
+    """
+    Build standings per lab (creator) over the last `months` calendar months.
+    - Peak score: best COMPLETE percentage among models released in the window.
+    - Consistency: EMA across models released in the window, ordered by release date.
+    """
+    today = date.today()
+    cutoff = _months_ago(today, months)
+    labs = defaultdict(list)
+    for m in model_summary:
+        mid = m.get("model")
+        meta = model_metadata.get(mid, {})
+        creator = meta.get("creator") or "Unknown"
+        if not creator or creator.strip().lower() == "unknown":
+            continue  # exclude placeholder/unknown labs
+        rd = _parse_date_safe(meta.get("release_date"))
+        if not rd or rd < cutoff:
+            continue
+        try:
+            score = float(m.get("pct_complete_overall", 0) or 0.0)
+        except Exception:
+            score = 0.0
+        labs[creator].append({"model": mid, "release_date": rd, "score": score})
+
+    standings = []
+    for lab, items in labs.items():
+        if not items:
+            continue
+        items.sort(key=lambda x: (x["release_date"], x["model"]))
+        peak = max(items, key=lambda x: (x["score"], x["release_date"], x["model"]))
+        ema = None
+        for it in items:
+            s = it["score"]
+            if ema is None:
+                ema = s
+            else:
+                ema = (ema * (1 - ema_alpha)) + (s * ema_alpha)
+        standings.append(
+            {
+                "lab": lab,
+                "peak_score": peak["score"],
+                "consistency": ema if ema is not None else 0.0,
+                "models_in_window": len(items),
+            }
+        )
+    standings.sort(key=lambda x: (-(x.get("consistency") or 0), -(x["peak_score"]), x["lab"]))
+    return {
+        "as_of": today.isoformat(),
+        "window_months": months,
+        "ema_alpha": ema_alpha,
+        "standings": standings,
+    }
+
+
 def save_model_domain_summary(filepath, model_domain_summary):
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     try:
@@ -543,6 +600,13 @@ def _pct(v):
         return "0.0%"
 
 
+def _pct_value(v):
+    try:
+        return f"{float(v):.1f}"
+    except Exception:
+        return "0.0"
+
+
 def _pct_color_style(pct):
     try:
         p = float(pct)
@@ -604,9 +668,11 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 <link href=\"https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css\" rel=\"stylesheet\">
 <link href=\"/style.css\" rel=\"stylesheet\">
 </head><body>
+<div class=\"page-shell\">
 <div class=\"site-header\"><img src=\"/speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\">\n<h1>SpeechMap.AI <span class=\"subtitle\">The Free Speech Dashboard for AI.</span></h1></div>
 <nav class=\"view-selector\">
   <button onclick=\"location.assign('/index.html')\" class=\"{ 'active' if active_tab=='about' else '' }\">About</button>
+  <button onclick=\"location.assign('/labs/')\" class=\"{ 'active' if active_tab=='labs' else '' }\">Lab Standings</button>
   <button onclick=\"location.assign('/models/')\" class=\"{ 'active' if active_tab=='models' else '' }\">Model Results</button>
   <button onclick=\"location.assign('/themes/')\" class=\"{ 'active' if active_tab=='themes' else '' }\">Question Themes</button>
   <button onclick=\"location.assign('/timeline/')\" class=\"{ 'active' if active_tab=='timeline' else '' }\">Model Timeline</button>
@@ -619,9 +685,9 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 def _page_foot(depth=0):
     return (
         f"\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js\"></script>\n"
-        + f"<script src=\"/script.js?7\"></script>\n"
+        + f"<script src=\"/script.js?13\"></script>\n"
         + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
-        + "</body></html>"
+        + "</div></body></html>"
     )
 
 def render_home_page(stats, theme_summary=None):
@@ -688,7 +754,7 @@ def render_home_page(stats, theme_summary=None):
         "<div class=\"about-content\">"
         "  <div class=\"about-hero\">"
         "    <div class=\"hero-text\">"
-        "      <h2>We map the invisible<br>boundaries of AI speech</h2>"
+        "      <h2>Mapping the invisible<br>boundaries of AI speech</h2>"
         "    </div>"
         "    <div class=\"hero-image\">"
         "      <img src=\"/graphic.png\" alt=\"Map showing AI model responses across regions\" class=\"hero-graphic\">"
@@ -700,6 +766,7 @@ def render_home_page(stats, theme_summary=None):
         "      <p><b>SpeechMap.AI</b> is a public research project that explores the boundaries of AI-generated speech.</p>"
         "      <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and topics. Most AI benchmarks measure what models <i>can</i> do. We focus on what they <i>won’t</i>: what they avoid, refuse, or shut down.</p>"
         "      <p>Our point is not that all requests must be fulfilled. Some are offensive. Some are absurd. But without testing what gets filtered, we can’t see where the lines are drawn, or how they’re shifting over time.</p>"
+        "      <p class=\"lab-cta\"><a href=\"/labs/\">View Lab Standings</a></p>"
         "    </div>"
         "    <div class=\"grid-item where-lines\">"
         "      <h3>What We Found</h3>"
@@ -724,11 +791,10 @@ def render_home_page(stats, theme_summary=None):
         "    <div class=\"grid-item stats-block\">"
         "      <h3>What we've measured so far</h3>"
         + ("      <ul>"
-           f"<li><strong class=\"stat-value\">{models}</strong> AI Models Compared</li>"
+           f"<li><strong class=\"stat-value\">{models}</strong> AI Models Tested</li>"
            f"<li><strong class=\"stat-value\">{themes}</strong> Question Themes</li>"
            f"<li><strong class=\"stat-value\">{judgments:,}</strong> Model Responses Analyzed</li>"
            f"<li><strong class=\"stat-value\">{filtered_pct:.1f}%</strong> of requests were not fulfilled</li>"
-           "<li>Full question database with search + filters</li>"
            "</ul>"
           ) +
         
@@ -736,12 +802,11 @@ def render_home_page(stats, theme_summary=None):
         "  </div>"
         "  <h3>Help Us Grow</h3>"
         "  <p>We believe that AI will be the defining speech-enabling technology of the 21st century. If you want a future with fair and open access to expression, it is critical to know what these systems will do and notice if if this changes over time.</p>"
-        "  <p>Evaluating one model can cost <b>tens to hundreds of dollars</b> in API fees. Older models are already disappearing. Our goal is exhaustive coverage.</p>"
+        "  <p>Evaluating one model can cost <b>tens to hundreds of dollars</b> in API fees. Our goal is exhaustive coverage, and older models are already disappearing.</p>"
         "  <p>If you believe this work matters:</p>"
         "  <ul>"
         "    <li><a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\">Support us on Ko-fi</a></li>"
         "    <li><a href=\"https://speechmap.substack.com/\">Subscribe to our Substack for updates</a></li>"
-        "    <li><a href=\"/models/\">Explore the data yourself</a></li>"
         "    <li><a href=\"https://github.com/xlr8harder/llm-compliance\" target=\"_blank\" rel=\"noopener noreferrer\">View the raw data on GitHub</a></li>"
         "  </ul>"
         "</div>"
@@ -880,6 +945,56 @@ def render_themes_index(theme_summary_all):
     return _page_head(title, canon, depth=depth, active_tab='themes') + table + _page_foot(depth=depth)
 
 
+def render_lab_standings_page(lab_standings):
+    title = "Lab Standings"
+    canon = f"{SITE_BASE_URL}/labs/"
+    depth = 0
+    data = lab_standings or {}
+    standings = data.get("standings") or []
+    window_months = data.get("window_months", LAB_STANDINGS_WINDOW_MONTHS)
+    ema_alpha = data.get("ema_alpha", LAB_STANDINGS_EMA_ALPHA)
+    as_of_str = data.get("as_of") or date.today().isoformat()
+    try:
+        as_of_date = date.fromisoformat(as_of_str)
+    except Exception:
+        as_of_date = date.today()
+    cutoff_date = _months_ago(as_of_date, window_months)
+    cards = []
+    for i, row in enumerate(standings, start=1):
+        lab = row.get("lab", "")
+        trend = _pct_value(row.get("consistency", 0))
+        peak = _pct_value(row.get("peak_score", 0))
+        models_ct = int(row.get("models_in_window", 0))
+        cards.append(
+            f"<tr>"
+            f"<td class=\"rank\">#{i}</td>"
+            f"<td class=\"lab-name\">{_html_escape(lab)}</td>"
+            f"<td class=\"trend\">{trend}</td>"
+            f"<td class=\"peak\">{peak}</td>"
+            f"<td class=\"count\">{models_ct}</td>"
+            f"</tr>"
+        )
+    if not cards:
+        cards.append("<tr><td colspan=\"5\" class=\"empty\">No labs with releases in this window.</td></tr>")
+    table = f"""
+<div class=\"lab-standings-intro\">
+  <h2>Lab Standings</h2>
+  <p>Labs ranked by their SpeechMap Index Score, an EMA of SpeechMap scores for models released by the lab in the last 6 months.</p>
+  <p class=\"meta-note\">Last update: {as_of_date.isoformat()}</p>
+</div>
+<div class=\"lab-leaderboard-table-wrap\">
+<table class=\"leaderboard-table\">
+  <thead><tr><th>Rank</th><th>Lab</th><th>Index</th><th>Peak Score</th><th>Models</th></tr></thead>
+  <tbody>
+{''.join(cards)}
+  </tbody>
+</table>
+</div>
+<p class=\"lab-note-link\">For details, see the <a href=\"/models/\">Model Results</a> page.</p>
+"""
+    return _page_head(title, canon, depth=depth, active_tab='labs') + table + _page_foot(depth=depth)
+
+
 def _summarize_theme_across_models(theme_key, model_theme_summary):
     # Build per-model summary rows for one theme
     rows = []
@@ -983,7 +1098,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     return head + body_html + _page_foot(depth=depth)
 
 
-def generate_static_pages(model_meta_dict, summaries, data_by_theme):
+def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, include_theme_pages=True):
     # Models index
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
     models_index_path = os.path.join(STATIC_MODELS_DIR, "index.html")
@@ -1004,19 +1119,24 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme):
     _write_file(themes_index_path, render_themes_index(summaries["question_theme_summary"]))
 
     # Per-theme pages (use per-model stats + sample records from data_by_theme)
-    for theme_key, records in data_by_theme.items():
-        safe = generate_safe_id(theme_key)
-        path = os.path.join(STATIC_THEMES_DIR, safe, "index.html")
-        # Determine domain: prefer from per-model stats
-        domain_guess = None
-        for model, tm in summaries["model_theme_summary"].items():
-            s = tm.get(theme_key)
-            if s and s.get("domain"):
-                domain_guess = s.get("domain")
-                break
-        per_model_rows = _summarize_theme_across_models(theme_key, summaries["model_theme_summary"])
-        # Render ALL records for full static detail (include all variations per model)
-        _write_file(path, render_theme_detail(theme_key, domain_guess, per_model_rows, records))
+    if include_theme_pages:
+        for theme_key, records in data_by_theme.items():
+            safe = generate_safe_id(theme_key)
+            path = os.path.join(STATIC_THEMES_DIR, safe, "index.html")
+            # Determine domain: prefer from per-model stats
+            domain_guess = None
+            for model, tm in summaries["model_theme_summary"].items():
+                s = tm.get(theme_key)
+                if s and s.get("domain"):
+                    domain_guess = s.get("domain")
+                    break
+            per_model_rows = _summarize_theme_across_models(theme_key, summaries["model_theme_summary"])
+            # Render ALL records for full static detail (include all variations per model)
+            _write_file(path, render_theme_detail(theme_key, domain_guess, per_model_rows, records))
+
+    # Lab standings page
+    os.makedirs(STATIC_LABS_DIR, exist_ok=True)
+    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings))
 
 
 def generate_sitemap_and_robots(model_summary, theme_keys):
@@ -1027,6 +1147,7 @@ def generate_sitemap_and_robots(model_summary, theme_keys):
     urls.append((f"{SITE_BASE_URL}/", today_iso))
     urls.append((f"{SITE_BASE_URL}/models/", today_iso))
     urls.append((f"{SITE_BASE_URL}/themes/", today_iso))
+    urls.append((f"{SITE_BASE_URL}/labs/", today_iso))
     # Model pages with release dates if available
     for m in model_summary:
         mid = m.get("model")
@@ -1099,9 +1220,10 @@ def load_core_artifacts():
     return model_meta_dict, model_summary, qts_all, model_theme_summary, stats
 
 
-def generate_static_pages_from_artifacts():
+def generate_static_pages_from_artifacts(skip_theme_pages=False):
     print("Regenerating static pages from existing artifacts...")
     model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats = load_core_artifacts()
+    lab_standings = compute_lab_standings(model_summary, model_meta_dict)
 
     # Root index (About) page — overwrite with correct static content
     _write_file("index.html", render_home_page(core_stats, qts_all))
@@ -1121,31 +1243,36 @@ def generate_static_pages_from_artifacts():
     os.makedirs(STATIC_THEMES_DIR, exist_ok=True)
     _write_file(os.path.join(STATIC_THEMES_DIR, "index.html"), render_themes_index(qts_all))
 
+    # Lab standings page
+    os.makedirs(STATIC_LABS_DIR, exist_ok=True)
+    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings))
+
     # Per-theme pages (load gz on demand)
-    for t in qts_all:
-        key = t.get("grouping_key")
-        if not key:
-            continue
-        safe = generate_safe_id(key)
-        gz_path = os.path.join(OUTPUT_THEME_DETAIL_DIR, f"{safe}.json.gz")
-        records = []
-        try:
-            if os.path.exists(gz_path):
-                with gzip.open(gz_path, "rt", encoding="utf-8") as f:
-                    j = json.load(f)
-                records = j.get("records", [])
-        except Exception as e:
-            print(f"Warning: Failed to read {gz_path}: {e}")
-        # Domain guess from model_theme_summary
-        domain_guess = None
-        for mid, themes in model_theme_summary.items():
-            s = themes.get(key)
-            if s and s.get("domain"):
-                domain_guess = s.get("domain")
-                break
-        out_path = os.path.join(STATIC_THEMES_DIR, safe, "index.html")
-        # Render ALL records for full static detail
-        _write_file(out_path, render_theme_detail(key, domain_guess, None, records))
+    if not skip_theme_pages:
+        for t in qts_all:
+            key = t.get("grouping_key")
+            if not key:
+                continue
+            safe = generate_safe_id(key)
+            gz_path = os.path.join(OUTPUT_THEME_DETAIL_DIR, f"{safe}.json.gz")
+            records = []
+            try:
+                if os.path.exists(gz_path):
+                    with gzip.open(gz_path, "rt", encoding="utf-8") as f:
+                        j = json.load(f)
+                    records = j.get("records", [])
+            except Exception as e:
+                print(f"Warning: Failed to read {gz_path}: {e}")
+            # Domain guess from model_theme_summary
+            domain_guess = None
+            for mid, themes in model_theme_summary.items():
+                s = themes.get(key)
+                if s and s.get("domain"):
+                    domain_guess = s.get("domain")
+                    break
+            out_path = os.path.join(STATIC_THEMES_DIR, safe, "index.html")
+            # Render ALL records for full static detail
+            _write_file(out_path, render_theme_detail(key, domain_guess, None, records))
 
     # Acknowledgments static page
     ack_html = _page_head("Acknowledgments", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
@@ -1188,11 +1315,12 @@ def main():
     print("Starting preprocessing...")
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--static-only', action='store_true')
+    parser.add_argument('--no-themes', action='store_true')
     args, _ = parser.parse_known_args()
 
     if args.static_only:
         try:
-            generate_static_pages_from_artifacts()
+            generate_static_pages_from_artifacts(skip_theme_pages=args.no_themes)
             print("Static regeneration complete.")
         except Exception as e:
             print(f"Static regeneration failed: {e}")
@@ -1227,33 +1355,38 @@ def main():
     stats_summary = {"models": num_models, "themes": num_themes, "judgments": num_judgments, "complete": num_complete}
     print("Calculated Stats:", stats_summary)
 
-    # Group data by grouping_key for saving individual files
+    # Lab standings (last N months) derived from summary + metadata (rendered only)
+    lab_standings = compute_lab_standings(summaries["model_summary"], model_meta_dict)
+
+    # Group data by grouping_key for saving individual files (optional)
     data_by_theme = defaultdict(list)
-    for record in all_data:
-        # Only include records for models that HAVE metadata
-        if record["model"] in model_meta_dict:
-             data_by_theme[record["grouping_key"]].append(record)
+    if not args.no_themes:
+        for record in all_data:
+            # Only include records for models that HAVE metadata
+            if record["model"] in model_meta_dict:
+                data_by_theme[record["grouping_key"]].append(record)
 
-    num_theme_files = len(data_by_theme)
-    print(f"\nPreparing to save {num_theme_files} theme detail files to '{OUTPUT_THEME_DETAIL_DIR}/'.")
+    if not args.no_themes:
+        num_theme_files = len(data_by_theme)
+        print(f"\nPreparing to save {num_theme_files} theme detail files to '{OUTPUT_THEME_DETAIL_DIR}/'.")
 
-    os.makedirs(OUTPUT_THEME_DETAIL_DIR, exist_ok=True)
+        os.makedirs(OUTPUT_THEME_DETAIL_DIR, exist_ok=True)
 
-    saved_files_count = 0
-    failed_files_count = 0
-    for grouping_key, records in data_by_theme.items():
-        safe_filename_key = generate_safe_id(grouping_key)
-        output_filename = os.path.join(OUTPUT_THEME_DETAIL_DIR, f"{safe_filename_key}.json.gz")
-        if save_theme_detail_file(output_filename, records):
-            saved_files_count += 1
-        else:
-            failed_files_count += 1
+        saved_files_count = 0
+        failed_files_count = 0
+        for grouping_key, records in data_by_theme.items():
+            safe_filename_key = generate_safe_id(grouping_key)
+            output_filename = os.path.join(OUTPUT_THEME_DETAIL_DIR, f"{safe_filename_key}.json.gz")
+            if save_theme_detail_file(output_filename, records):
+                saved_files_count += 1
+            else:
+                failed_files_count += 1
 
-    print(f"\nTheme detail file saving complete. Saved: {saved_files_count}, Failed: {failed_files_count}")
+        print(f"\nTheme detail file saving complete. Saved: {saved_files_count}, Failed: {failed_files_count}")
 
-    if failed_files_count > 0:
-        print("ERROR: Failed to save one or more theme detail files. Aborting metadata generation.")
-        sys.exit(1)
+        if failed_files_count > 0:
+            print("ERROR: Failed to save one or more theme detail files. Aborting metadata generation.")
+            sys.exit(1)
 
     # Phase 1: Save split data artifacts
     # 1) Core metadata (small)
@@ -1266,13 +1399,17 @@ def main():
     model_domain_summary = compute_model_domain_summary(summaries["model_theme_summary"])
     save_model_domain_summary(OUTPUT_MODEL_DOMAIN_SUMMARY_FILE, model_domain_summary)
 
+    # 3b) Lab standings for the Lab Standings view (stored in memory for rendering only)
+
     # 4) Per-model theme breakdowns (lazy-loaded by model detail view)
     save_per_model_theme_breakdowns(OUTPUT_MODEL_THEMES_DIR, summaries["model_theme_summary"])
 
     # Phase 2: Generate static pages for SEO
     print("\nGenerating static pages (Phase 2)...")
-    generate_static_pages(model_meta_dict, summaries, data_by_theme)
-    generate_sitemap_and_robots(summaries["model_summary"], list(data_by_theme.keys()))
+    generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, include_theme_pages=not args.no_themes)
+    # Use theme keys from summary (not data_by_theme) so sitemap still includes theme URLs even when skipping regeneration
+    theme_keys_for_sitemap = [t.get("grouping_key") for t in summaries["question_theme_summary"] if t.get("grouping_key")]
+    generate_sitemap_and_robots(summaries["model_summary"], theme_keys_for_sitemap)
     # Overwrite root About page with static content using real stats
     _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"]))
 

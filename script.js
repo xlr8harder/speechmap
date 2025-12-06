@@ -85,7 +85,7 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       });
     });
     // Build Tabulator
-    new Tabulator(container, {
+    const table = new Tabulator(container, {
       data: rows,
       layout: 'fitDataFill',
       height: '65vh',
