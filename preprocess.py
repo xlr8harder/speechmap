@@ -465,6 +465,14 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
         except Exception:
             ema_alpha = LAB_STANDINGS_EMA_ALPHA
     base_alpha = ema_alpha
+    try:
+        base_decay = 1 - float(base_alpha)
+    except Exception:
+        base_decay = 0.5
+    if base_decay < 0:
+        base_decay = 0.0
+    if base_decay > 1:
+        base_decay = 1.0
     today = date.today()
     cutoff = _months_ago(today, months)
     labs = defaultdict(list)
@@ -513,8 +521,12 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
                     delta_months = (year - prev_year) * 12 + (month - prev_month)
                     if delta_months < 1:
                         delta_months = 1
-                    hl = float(max(half_life_months, 1))
-                    alpha_gap = 1 - (0.5 ** (delta_months / hl))
+                    # Gap-aware decay based on base decay factor
+                    alpha_gap = 1 - (base_decay ** delta_months)
+                    if alpha_gap < 0:
+                        alpha_gap = 0.0
+                    if alpha_gap > 1:
+                        alpha_gap = 1.0
                 except Exception:
                     alpha_gap = base_alpha
                 ema = (ema * (1 - alpha_gap)) + (s * alpha_gap)
