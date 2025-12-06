@@ -68,6 +68,10 @@
 {"model_identifier": "mistralai/magistral-medium-2506", "creator": "mistralai", "model_name": "magistral-medium-2506", "model_family": "magistral-medium", "release_date": "2025-06-10", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/magistral-medium-2506-thinking", "creator": "mistralai", "model_name": "magistral-medium-2506-thinking", "model_family": "magistral-medium", "release_date": "2025-06-10", "reasoning_model": true, "notes": ""}
 {"model_identifier": "mistralai/magistral-small-2506", "creator": "mistralai", "model_name": "magistral-small-2506", "model_family": "magistral-small", "release_date": "2025-06-10", "reasoning_model": true, "notes": ""}
+{"model_identifier": "mistralai/mistral-large-2512", "creator": "mistralai", "model_name": "mistral-large-2512", "model_family": "mistral-large", "release_date": "2025-12-02", "reasoning_model": false, "notes": ""}
+{"model_identifier": "mistralai/ministral-14b-2512", "creator": "mistralai", "model_name": "ministral-14b-2512", "model_family": "ministral-14b", "release_date": "2025-12-02", "reasoning_model": false, "notes": ""}
+{"model_identifier": "mistralai/ministral-8b-2512", "creator": "mistralai", "model_name": "ministral-8b-2512", "model_family": "ministral-8b", "release_date": "2025-12-02", "reasoning_model": false, "notes": ""}
+{"model_identifier": "mistralai/ministral-3b-2512", "creator": "mistralai", "model_name": "ministral-3b-2512", "model_family": "ministral-3b", "release_date": "2025-12-02", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-large-2512", "creator": "mistralai", "model_name": "mistral-large-2512", "model_family": "mistral-large", "release_date": "2025-12-18", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-large-2411", "creator": "mistralai", "model_name": "mistral-large-2411", "model_family": "mistral-large", "release_date": "2024-11-18", "reasoning_model": false, "notes": ""}
 {"model_identifier": "mistralai/mistral-large-2407", "creator": "mistralai", "model_name": "mistral-large-2407", "model_family": "mistral-large", "release_date": "2024-07-24", "reasoning_model": false, "notes": ""}
@@ -177,6 +181,7 @@
 {"model_identifier": "tngtech/deepseek-r1t-chimera", "creator": "tngtech", "model_name": "deepseek-r1t-chimera", "model_family": "deepseek-r1", "release_date": "2025-04-27", "reasoning_model": true, "notes": ""}
 {"model_identifier": "tngtech/DeepSeek-TNG-R1T2-Chimera", "creator": "tngtech", "model_name": "DeepSeek-TNG-R1T2-Chimera", "model_family": "deepseek-r1", "release_date": "2025-07-03", "reasoning_model": true, "notes": ""}
 {"model_identifier": "amazon/nova-lite-v1.0", "creator": "amazon", "model_name": "nova-lite-v1.0", "model_family": "nova-lite-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
+{"model_identifier": "amazon/nova-2-lite-v1", "creator": "amazon", "model_name": "nova-2-lite-v1", "model_family": "nova-2-lite", "release_date": "2025-12-02", "reasoning_model": false, "notes": ""}
 {"model_identifier": "amazon/nova-micro-v1.0", "creator": "amazon", "model_name": "nova-micro-v1.0", "model_family": "nova-micro-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
 {"model_identifier": "amazon/nova-pro-v1.0", "creator": "amazon", "model_name": "nova-pro-v1.0", "model_family": "nova-pro-v1", "release_date": "2024-12-03", "reasoning_model": false, "notes": ""}
 {"model_identifier": "amazon/nova-premier-v1", "creator": "amazon", "model_name": "nova-premier-v1", "model_family": "nova-premier-v1", "release_date": "2025-10-31", "reasoning_model": false, "notes": ""}
