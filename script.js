@@ -90,7 +90,7 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       layout: 'fitDataFill',
       height: '65vh',
       placeholder: 'No models.',
-      initialSort: [{column:'pct_complete_overall', dir:'asc'}],
+      initialSort: [{column:'release_date', dir:'desc'}],
       columns: [
         { title:'Model', field:'model', widthGrow:2, headerFilter:'input', headerFilterPlaceholder:'Filter models… (supports /regex/)', headerFilterFunc:(headerValue, rowValue)=>{
             if (!headerValue) return true;
@@ -115,7 +115,17 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
             return `<a href="${link}">${name}</a>`;
           }
         },
-        { title:'Released', field:'release_date', width:120, hozAlign:'center' },
+        { title:'Released', field:'release_date', width:120, hozAlign:'center', sorter:(a,b)=>{
+            const da = Date.parse(a || '');
+            const db = Date.parse(b || '');
+            const aValid = !Number.isNaN(da);
+            const bValid = !Number.isNaN(db);
+            if (!aValid && !bValid) return 0;
+            if (!aValid) return -1;
+            if (!bValid) return 1;
+            return da - db;
+          }
+        },
         { title:'# Resp', field:'num_responses', width:90, hozAlign:'right', sorter:'number' },
         { title:'% Comp', field:'pct_complete_overall', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
         { title:'% Evas', field:'pct_evasive', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },

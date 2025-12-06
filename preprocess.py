@@ -293,7 +293,10 @@ def calculate_summaries(all_records, model_metadata_dict):
                 "pct_error": (stats["r"] / count * 100) if count > 0 else 0,
             }
         )
-    model_summary.sort(key=lambda x: (x["pct_complete_overall"], x["model"]))
+    def _model_sort_key(m):
+        rd = _parse_date_safe(m.get("release_date"))
+        return (rd or date.min, m.get("model", ""))
+    model_summary.sort(key=_model_sort_key, reverse=True)
     print(f"Calculated model summary for {len(model_summary)} models.")
 
     # --- Finalize Question Theme Summary ---
@@ -730,7 +733,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 def _page_foot(depth=0):
     return (
         f"\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js\"></script>\n"
-        + f"<script src=\"/script.js?13\"></script>\n"
+        + f"<script src=\"/script.js?14\"></script>\n"
         + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
         + "</div></body></html>"
     )
