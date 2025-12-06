@@ -5,3 +5,4 @@ __pycache__/
 .cache/
 theme_details/
 analysis
+__pycache__
