@@ -672,7 +672,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 <div class=\"site-header\"><img src=\"/speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\">\n<h1>SpeechMap.AI <span class=\"subtitle\">The Free Speech Dashboard for AI.</span></h1></div>
 <nav class=\"view-selector\">
   <button onclick=\"location.assign('/index.html')\" class=\"{ 'active' if active_tab=='about' else '' }\">About</button>
-  <button onclick=\"location.assign('/labs/')\" class=\"{ 'active' if active_tab=='labs' else '' }\">Lab Standings</button>
+  <button onclick=\"location.assign('/labs/')\" class=\"{ 'active' if active_tab=='labs' else '' }\">Lab Leaderboard</button>
   <button onclick=\"location.assign('/models/')\" class=\"{ 'active' if active_tab=='models' else '' }\">Model Results</button>
   <button onclick=\"location.assign('/themes/')\" class=\"{ 'active' if active_tab=='themes' else '' }\">Question Themes</button>
   <button onclick=\"location.assign('/timeline/')\" class=\"{ 'active' if active_tab=='timeline' else '' }\">Model Timeline</button>
@@ -690,7 +690,7 @@ def _page_foot(depth=0):
         + "</div></body></html>"
     )
 
-def render_home_page(stats, theme_summary=None):
+def render_home_page(stats, theme_summary=None, lab_standings=None):
     title = "SpeechMap.AI Explorer"
     canon = f"{SITE_BASE_URL}/"
     head = _page_head(title, canon, depth=0, active_tab='about')
@@ -744,6 +744,17 @@ def render_home_page(stats, theme_summary=None):
     pct_ban_ai = _format_pct_for_key("tech_ai_ban_existential_risk", "92.7%")
     pct_destroy_ai = _format_pct_for_key("tech_ai_destroy_existing_cbrn", "75%")
 
+    # Lab leaderboard (top lab in window)
+    top_lab_name = "top lab"
+    try:
+        standings = (lab_standings or {}).get("standings") or []
+        if standings:
+            lab = standings[0].get("lab")
+            if lab:
+                top_lab_name = _html_escape(lab)
+    except Exception:
+        pass
+
     stats_ul = (
         f"      <ul><li><strong class=\"stat-value\">{models}</strong> AI Models Compared</li>"
         f"          <li><strong class=\"stat-value\">{themes}</strong> Question Themes</li>"
@@ -766,12 +777,11 @@ def render_home_page(stats, theme_summary=None):
         "      <p><b>SpeechMap.AI</b> is a public research project that explores the boundaries of AI-generated speech.</p>"
         "      <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and topics. Most AI benchmarks measure what models <i>can</i> do. We focus on what they <i>won’t</i>: what they avoid, refuse, or shut down.</p>"
         "      <p>Our point is not that all requests must be fulfilled. Some are offensive. Some are absurd. But without testing what gets filtered, we can’t see where the lines are drawn, or how they’re shifting over time.</p>"
-        "      <p class=\"lab-cta\"><a href=\"/labs/\">View Lab Standings</a></p>"
+        "      <p class=\"lab-cta\"><a href=\"/labs/\">View Lab Leaderboard</a></p>"
         "    </div>"
         "    <div class=\"grid-item where-lines\">"
         "      <h3>What We Found</h3>"
-        "      <p><b>OpenAI's models</b> have become more likely to refuse controversial prompts over time.</p>"
-        "      <p><b>xAI's Grok</b> is the most permissive model tested, complying with <b>&gt;96.2%</b> of requests in our dataset.</p>"
+        f"      <p>In the last six months, <b>{top_lab_name}</b> has best supported user speech, earning the top place on our <a href=\"/labs/\">lab leaderboard</a>.</p>"
         "      <p>Examples from our database:</p>"
         "      <ul>"
         f"        <li><b>Argue for traditional gender roles</b>: {pct_gender_traditional} compliance</li>"
@@ -779,14 +789,13 @@ def render_home_page(stats, theme_summary=None):
         f"        <li><b>Outlaw a religion</b>: Judaism ({pct_outlaw_judaism}) vs Witchcraft ({pct_outlaw_witchcraft})</li>"
         f"        <li><b>Ban AI for safety</b>: {pct_ban_ai} — but if you add \"destroy all AI,\" it drops to {pct_destroy_ai}</li>"
         "      </ul>"
-        "      <p>We believe these patterns are worth understanding—regardless of what you believe should be allowed.</p>"
         "    </div>"
         
         "    <div class=\"grid-item why-matters\">"
         "      <h3>Why This Matters</h3>"
         "      <p>AI models are becoming infrastructure for public speech. They're embedded in how we write, search, learn and argue. That makes them powerful speech-enabling technologies, but also potential speech-limiting ones.</p>"
         "      <p>If models refuse to talk about certain topics, then they shape the boundaries of expression. Some models avoid restricting certain governments. Others resist satire, protest or controversial moral arguments. Often, the rules are unclear and inconsistently applied.</p>"
-        "      <p><b>SpeechMap.AI reveals where the boundaries of model gnerated speech lie.</b></p>"
+        "      <p><b>SpeechMap.AI reveals where the boundaries of model-generated speech lie.</b></p>"
         "    </div>"
         "    <div class=\"grid-item stats-block\">"
         "      <h3>What we've measured so far</h3>"
@@ -946,7 +955,7 @@ def render_themes_index(theme_summary_all):
 
 
 def render_lab_standings_page(lab_standings):
-    title = "Lab Standings"
+    title = "Lab Leaderboard"
     canon = f"{SITE_BASE_URL}/labs/"
     depth = 0
     data = lab_standings or {}
@@ -978,8 +987,8 @@ def render_lab_standings_page(lab_standings):
         cards.append("<tr><td colspan=\"5\" class=\"empty\">No labs with releases in this window.</td></tr>")
     table = f"""
 <div class=\"lab-standings-intro\">
-  <h2>Lab Standings</h2>
-  <p>Labs ranked by their SpeechMap Index Score, an EMA of SpeechMap scores for models released by the lab in the last 6 months.</p>
+  <h2>Lab Leaderboard</h2>
+  <p>Labs ranked by their SpeechMap Index Score, an EMA of SpeechMap scores for models released by the lab in the last 6 months. For details, see the <a href=\"/models/\">Model Results</a> page.</p>
   <p class=\"meta-note\">Last update: {as_of_date.isoformat()}</p>
 </div>
 <div class=\"lab-leaderboard-table-wrap\">
@@ -990,7 +999,6 @@ def render_lab_standings_page(lab_standings):
   </tbody>
 </table>
 </div>
-<p class=\"lab-note-link\">For details, see the <a href=\"/models/\">Model Results</a> page.</p>
 """
     return _page_head(title, canon, depth=depth, active_tab='labs') + table + _page_foot(depth=depth)
 
@@ -1226,7 +1234,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
     lab_standings = compute_lab_standings(model_summary, model_meta_dict)
 
     # Root index (About) page — overwrite with correct static content
-    _write_file("index.html", render_home_page(core_stats, qts_all))
+    _write_file("index.html", render_home_page(core_stats, qts_all, lab_standings))
 
     # Models index and detail pages
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
@@ -1411,7 +1419,7 @@ def main():
     theme_keys_for_sitemap = [t.get("grouping_key") for t in summaries["question_theme_summary"] if t.get("grouping_key")]
     generate_sitemap_and_robots(summaries["model_summary"], theme_keys_for_sitemap)
     # Overwrite root About page with static content using real stats
-    _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"]))
+    _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"], lab_standings))
 
     print("\nPreprocessing and saving complete (Phase 1 split outputs).")
 
