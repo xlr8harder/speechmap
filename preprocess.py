@@ -456,7 +456,7 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
     """
     Build standings per lab (creator) over the last `months` calendar months.
     - Peak score: best COMPLETE percentage among models released in the window.
-    - Consistency: EMA across monthly average scores (one bucket per month), ordered by month.
+    - Consistency: EMA across monthly average scores (one bucket per month), ordered by month, with gap-aware decay.
     """
     if ema_alpha is None:
         # Alpha derived so the weight halves every `half_life_months` buckets
@@ -464,6 +464,7 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
             ema_alpha = 1 - (0.5 ** (1 / float(max(half_life_months, 1))))
         except Exception:
             ema_alpha = LAB_STANDINGS_EMA_ALPHA
+    base_alpha = ema_alpha
     today = date.today()
     cutoff = _months_ago(today, months)
     labs = defaultdict(list)
@@ -499,12 +500,25 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
                 month_avgs.append((ym, sum(scores) / len(scores)))
         month_avgs.sort(key=lambda x: x[0])
         ema = None
-        for _, avg_score in month_avgs:
+        prev_ym = None
+        for ym, avg_score in month_avgs:
             s = avg_score
             if ema is None:
                 ema = s
+                prev_ym = ym
             else:
-                ema = (ema * (1 - ema_alpha)) + (s * ema_alpha)
+                try:
+                    prev_year, prev_month = prev_ym
+                    year, month = ym
+                    delta_months = (year - prev_year) * 12 + (month - prev_month)
+                    if delta_months < 1:
+                        delta_months = 1
+                    hl = float(max(half_life_months, 1))
+                    alpha_gap = 1 - (0.5 ** (delta_months / hl))
+                except Exception:
+                    alpha_gap = base_alpha
+                ema = (ema * (1 - alpha_gap)) + (s * alpha_gap)
+                prev_ym = ym
         standings.append(
             {
                 "lab": lab,
@@ -517,7 +531,7 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
     return {
         "as_of": today.isoformat(),
         "window_months": months,
-        "ema_alpha": ema_alpha,
+        "ema_alpha": base_alpha,
         "half_life_months": half_life_months,
         "standings": standings,
     }
