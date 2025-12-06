@@ -1036,7 +1036,9 @@ def render_lab_standings_page(lab_standings):
     table = f"""
 <div class=\"lab-standings-intro\">
   <h2>Lab Leaderboard</h2>
-  <p>Labs ranked by their SpeechMap Index Score, an EMA of SpeechMap scores for models released by the lab in the last 6 months. For details, see the <a href=\"/models/\">Model Results</a> page.</p>
+  <p>Labs ranked by their SpeechMap Index Score, a time-based EMA of SpeechMap scores for
+  all models released by the lab in the last 6 months, bucketed monthly. For a
+  detailed view, see the full <a href=\"/models/\">Model Results</a> page.</p>
   <p class=\"meta-note\">Last update: {as_of_date.isoformat()}</p>
 </div>
 <div class=\"lab-leaderboard-table-wrap\">
