@@ -684,8 +684,19 @@ except Exception:
     sys.exit(1)
 
 def md_to_html(text):
+    """
+    Render untrusted model output as GitHub-flavored Markdown, while ensuring
+    any raw HTML-like content (e.g., <think>...</think>) is treated as text.
+
+    We first HTML-escape the input so angle brackets and entities are rendered
+    literally, then run it through cmarkgfm for Markdown formatting and
+    linkification. This keeps Markdown features (headings, lists, emphasis)
+    but prevents arbitrary tags from being interpreted by the browser.
+    """
+    raw = str(text or "")
+    safe = _html_escape(raw)
     # Do not pass CMARK_OPT_UNSAFE; tagfilter extension is applied to strip raw HTML.
-    return cmarkgfm.github_flavored_markdown_to_html(str(text or ""), options=_COptions.CMARK_OPT_DEFAULT)
+    return cmarkgfm.github_flavored_markdown_to_html(safe, options=_COptions.CMARK_OPT_DEFAULT)
 
 
 def _write_file(path, content):
