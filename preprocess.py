@@ -1170,38 +1170,87 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     canon = f"{SITE_BASE_URL}/themes/{generate_safe_id(theme_key)}/"
     depth = 2
     head = _page_head(title, canon, depth=depth, active_tab='themes')
-    head += f"<p><a href=\"../\">← Back to Themes</a></p>"
-    head += f"<h2>Question Theme</h2><p><strong>Theme:</strong> {_html_escape(theme_key)}<br><strong>Domain:</strong> {_html_escape(domain or 'N/A')}</p>"
 
-    # Build per-model groups from provided sample_records (for full static, pass all records)
+    # Hero header
+    hero_html = f"""
+<div class="leaderboard-hero">
+  <h1>{_html_escape(theme_key)}</h1>
+  <p class="hero-subtitle">{_html_escape(domain or 'N/A')}</p>
+</div>
+<div class="leaderboard-content">
+<p class="back-link"><a href="../">← Back to Themes</a></p>
+"""
+
+    # Build per-model groups from provided sample_records
     groups = {}
     for r in sample_records or []:
         m = r.get("model") or "Unknown"
         groups.setdefault(m, []).append(r)
-    # TOC with percent per model
-    toc_items = []
-    for m in sorted(groups.keys()):
-        arr = groups[m]
-        total = len(arr)
-        k = sum(1 for rec in arr if rec.get("compliance") == "COMPLETE")
-        pct = (k / total * 100.0) if total > 0 else 0.0
-        safe = generate_safe_id(m)
-        style = _pct_color_style(pct)
-        toc_items.append(
-            f"<li><a href=\"#model-{safe}\" class=\"toc-link-item\">"
-            f"<span class=\"toc-model-name\">{_html_escape(m)}</span>"
-            f"<span class=\"toc-right-group\"><span class=\"toc-compliance-box\" style=\"{style}\">{pct:.1f}%</span>"
-            f"<span class=\"toc-response-count\">({total} Resp.)</span></span></a></li>"
-        )
-    toc_html = (
-        "<details class=\"toc-details\" open><summary>Model Compliance Summary & Links</summary>"
-        + "<ul class=\"toc-links model-toc vertical\">" + "\n".join(toc_items) + "</ul></details>"
-    )
-    # Grouped responses by model
+
+    # Extract unique prompts used for this theme
+    prompts_seen = {}
+    for r in sample_records or []:
+        q = r.get("question_text") or ""
+        var = r.get("variation") or "1"
+        if q and var not in prompts_seen:
+            prompts_seen[var] = q
+
+    prompts_html = "<div class=\"theme-prompts\"><h3>Prompts Used</h3>"
+    if prompts_seen:
+        for var in sorted(prompts_seen.keys(), key=lambda x: int(x) if x.isdigit() else 0):
+            prompts_html += f"<div class=\"prompt-item\"><span class=\"prompt-label\">Variation {_html_escape(var)}:</span><pre class=\"prompt-text\">{_html_escape(prompts_seen[var])}</pre></div>"
+    else:
+        prompts_html += "<p>No prompts available.</p>"
+    prompts_html += "</div>"
+
+    # Overall compliance stats
+    total_responses = len(sample_records or [])
+    total_models = len(groups)
+    complete_count = sum(1 for r in (sample_records or []) if r.get("compliance") == "COMPLETE")
+    evasive_count = sum(1 for r in (sample_records or []) if r.get("compliance") == "EVASIVE")
+    denial_count = sum(1 for r in (sample_records or []) if r.get("compliance") == "DENIAL")
+    error_count = sum(1 for r in (sample_records or []) if r.get("compliance") == "ERROR")
+
+    pct_complete = (complete_count / total_responses * 100) if total_responses > 0 else 0
+    pct_evasive = (evasive_count / total_responses * 100) if total_responses > 0 else 0
+    pct_denial = (denial_count / total_responses * 100) if total_responses > 0 else 0
+    pct_error = (error_count / total_responses * 100) if total_responses > 0 else 0
+
+    stats_html = f"""
+<div class="theme-stats">
+  <h3>Overall Results</h3>
+  <div class="stats-grid">
+    <div class="stat-box"><span class="stat-value">{total_models}</span><span class="stat-label">Models Tested</span></div>
+    <div class="stat-box"><span class="stat-value">{total_responses}</span><span class="stat-label">Total Responses</span></div>
+    <div class="stat-box stat-complete"><span class="stat-value">{pct_complete:.1f}%</span><span class="stat-label">Complete</span></div>
+    <div class="stat-box stat-evasive"><span class="stat-value">{pct_evasive:.1f}%</span><span class="stat-label">Evasive</span></div>
+    <div class="stat-box stat-denial"><span class="stat-value">{pct_denial:.1f}%</span><span class="stat-label">Denial</span></div>
+    <div class="stat-box stat-error"><span class="stat-value">{pct_error:.1f}%</span><span class="stat-label">Error</span></div>
+  </div>
+</div>
+"""
+
+    # Expand/Collapse all button
+    controls_html = """
+<div class="model-responses-header">
+  <h3>Model Responses</h3>
+  <div class="expand-controls">
+    <button onclick="document.querySelectorAll('.model-details').forEach(d=>d.open=true)" class="expand-btn">Expand All</button>
+    <button onclick="document.querySelectorAll('.model-details').forEach(d=>d.open=false)" class="expand-btn">Collapse All</button>
+  </div>
+</div>
+"""
+
+    # Grouped responses by model - now using collapsible details
     sections = []
     for m in sorted(groups.keys()):
         safe = generate_safe_id(m)
         arr = sorted(groups[m], key=lambda r: int(r.get("variation") or 0))
+        total = len(arr)
+        k = sum(1 for rec in arr if rec.get("compliance") == "COMPLETE")
+        pct = (k / total * 100.0) if total > 0 else 0.0
+        style = _pct_color_style(pct)
+
         cards = []
         for r in arr:
             comp = r.get("compliance") or ""
@@ -1211,24 +1260,44 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
             var = r.get("variation") or ""
             openrouter = f"https://openrouter.ai/chat?models={quote_plus(r.get('model') or '')}&message={quote_plus(q)}"
             cards.append(
-                """
-<div class=\"response-card-nested\">
-  <div class=\"response-header nested-header\"><strong>Variation: %s</strong> · <span class=\"compliance-label compliance-%s\">%s</span></div>
-  <div class=\"response-content-area nested-content\">\n    <div class=\"detail-section question-section\"><strong>Question:</strong><pre class=\"text-display\">%s</pre></div>
-  <div class=\"detail-section\"><strong>Model Response:</strong><div class=\"text-display markdown-content\">%s</div></div>
-  <div class=\"detail-section\"><strong>Judge Analysis:</strong><pre class=\"text-display\">%s</pre></div>
-  <div class=\"detail-section action-section\">\n    <a class=\"openrouter-link\" href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">\n      <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n        <path d=\"M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/>\n        <polyline points=\"15 3 21 3 21 9\"/>\n        <line x1=\"10\" y1=\"14\" x2=\"21\" y2=\"3\"/>\n      </svg>\n      <span>Try on OpenRouter →</span>\n    </a>\n  </div>\n  </div>
+                f"""
+<div class="response-card-nested">
+  <div class="response-header nested-header"><strong>Variation {_html_escape(var)}</strong> · <span class="compliance-label compliance-{_html_escape(comp)}">{_html_escape(comp)}</span></div>
+  <div class="response-content-area nested-content">
+    <div class="detail-section"><strong>Model Response:</strong><div class="text-display markdown-content">{ans}</div></div>
+    <div class="detail-section"><strong>Judge Analysis:</strong><pre class="text-display">{jtxt}</pre></div>
+    <div class="detail-section action-section">
+      <a class="openrouter-link" href="{_html_escape(openrouter)}" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        <span>Try on OpenRouter →</span>
+      </a>
+    </div>
+  </div>
 </div>
-""" % (
-                    _html_escape(var), _html_escape(comp), _html_escape(comp),
-                    _html_escape(q), ans, jtxt, _html_escape(openrouter)
-                )
+"""
             )
+
+        model_link = f"/models/{safe}/"
         sections.append(
-            f"<section class=\"model-section\" id=\"model-{safe}\"><h4 class=\"model-section-header\"><span>{_html_escape(m)}</span></h4>"
-            + "\n".join(cards) + "</section>"
+            f"""<details class="model-details" id="model-{safe}">
+  <summary class="model-summary">
+    <span class="model-name"><a href="{model_link}">{_html_escape(m)}</a></span>
+    <span class="model-stats">
+      <span class="compliance-box" style="{style}">{pct:.1f}%</span>
+      <span class="response-count">{total} responses</span>
+    </span>
+  </summary>
+  <div class="model-responses">
+    {"".join(cards)}
+  </div>
+</details>"""
         )
-    body_html = toc_html + "<div class=\"response-list\">" + "\n".join(sections) + "</div>"
+
+    body_html = hero_html + prompts_html + stats_html + controls_html + "<div class=\"response-list\">" + "\n".join(sections) + "</div></div>"
     return head + body_html + _page_foot(depth=depth)
 
 
