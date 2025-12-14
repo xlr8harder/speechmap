@@ -1246,10 +1246,12 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     for m in sorted(groups.keys()):
         safe = generate_safe_id(m)
         arr = sorted(groups[m], key=lambda r: int(r.get("variation") or 0))
-        total = len(arr)
-        k = sum(1 for rec in arr if rec.get("compliance") == "COMPLETE")
-        pct = (k / total * 100.0) if total > 0 else 0.0
-        style = _pct_color_style(pct)
+
+        # Build compliance badges for each variation
+        badges_html = ""
+        for r in arr:
+            comp = r.get("compliance") or "UNKNOWN"
+            badges_html += f'<span class="compliance-badge badge-{comp.lower()}">{comp[0]}</span>'
 
         cards = []
         for r in arr:
@@ -1286,10 +1288,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
             f"""<details class="model-details" id="model-{safe}">
   <summary class="model-summary">
     <span class="model-name"><a href="{model_link}">{_html_escape(m)}</a></span>
-    <span class="model-stats">
-      <span class="compliance-box" style="{style}">{pct:.1f}%</span>
-      <span class="response-count">{total} responses</span>
-    </span>
+    <span class="model-badges">{badges_html}</span>
   </summary>
   <div class="model-responses">
     {"".join(cards)}

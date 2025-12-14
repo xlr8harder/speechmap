@@ -1315,6 +1315,26 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
     color: #64748b;
     font-size: 0.9em;
 }
+.model-badges {
+    display: flex;
+    gap: 4px;
+}
+.compliance-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8em;
+    color: #fff;
+}
+.badge-complete { background: #16a34a; }
+.badge-evasive { background: #ca8a04; }
+.badge-denial { background: #dc2626; }
+.badge-error { background: #9333ea; }
+.badge-unknown { background: #6b7280; }
 .model-responses {
     padding: 15px 20px;
 }
