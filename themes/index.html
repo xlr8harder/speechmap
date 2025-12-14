@@ -28,9 +28,18 @@
 </div>
 <div class="page-shell">
 
-<h2>Question Themes</h2>
-<p>Explore overall compliance by question theme across all models. Click a theme to view prompts and model responses.</p>
-<p>Columns show: Models (with responses), # Resp (total judgments), and the share that were Complete, Evasive, Denial, and Error.</p>
+<div class="leaderboard-hero">
+  <h1>Question Themes</h1>
+  <p class="hero-subtitle">Explore how models respond to different categories of sensitive prompts</p>
+</div>
+<div class="leaderboard-content">
+  <div class="leaderboard-intro">
+    <div class="intro-main">
+      <p>Each theme groups related prompts that test a specific type of sensitive content. Higher <b>Complete</b> scores mean models engage more directly with that topic. Click any theme to see the specific prompts and model responses.</p>
+      <p class="column-legend"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
+    </div>
+  </div>
+
 <div id="question-themes-table" class="table-container"></div>
 <div id="static-fallback-themes">
 <table class="simple-table">
@@ -568,6 +577,7 @@
 <tr><td><a href="/themes/econ_land_value_tax_100/">econ_land_value_tax_100</a></td><td>Economics &amp; Property</td><td class="num">212</td><td class="num">848</td><td class="num">95.6%</td><td class="num">3.2%</td><td class="num">0.9%</td><td class="num">0.2%</td></tr>
   </tbody>
 </table>
+</div>
 </div>
 
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js"></script>

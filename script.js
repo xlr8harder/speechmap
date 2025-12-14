@@ -256,11 +256,10 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       const selHighlight = document.getElementById('timeline-highlight-creator-filter');
       const domainSet = new Set(); for (const mid in domainSummary){ Object.keys(domainSummary[mid]||{}).forEach(d=>domainSet.add(d)); }
       const creatorSet = new Set(['all']); for (const mid in modelMeta){ creatorSet.add(modelMeta[mid]?.creator || 'Unknown Creator'); }
-      function setOptions(sel, arr){ if(!sel) return; sel.innerHTML=''; arr.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); }); }
-      if (selDomain && !selDomain.dataset.wired){ setOptions(selDomain, ['all', ...Array.from(domainSet).sort()]); selDomain.value=domain; selDomain.dataset.wired='1'; }
-      if (selMetric && !selMetric.dataset.wired){ setOptions(selMetric, Object.keys(JUDGMENT_KEYS)); selMetric.value=metric; selMetric.dataset.wired='1'; }
-      if (selCreator && !selCreator.dataset.wired){ setOptions(selCreator, Array.from(creatorSet).sort()); selCreator.value=creator; selCreator.dataset.wired='1'; }
-      if (selHighlight && !selHighlight.dataset.wired){ setOptions(selHighlight, ['none', ...Array.from(creatorSet).sort().filter(c=>c!=='all')]); selHighlight.value=highlight; selHighlight.dataset.wired='1'; }
+      function setOptions(sel, arr, labelMap){ if(!sel) return; sel.innerHTML=''; arr.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=labelMap?labelMap[v]:v; sel.appendChild(o); }); }
+      if (selMetric && !selMetric.dataset.wired){ const metricLabels={}; Object.keys(JUDGMENT_KEYS).forEach(k=>metricLabels[k]=JUDGMENT_KEYS[k].label); setOptions(selMetric, Object.keys(JUDGMENT_KEYS), metricLabels); selMetric.value=metric; selMetric.dataset.wired='1'; }
+      if (selCreator && !selCreator.dataset.wired){ const creators = Array.from(creatorSet).filter(c=>c!=='all').sort(); setOptions(selCreator, ['all', ...creators]); selCreator.value=creator; selCreator.dataset.wired='1'; }
+      if (selHighlight && !selHighlight.dataset.wired){ const creators = Array.from(creatorSet).filter(c=>c!=='all').sort(); setOptions(selHighlight, ['none', ...creators]); selHighlight.value=highlight; selHighlight.dataset.wired='1'; }
       function updateURL(){ const p=new URLSearchParams(); if (selDomain && selDomain.value!=='all') p.set('domain', selDomain.value); if (selCreator && selCreator.value!=='all') p.set('creator', selCreator.value); if (selMetric && selMetric.value!=='pct_complete_overall') p.set('metric', selMetric.value); if (selHighlight && selHighlight.value!=='none') p.set('highlight', selHighlight.value); history.replaceState(null,'',p.toString()?`?${p.toString()}`:location.pathname); }
       function wire(sel){ if(!sel||sel.dataset.changeWired==='1') return; sel.addEventListener('change',()=>{ updateURL(); hydrateTimeline(); }); sel.dataset.changeWired='1'; }
       wire(selDomain); wire(selMetric); wire(selCreator); wire(selHighlight);

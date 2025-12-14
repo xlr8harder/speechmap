@@ -1089,6 +1089,7 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .filter-controls { /* General container for filters */
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-around;
     gap: 15px;
     margin-bottom: 20px;
     padding: 15px;
@@ -1099,7 +1100,9 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .filter-item {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
 }
 .filter-item label {
     font-weight: 500;

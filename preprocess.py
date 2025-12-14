@@ -1046,17 +1046,27 @@ def render_themes_index(theme_summary_all):
             f"<td class=\"num\">{_pct(t.get('pct_error',0))}</td>"
             f"</tr>"
         )
+    header_html = """
+<div class=\"leaderboard-hero\">
+  <h1>Question Themes</h1>
+  <p class=\"hero-subtitle\">Explore how models respond to different categories of sensitive prompts</p>
+</div>
+<div class=\"leaderboard-content\">
+  <div class=\"leaderboard-intro\">
+    <div class=\"intro-main\">
+      <p>Each theme groups related prompts that test a specific type of sensitive content. Higher <b>Complete</b> scores mean models engage more directly with that topic. Click any theme to see the specific prompts and model responses.</p>
+      <p class=\"column-legend\"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
+    </div>
+  </div>
+"""
     table = """
-<h2>Question Themes</h2>
-<p>Explore overall compliance by question theme across all models. Click a theme to view prompts and model responses.</p>
-<p>Columns show: Models (with responses), # Resp (total judgments), and the share that were Complete, Evasive, Denial, and Error.</p>
 <div id=\"question-themes-table\" class=\"table-container\"></div>
 <div id=\"static-fallback-themes\">
 <table class=\"simple-table\">
   <thead><tr><th>Theme</th><th>Domain</th><th>Models</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
   <tbody>
-""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n"
-    return _page_head(title, canon, depth=depth, active_tab='themes') + table + _page_foot(depth=depth)
+""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n</div>\n"
+    return _page_head(title, canon, depth=depth, active_tab='themes') + header_html + table + _page_foot(depth=depth)
 
 
 def render_lab_standings_page(lab_standings):
@@ -1400,22 +1410,31 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
 
     # Acknowledgments static page
     ack_html = _page_head("Acknowledgments", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
-        "<div class=\"acknowledgments-content\"><h2>Acknowledgments</h2>"
+        "<div class=\"leaderboard-hero\">"
+        "  <h1>Acknowledgments</h1>"
+        "  <p class=\"hero-subtitle\">Thank you to our supporters</p>"
+        "</div>"
+        "<div class=\"leaderboard-content\">"
+        "<div class=\"acknowledgments-content\">"
         "<p>We're deeply indebted to <a href=\"https://x.com/jon_durbin\">Jon Durbin</a>, who provided the initial seed funds needed to launch the project.</p>"
         "<p>We're grateful to <a href=\"https://openrouter.ai\">OpenRouter</a> for their generous support shortly after our launch. Their contribution helped us complete coverage of all key models from all major model providers for our initial post-launch milestone, and their infrastructure made this project far more feasible than it would have been otherwise.</p>"
-        "</div>"
+        "</div></div>"
     ) + _page_foot(depth=0)
     _write_file(os.path.join("acknowledgments", "index.html"), ack_html)
 
     # Timeline static shell (Chart hydration allowed to load data/*)
     timeline_head = _page_head("Model Timeline", f"{SITE_BASE_URL}/timeline/", depth=0, active_tab='timeline')
     timeline_body = (
+        "<div class=\"leaderboard-hero\">"
+        "  <h1>Model Timeline</h1>"
+        "  <p class=\"hero-subtitle\">Track how model compliance changes over time</p>"
+        "</div>"
+        "<div class=\"leaderboard-content\">"
         "<div class=\"timeline-view-container\">"
-        "<h2>Model Timeline</h2>"
-        "<p>Scatter plot showing model release dates against their compliance percentage. Click points to view model details.</p>"
+        "<div class=\"leaderboard-intro\"><div class=\"intro-main\">"
+        "<p>This scatter plot shows each model's release date against its compliance rate. Use the filters to explore by metric or creator. Click any point to view that model's details.</p>"
+        "</div></div>"
         "<div class=\"timeline-filters filter-controls\">"
-        "  <div class=\"filter-item\"><label for=\"timeline-domain-filter\">Domain:</label>"
-        "    <select id=\"timeline-domain-filter\"></select></div>"
         "  <div class=\"filter-item\"><label for=\"timeline-metric-filter\">Y-Axis Metric:</label>"
         "    <select id=\"timeline-metric-filter\"></select></div>"
         "  <div class=\"filter-item\"><label for=\"timeline-creator-filter\">Creator:</label>"
@@ -1424,7 +1443,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
         "    <select id=\"timeline-highlight-creator-filter\"></select></div>"
         "</div>"
         "<div class=\"chart-container\"><canvas id=\"timeline-chart-canvas\"></canvas></div>"
-        "</div>"
+        "</div></div>"
     )
     # Include Chart.js for this page only
     timeline_foot = (
