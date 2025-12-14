@@ -965,34 +965,71 @@ def render_model_detail(model_id, meta, theme_stats_for_model):
     title = f"Model: {model_id}"
     canon = f"{SITE_BASE_URL}/models/{generate_safe_id(model_id)}/"
     depth = 2
-    meta_rows = []
-    for k, v in (meta or {}).items():
-        if k == "model_identifier":
-            continue
-        if v is None or v == "":
-            continue
-        meta_rows.append(f"<tr><td>{_html_escape(k.replace('_',' ').title())}</td><td>{_html_escape(v)}</td></tr>")
-    # Build meta info using the same classes as the interactive view
-    def _fmt_key(k):
-        try:
-            return str(k).replace("_", " ").title()
-        except Exception:
-            return str(k)
-    meta_items = []
-    if meta:
-        for k, v in meta.items():
-            if k == "model_identifier" or v is None or v == "":
-                continue
-            meta_items.append(f"<div class=\"meta-item\"><span class=\"meta-key\">{_html_escape(_fmt_key(k))}:</span> <span class=\"meta-value\">{_html_escape(v)}</span></div>")
-    meta_section = (
-        "<div class=\"model-meta-box\">"
-        + "<h3>Model Information</h3>"
-        + "<div class=\"meta-grid\">"
-        + ("\n".join(meta_items) if meta_items else "<div class=\"meta-item\"><em>(No additional metadata available for this model.)</em></div>")
-        + "</div></div>"
-    )
 
-    header_html = f"<h2>Model Details: {_html_escape(model_id)}</h2><p><a href=\"../\">← Back to Models</a></p>"
+    # Extract key metadata
+    creator = (meta or {}).get("creator", "Unknown")
+    model_name = (meta or {}).get("model_name", model_id)
+    release_date = (meta or {}).get("release_date", "")
+    model_family = (meta or {}).get("model_family", "")
+    is_reasoning = (meta or {}).get("reasoning_model", False)
+
+    # Hero header
+    hero_html = f"""
+<div class="leaderboard-hero">
+  <h1>{_html_escape(model_name)}</h1>
+  <p class="hero-subtitle">{_html_escape(creator)}</p>
+</div>
+<div class="leaderboard-content">
+<p class="back-link"><a href="../">← Back to Models</a></p>
+"""
+
+    # Calculate overall stats
+    total_responses = 0
+    total_complete = 0
+    total_evasive = 0
+    total_denial = 0
+    total_error = 0
+    for key, s in (theme_stats_for_model or {}).items():
+        c = int(s.get("c", 0))
+        total_responses += c
+        total_complete += int(s.get("k", 0))
+        total_evasive += int(s.get("e", 0))
+        total_denial += int(s.get("d", 0))
+        total_error += int(s.get("r", 0))
+
+    pct_complete = (total_complete / total_responses * 100) if total_responses > 0 else 0
+    pct_evasive = (total_evasive / total_responses * 100) if total_responses > 0 else 0
+    pct_denial = (total_denial / total_responses * 100) if total_responses > 0 else 0
+    pct_error = (total_error / total_responses * 100) if total_responses > 0 else 0
+    num_themes = len(theme_stats_for_model or {})
+
+    # Model info card - include all key fields
+    info_items = []
+    info_items.append(f'<div class="info-item"><span class="info-label">Creator</span><span class="info-value">{_html_escape(creator)}</span></div>')
+    info_items.append(f'<div class="info-item"><span class="info-label">Model Name</span><span class="info-value">{_html_escape(model_name)}</span></div>')
+    if model_family:
+        info_items.append(f'<div class="info-item"><span class="info-label">Family</span><span class="info-value">{_html_escape(model_family)}</span></div>')
+    if release_date:
+        info_items.append(f'<div class="info-item"><span class="info-label">Released</span><span class="info-value">{_html_escape(release_date)}</span></div>')
+    reasoning_text = "Yes" if is_reasoning else "No"
+    info_items.append(f'<div class="info-item"><span class="info-label">Reasoning Model</span><span class="info-value">{reasoning_text}</span></div>')
+
+    info_section = f'<div class="model-info-section"><h3>Model Information</h3><div class="model-info-bar">{"".join(info_items)}</div></div>'
+
+    # Overall stats
+    stats_html = f"""
+<div class="theme-stats">
+  <h3>Overall Results</h3>
+  <div class="stats-grid">
+    <div class="stat-box"><span class="stat-value">{num_themes}</span><span class="stat-label">Themes Tested</span></div>
+    <div class="stat-box"><span class="stat-value">{total_responses}</span><span class="stat-label">Total Responses</span></div>
+    <div class="stat-box stat-complete"><span class="stat-value">{pct_complete:.1f}%</span><span class="stat-label">Complete</span></div>
+    <div class="stat-box stat-evasive"><span class="stat-value">{pct_evasive:.1f}%</span><span class="stat-label">Evasive</span></div>
+    <div class="stat-box stat-denial"><span class="stat-value">{pct_denial:.1f}%</span><span class="stat-label">Denial</span></div>
+    <div class="stat-box stat-error"><span class="stat-value">{pct_error:.1f}%</span><span class="stat-label">Error</span></div>
+  </div>
+</div>
+"""
 
     # Build theme rows
     rows = []
@@ -1001,7 +1038,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model):
         c = int(s.get("c", 0))
         pct_c = (s.get("k", 0) / c * 100) if c > 0 else 0
         items.append((key, s.get("domain") or "N/A", c, pct_c, s))
-    items.sort(key=lambda x: (x[3], x[0]))
+    items.sort(key=lambda x: x[0])  # Sort by theme name ascending
     for key, dom, c, pct_c, s in items:
         theme_link = f"../../themes/{generate_safe_id(key)}/#model-{generate_safe_id(model_id)}"
         rows.append(
@@ -1022,8 +1059,8 @@ def render_model_detail(model_id, meta, theme_stats_for_model):
 <table class=\"simple-table\">
   <thead><tr><th>Theme</th><th>Domain</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
   <tbody>
-""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n"
-    return _page_head(title, canon, depth=depth, active_tab='models') + header_html + meta_section + table + _page_foot(depth=depth)
+""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n</div>\n"
+    return _page_head(title, canon, depth=depth, active_tab='models') + hero_html + info_section + stats_html + table + _page_foot(depth=depth)
 
 
 def render_themes_index(theme_summary_all):

@@ -168,7 +168,7 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       layout: 'fitDataFill',
       height: '65vh',
       placeholder: 'No themes.',
-      initialSort: [{column:'pct_complete_overall', dir:'asc'}],
+      initialSort: [{column:'theme', dir:'asc'}],
       columns: [
         { title:'Theme', field:'theme', widthGrow:2, formatter:(cell)=>{
             const r = cell.getRow().getData();

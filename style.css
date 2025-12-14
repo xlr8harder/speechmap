@@ -972,7 +972,7 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 }
 
 .leaderboard-content {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -1337,4 +1337,42 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .badge-unknown { background: #6b7280; }
 .model-responses {
     padding: 15px 20px;
+}
+
+/* Model detail page info bar */
+.model-info-section {
+    margin-bottom: 30px;
+}
+.model-info-section h3 {
+    margin: 0 0 15px 0;
+    color: #1e3a5f;
+}
+.model-info-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 120px;
+}
+.info-label {
+    font-size: 0.8em;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+.info-value {
+    font-size: 1.1em;
+    color: #1e3a5f;
+    font-weight: 500;
 }
