@@ -69,6 +69,10 @@
     <lastmod>2025-11-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/models/tngtech-tng-r1t-chimera/</loc>
+    <lastmod>2025-11-26</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/models/anthropic-claude-opus-4-5-thinking/</loc>
     <lastmod>2025-11-24</lastmod>
   </url>
@@ -451,10 +455,6 @@
   <url>
     <loc>https://speechmap.ai/models/openai-chatgpt-4o-latest-20250428/</loc>
     <lastmod>2025-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/models/tngtech-tng-r1t-chimera/</loc>
-    <lastmod>2025-04-27</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/models/tngtech-deepseek-r1t-chimera/</loc>
