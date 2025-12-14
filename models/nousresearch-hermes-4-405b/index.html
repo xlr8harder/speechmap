@@ -13,18 +13,20 @@
 <link href="https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css" rel="stylesheet">
 <link href="/style.css" rel="stylesheet">
 </head><body>
+<div class="top-nav-wrapper">
+  <div class="top-nav-inner">
+    <div class="site-header"><img src="/speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo"><h1>SpeechMap.AI</h1></div>
+    <nav class="view-selector">
+      <button onclick="location.assign('/')" class="">About</button>
+      <button onclick="location.assign('/labs/')" class="">Leaderboard</button>
+      <button onclick="location.assign('/models/')" class="active">Models</button>
+      <button onclick="location.assign('/themes/')" class="">Themes</button>
+      <button onclick="location.assign('/timeline/')" class="">Timeline</button>
+      <button onclick="location.assign('/acknowledgments/')" class="">Acknowledgments</button>
+    </nav>
+  </div>
+</div>
 <div class="page-shell">
-<div class="site-header"><img src="/speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo">
-<h1>SpeechMap.AI <span class="subtitle">The Free Speech Dashboard for AI.</span></h1></div>
-<nav class="view-selector">
-  <button onclick="location.assign('/index.html')" class="">About</button>
-  <button onclick="location.assign('/labs/')" class="">Lab Leaderboard</button>
-  <button onclick="location.assign('/models/')" class="active">Model Results</button>
-  <button onclick="location.assign('/themes/')" class="">Question Themes</button>
-  <button onclick="location.assign('/timeline/')" class="">Model Timeline</button>
-  <button onclick="location.assign('/acknowledgments/')" class="">Acknowledgments</button>
-</nav>
-<hr>
 <h2>Model Details: nousresearch/hermes-4-405b</h2><p><a href="../">← Back to Models</a></p><div class="model-meta-box"><h3>Model Information</h3><div class="meta-grid"><div class="meta-item"><span class="meta-key">Creator:</span> <span class="meta-value">nousresearch</span></div>
 <div class="meta-item"><span class="meta-key">Model Name:</span> <span class="meta-value">hermes-4-405b</span></div>
 <div class="meta-item"><span class="meta-key">Model Family:</span> <span class="meta-value">hermes-4-405b</span></div>

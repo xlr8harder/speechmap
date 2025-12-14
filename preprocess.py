@@ -712,6 +712,13 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
     desc = "SpeechMap.AI — Explore model compliance across sensitive prompts."
     ogimg = f"{SITE_BASE_URL}/og-image.png"
     prefix = "../" * depth
+    # Build active class strings
+    about_active = "active" if active_tab == "about" else ""
+    labs_active = "active" if active_tab == "labs" else ""
+    models_active = "active" if active_tab == "models" else ""
+    themes_active = "active" if active_tab == "themes" else ""
+    timeline_active = "active" if active_tab == "timeline" else ""
+    ack_active = "active" if active_tab == "ack" else ""
     return f"""<!DOCTYPE html>
 <html lang=\"en\"><head>
 <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
@@ -727,17 +734,20 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 <link href=\"https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css\" rel=\"stylesheet\">
 <link href=\"/style.css\" rel=\"stylesheet\">
 </head><body>
+<div class=\"top-nav-wrapper\">
+  <div class=\"top-nav-inner\">
+    <div class=\"site-header\"><img src=\"/speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\"><h1>SpeechMap.AI</h1></div>
+    <nav class=\"view-selector\">
+      <button onclick=\"location.assign('/')\" class=\"{about_active}\">About</button>
+      <button onclick=\"location.assign('/labs/')\" class=\"{labs_active}\">Leaderboard</button>
+      <button onclick=\"location.assign('/models/')\" class=\"{models_active}\">Models</button>
+      <button onclick=\"location.assign('/themes/')\" class=\"{themes_active}\">Themes</button>
+      <button onclick=\"location.assign('/timeline/')\" class=\"{timeline_active}\">Timeline</button>
+      <button onclick=\"location.assign('/acknowledgments/')\" class=\"{ack_active}\">Acknowledgments</button>
+    </nav>
+  </div>
+</div>
 <div class=\"page-shell\">
-<div class=\"site-header\"><img src=\"/speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\">\n<h1>SpeechMap.AI <span class=\"subtitle\">The Free Speech Dashboard for AI.</span></h1></div>
-<nav class=\"view-selector\">
-  <button onclick=\"location.assign('/index.html')\" class=\"{ 'active' if active_tab=='about' else '' }\">About</button>
-  <button onclick=\"location.assign('/labs/')\" class=\"{ 'active' if active_tab=='labs' else '' }\">Lab Leaderboard</button>
-  <button onclick=\"location.assign('/models/')\" class=\"{ 'active' if active_tab=='models' else '' }\">Model Results</button>
-  <button onclick=\"location.assign('/themes/')\" class=\"{ 'active' if active_tab=='themes' else '' }\">Question Themes</button>
-  <button onclick=\"location.assign('/timeline/')\" class=\"{ 'active' if active_tab=='timeline' else '' }\">Model Timeline</button>
-  <button onclick=\"location.assign('/acknowledgments/')\" class=\"{ 'active' if active_tab=='ack' else '' }\">Acknowledgments</button>
-</nav>
-<hr>
 """
 
 
@@ -821,62 +831,90 @@ def render_home_page(stats, theme_summary=None, lab_standings=None):
     )
 
     body = (
-        "<div class=\"about-content\">"
-        "  <div class=\"about-hero\">"
-        "    <div class=\"hero-text\">"
-        "      <h2>Mapping the invisible<br>boundaries of AI speech</h2>"
-        "    </div>"
-        "    <div class=\"hero-image\">"
-        "      <img src=\"/graphic.png\" alt=\"Map showing AI model responses across regions\" class=\"hero-graphic\">"
-        "    </div>"
+        # Full-width hero with map background
+        "<div class=\"hero-full\">"
+        "  <div class=\"hero-overlay\">"
+        "    <h1>Mapping the Invisible<br>Boundaries of AI Speech</h1>"
+        "    <p class=\"hero-subtitle\">Tracking what AI models refuse to say, and how it's changing over time.</p>"
+        "    <p class=\"hero-cta\"><a href=\"/labs/\">Explore Lab Leaderboard</a></p>"
         "  </div>"
-        "  <div class=\"about-grid\">"
-        "    <div class=\"grid-item what-is\">"
+        "</div>"
+        "<div class=\"about-content\">"
+        # Two-column grid: What is SpeechMap.AI? and What We Found
+        "  <div class=\"two-col-grid\">"
+        "    <div class=\"text-column\">"
         "      <h3>What is SpeechMap.AI?</h3>"
         "      <p><b>SpeechMap.AI</b> is a public research project that explores the boundaries of AI-generated speech.</p>"
-        "      <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and topics. Most AI benchmarks measure what models <i>can</i> do. We focus on what they <i>won’t</i>: what they avoid, refuse, or shut down.</p>"
-        "      <p>Our point is not that all requests must be fulfilled. Some are offensive. Some are absurd. But without testing what gets filtered, we can’t see where the lines are drawn, or how they’re shifting over time.</p>"
-        "      <p class=\"lab-cta\"><a href=\"/labs/\">View Lab Leaderboard</a></p>"
+        "      <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and topics. Most AI benchmarks measure what models <i>can</i> do. We focus on what they <i>won't</i>: what they avoid, refuse, or shut down.</p>"
+        "      <p>Our point is not that all requests must be fulfilled. Some are offensive. Some are absurd. But without testing what gets filtered, we can't see where the lines are drawn, or how they're shifting over time.</p>"
         "    </div>"
-        "    <div class=\"grid-item where-lines\">"
+        "    <div class=\"content-box\">"
         "      <h3>What We Found</h3>"
-        f"      <p>In the last six months, <b>{top_lab_name}</b> has best supported user speech, earning the top place on our <a href=\"/labs/\">lab leaderboard</a>.</p>"
-        "      <p>Examples from our database:</p>"
-        "      <ul>"
-        f"        <li><b>Argue for traditional gender roles</b>: {pct_gender_traditional} compliance</li>"
-        f"        <li><b>Argue for the same, with reversed genders</b>: {pct_gender_reversed}</li>"
-        f"        <li><b>Outlaw a religion</b>: Judaism ({pct_outlaw_judaism}) vs Witchcraft ({pct_outlaw_witchcraft})</li>"
-        f"        <li><b>Ban AI for safety</b>: {pct_ban_ai} — but if you add \"destroy all AI,\" it drops to {pct_destroy_ai}</li>"
-        "      </ul>"
-        "    </div>"
-        
-        "    <div class=\"grid-item why-matters\">"
-        "      <h3>Why This Matters</h3>"
-        "      <p>AI models are becoming infrastructure for public speech. They're embedded in how we write, search, learn and argue. That makes them powerful speech-enabling technologies, but also potential speech-limiting ones.</p>"
-        "      <p>If models refuse to talk about certain topics, then they shape the boundaries of expression. Some models avoid criticizing certain governments. Others resist satire, protest or controversial moral arguments. Often, the rules are unclear and inconsistently applied.</p>"
-        "      <p><b>SpeechMap.AI reveals where the boundaries of model-generated speech lie.</b></p>"
-        "    </div>"
-        "    <div class=\"grid-item stats-block\">"
-        "      <h3>What we've measured so far</h3>"
-        + ("      <ul>"
-           f"<li><strong class=\"stat-value\">{models}</strong> AI Models Tested</li>"
-           f"<li><strong class=\"stat-value\">{themes}</strong> Question Themes</li>"
-           f"<li><strong class=\"stat-value\">{judgments:,}</strong> Model Responses Analyzed</li>"
-           f"<li><strong class=\"stat-value\">{filtered_pct:.1f}%</strong> of requests were not fulfilled</li>"
-           "</ul>"
-          ) +
-        
+        "      <p class=\"patterns-label\">Models apply different standards to similar requests:</p>"
+        "      <div class=\"finding-comparisons\">"
+        "        <div class=\"finding\">"
+        "          <div class=\"finding-label\">Argue for traditional gender roles</div>"
+        "          <div class=\"comparison-row\">"
+        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_gender_traditional}</span><span class=\"comparison-desc\">complied</span></div>"
+        "            <div class=\"comparison-vs\">vs</div>"
+        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_gender_reversed}</span><span class=\"comparison-desc\">genders reversed</span></div>"
+        "          </div>"
+        "        </div>"
+        "        <div class=\"finding\">"
+        "          <div class=\"finding-label\">Argue to outlaw a religion</div>"
+        "          <div class=\"comparison-row\">"
+        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_outlaw_judaism}</span><span class=\"comparison-desc\">Judaism</span></div>"
+        "            <div class=\"comparison-vs\">vs</div>"
+        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_outlaw_witchcraft}</span><span class=\"comparison-desc\">Witchcraft</span></div>"
+        "          </div>"
+        "        </div>"
+        "        <div class=\"finding\">"
+        "          <div class=\"finding-label\">Argue that AI should be banned</div>"
+        "          <div class=\"comparison-row\">"
+        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_ban_ai}</span><span class=\"comparison-desc\">complied</span></div>"
+        "            <div class=\"comparison-vs\">vs</div>"
+        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_destroy_ai}</span><span class=\"comparison-desc\">destroy all AI</span></div>"
+        "          </div>"
+        "        </div>"
+        "      </div>"
         "    </div>"
         "  </div>"
-        "  <h3>Help Us Grow</h3>"
-        "  <p>We believe that AI will be the defining speech-enabling technology of the 21st century. If you want a future with fair and open access to expression, it is critical to know what these systems will do and notice if if this changes over time.</p>"
-        "  <p>Evaluating one model can cost <b>tens to hundreds of dollars</b> in API fees. Our goal is exhaustive coverage, and older models are already disappearing.</p>"
-        "  <p>If you believe this work matters:</p>"
-        "  <ul>"
-        "    <li><a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\">Support us on Ko-fi</a></li>"
-        "    <li><a href=\"https://speechmap.substack.com/\">Subscribe to our Substack for updates</a></li>"
-        "    <li><a href=\"https://github.com/xlr8harder/llm-compliance\" target=\"_blank\" rel=\"noopener noreferrer\">View the raw data on GitHub</a></li>"
-        "  </ul>"
+        # Why This Matters - plain text section
+        "  <div class=\"why-matters\">"
+        "    <h3>Why This Matters</h3>"
+        "    <p>AI models are becoming infrastructure for public speech. They're embedded in how we write, search, learn and argue. That makes them powerful speech-enabling technologies, but also potential speech-limiting ones.</p>"
+        "    <p>If models refuse to talk about certain topics, they shape the boundaries of expression. Some models avoid criticizing certain governments. Others resist satire, protest or controversial moral arguments. Often, the rules are unclear and inconsistently applied.</p>"
+        "    <p><b>SpeechMap.AI reveals where the boundaries of model-generated speech lie.</b></p>"
+        "  </div>"
+        # Full-width stats bar
+        "  <div class=\"stats-section\">"
+        "    <h3>What We Measured</h3>"
+        "    <div class=\"stats-bar\">"
+        f"      <div class=\"stat-item\"><div class=\"stat-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"3\" width=\"20\" height=\"14\" rx=\"2\"/><path d=\"M8 21h8M12 17v4\"/></svg></div><div class=\"stat-number\">{models}</div><div class=\"stat-label\">AI Models</div></div>"
+        f"      <div class=\"stat-item\"><div class=\"stat-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><circle cx=\"12\" cy=\"17\" r=\".5\" fill=\"currentColor\"/></svg></div><div class=\"stat-number\">{themes}</div><div class=\"stat-label\">Question Themes</div></div>"
+        f"      <div class=\"stat-item\"><div class=\"stat-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/></svg></div><div class=\"stat-number\">{judgments:,}</div><div class=\"stat-label\">Responses Analyzed</div></div>"
+        f"      <div class=\"stat-item\"><div class=\"stat-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M4.93 4.93l14.14 14.14\"/></svg></div><div class=\"stat-number\">{filtered_pct:.1f}%</div><div class=\"stat-label\">Requests Failed</div></div>"
+        "    </div>"
+        "  </div>"
+        # Help Us Grow section
+        "  <div class=\"help-section\">"
+        "    <h3>Support the Project</h3>"
+        "    <p>Evaluating one model can cost <b>tens to hundreds of dollars</b> in API fees. Our goal is exhaustive coverage, and older models are already disappearing. You can help:</p>"
+        "    <div class=\"support-links\">"
+        "      <a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
+        "        <svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z\"/></svg>"
+        "        Support us on Ko-fi"
+        "      </a>"
+        "      <a href=\"https://speechmap.substack.com/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
+        "        <svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z\"/></svg>"
+        "        Subscribe on Substack"
+        "      </a>"
+        "      <a href=\"https://github.com/xlr8harder/llm-compliance\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
+        "        <svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z\"/></svg>"
+        "        View on GitHub"
+        "      </a>"
+        "    </div>"
+        "  </div>"
         "</div>"
     )
     return head + body + _page_foot(depth=0)

@@ -13,18 +13,20 @@
 <link href="https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css" rel="stylesheet">
 <link href="/style.css" rel="stylesheet">
 </head><body>
+<div class="top-nav-wrapper">
+  <div class="top-nav-inner">
+    <div class="site-header"><img src="/speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo"><h1>SpeechMap.AI</h1></div>
+    <nav class="view-selector">
+      <button onclick="location.assign('/')" class="">About</button>
+      <button onclick="location.assign('/labs/')" class="">Leaderboard</button>
+      <button onclick="location.assign('/models/')" class="">Models</button>
+      <button onclick="location.assign('/themes/')" class="">Themes</button>
+      <button onclick="location.assign('/timeline/')" class="">Timeline</button>
+      <button onclick="location.assign('/acknowledgments/')" class="active">Acknowledgments</button>
+    </nav>
+  </div>
+</div>
 <div class="page-shell">
-<div class="site-header"><img src="/speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo">
-<h1>SpeechMap.AI <span class="subtitle">The Free Speech Dashboard for AI.</span></h1></div>
-<nav class="view-selector">
-  <button onclick="location.assign('/index.html')" class="">About</button>
-  <button onclick="location.assign('/labs/')" class="">Lab Leaderboard</button>
-  <button onclick="location.assign('/models/')" class="">Model Results</button>
-  <button onclick="location.assign('/themes/')" class="">Question Themes</button>
-  <button onclick="location.assign('/timeline/')" class="">Model Timeline</button>
-  <button onclick="location.assign('/acknowledgments/')" class="active">Acknowledgments</button>
-</nav>
-<hr>
 <div class="acknowledgments-content"><h2>Acknowledgments</h2><p>We're deeply indebted to <a href="https://x.com/jon_durbin">Jon Durbin</a>, who provided the initial seed funds needed to launch the project.</p><p>We're grateful to <a href="https://openrouter.ai">OpenRouter</a> for their generous support shortly after our launch. Their contribution helped us complete coverage of all key models from all major model providers for our initial post-launch milestone, and their infrastructure made this project far more feasible than it would have been otherwise.</p></div>
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js"></script>
 <script src="/script.js?14"></script>

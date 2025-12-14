@@ -13,18 +13,20 @@
 <link href="https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css" rel="stylesheet">
 <link href="/style.css" rel="stylesheet">
 </head><body>
+<div class="top-nav-wrapper">
+  <div class="top-nav-inner">
+    <div class="site-header"><img src="/speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo"><h1>SpeechMap.AI</h1></div>
+    <nav class="view-selector">
+      <button onclick="location.assign('/')" class="">About</button>
+      <button onclick="location.assign('/labs/')" class="">Leaderboard</button>
+      <button onclick="location.assign('/models/')" class="">Models</button>
+      <button onclick="location.assign('/themes/')" class="">Themes</button>
+      <button onclick="location.assign('/timeline/')" class="active">Timeline</button>
+      <button onclick="location.assign('/acknowledgments/')" class="">Acknowledgments</button>
+    </nav>
+  </div>
+</div>
 <div class="page-shell">
-<div class="site-header"><img src="/speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo">
-<h1>SpeechMap.AI <span class="subtitle">The Free Speech Dashboard for AI.</span></h1></div>
-<nav class="view-selector">
-  <button onclick="location.assign('/index.html')" class="">About</button>
-  <button onclick="location.assign('/labs/')" class="">Lab Leaderboard</button>
-  <button onclick="location.assign('/models/')" class="">Model Results</button>
-  <button onclick="location.assign('/themes/')" class="">Question Themes</button>
-  <button onclick="location.assign('/timeline/')" class="active">Model Timeline</button>
-  <button onclick="location.assign('/acknowledgments/')" class="">Acknowledgments</button>
-</nav>
-<hr>
 <div class="timeline-view-container"><h2>Model Timeline</h2><p>Scatter plot showing model release dates against their compliance percentage. Click points to view model details.</p><div class="timeline-filters filter-controls">  <div class="filter-item"><label for="timeline-domain-filter">Domain:</label>    <select id="timeline-domain-filter"></select></div>  <div class="filter-item"><label for="timeline-metric-filter">Y-Axis Metric:</label>    <select id="timeline-metric-filter"></select></div>  <div class="filter-item"><label for="timeline-creator-filter">Creator:</label>    <select id="timeline-creator-filter"></select></div>  <div class="filter-item"><label for="timeline-highlight-creator-filter">Highlight Creator:</label>    <select id="timeline-highlight-creator-filter"></select></div></div><div class="chart-container"><canvas id="timeline-chart-canvas"></canvas></div></div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@^4"></script>
 <script src="https://cdn.jsdelivr.net/npm/date-fns@^2"></script>

@@ -13,18 +13,20 @@
 <link href="https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css" rel="stylesheet">
 <link href="/style.css" rel="stylesheet">
 </head><body>
+<div class="top-nav-wrapper">
+  <div class="top-nav-inner">
+    <div class="site-header"><img src="/speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo"><h1>SpeechMap.AI</h1></div>
+    <nav class="view-selector">
+      <button onclick="location.assign('/')" class="">About</button>
+      <button onclick="location.assign('/labs/')" class="">Leaderboard</button>
+      <button onclick="location.assign('/models/')" class="">Models</button>
+      <button onclick="location.assign('/themes/')" class="active">Themes</button>
+      <button onclick="location.assign('/timeline/')" class="">Timeline</button>
+      <button onclick="location.assign('/acknowledgments/')" class="">Acknowledgments</button>
+    </nav>
+  </div>
+</div>
 <div class="page-shell">
-<div class="site-header"><img src="/speechmap-logo.png" alt="SpeechMap.AI Logo" id="site-logo">
-<h1>SpeechMap.AI <span class="subtitle">The Free Speech Dashboard for AI.</span></h1></div>
-<nav class="view-selector">
-  <button onclick="location.assign('/index.html')" class="">About</button>
-  <button onclick="location.assign('/labs/')" class="">Lab Leaderboard</button>
-  <button onclick="location.assign('/models/')" class="">Model Results</button>
-  <button onclick="location.assign('/themes/')" class="active">Question Themes</button>
-  <button onclick="location.assign('/timeline/')" class="">Model Timeline</button>
-  <button onclick="location.assign('/acknowledgments/')" class="">Acknowledgments</button>
-</nav>
-<hr>
 <p><a href="../">← Back to Themes</a></p><h2>Question Theme</h2><p><strong>Theme:</strong> gender_trans_youth_parental_override_state<br><strong>Domain:</strong> Gender Roles &amp; Identity</p><details class="toc-details" open><summary>Model Compliance Summary & Links</summary><ul class="toc-links model-toc vertical"><li><a href="#model-allenai-olmo-3-32b-think" class="toc-link-item"><span class="toc-model-name">allenai/olmo-3-32b-think</span><span class="toc-right-group"><span class="toc-compliance-box" style="background-color:#2ecc71;color:white;">100.0%</span><span class="toc-response-count">(4 Resp.)</span></span></a></li>
 <li><a href="#model-allenai-olmo-3-7b-instruct" class="toc-link-item"><span class="toc-model-name">allenai/olmo-3-7b-instruct</span><span class="toc-right-group"><span class="toc-compliance-box" style="background-color:#f1c40f;color:#333;">25.0%</span><span class="toc-response-count">(4 Resp.)</span></span></a></li>
 <li><a href="#model-allenai-olmo-3-7b-think" class="toc-link-item"><span class="toc-model-name">allenai/olmo-3-7b-think</span><span class="toc-right-group"><span class="toc-compliance-box" style="background-color:#2ecc71;color:white;">100.0%</span><span class="toc-response-count">(4 Resp.)</span></span></a></li>
