@@ -28,14 +28,22 @@
 </div>
 <div class="page-shell">
 
-<h2>Model Results</h2>
-<p>Compare models by how often they fully answer sensitive prompts. Click a model name to see per-theme details and example responses.</p>
-<p>Columns show: Complete (answered), Evasive (partial/off-topic/redirect), Denial (refusal), and Error (API/moderation block).</p>
-<div id="overview-table" class="table-container"></div>
-<div id="static-fallback-overview">
-<table class="simple-table">
-  <thead><tr><th>Model</th><th>Released</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
-  <tbody>
+<div class="leaderboard-hero">
+  <h1>Model Results</h1>
+  <p class="hero-subtitle">Compare how AI models handle controversial and sensitive requests</p>
+</div>
+<div class="leaderboard-content">
+  <div class="leaderboard-intro">
+    <div class="intro-main">
+      <p>Each model is tested against hundreds of sensitive prompts. Higher <b>Complete</b> scores mean the model engages more directly. Click any model to explore its per-theme breakdown and example responses.</p>
+      <p class="column-legend"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
+    </div>
+  </div>
+  <div id="overview-table" class="table-container"></div>
+  <div id="static-fallback-overview">
+    <table class="simple-table">
+      <thead><tr><th>Model</th><th>Released</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
+      <tbody>
 <tr><td><a href="/models/openai-gpt-5-2-chat/">openai/gpt-5.2-chat</a></td><td>2025-12-11</td><td class="num">2120</td><td class="num">69.7%</td><td class="num">2.6%</td><td class="num">27.7%</td><td class="num">0.0%</td></tr>
 <tr><td><a href="/models/openai-gpt-5-2/">openai/gpt-5.2</a></td><td>2025-12-11</td><td class="num">2120</td><td class="num">59.8%</td><td class="num">2.3%</td><td class="num">37.8%</td><td class="num">0.1%</td></tr>
 <tr><td><a href="/models/z-ai-glm-4-6v/">z-ai/glm-4.6v</a></td><td>2025-12-08</td><td class="num">2088</td><td class="num">61.2%</td><td class="num">2.3%</td><td class="num">36.5%</td><td class="num">0.0%</td></tr>
@@ -248,8 +256,9 @@
 <tr><td><a href="/models/openai-gpt-4-0613/">openai/gpt-4-0613</a></td><td>2023-06-13</td><td class="num">2120</td><td class="num">79.3%</td><td class="num">7.3%</td><td class="num">13.4%</td><td class="num">0.0%</td></tr>
 <tr><td><a href="/models/openai-gpt-3-5-turbo-0613/">openai/gpt-3.5-turbo-0613</a></td><td>2023-06-13</td><td class="num">2120</td><td class="num">65.3%</td><td class="num">4.8%</td><td class="num">0.6%</td><td class="num">29.3%</td></tr>
 <tr><td><a href="/models/openai-gpt-4-0314/">openai/gpt-4-0314</a></td><td>2023-03-14</td><td class="num">2120</td><td class="num">94.3%</td><td class="num">3.7%</td><td class="num">2.0%</td><td class="num">0.0%</td></tr>
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js"></script>

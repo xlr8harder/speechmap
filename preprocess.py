@@ -941,15 +941,23 @@ def render_models_index(model_summary):
             f"</tr>"
         )
     table = """
-<h2>Model Results</h2>
-<p>Compare models by how often they fully answer sensitive prompts. Click a model name to see per-theme details and example responses.</p>
-<p>Columns show: Complete (answered), Evasive (partial/off-topic/redirect), Denial (refusal), and Error (API/moderation block).</p>
-<div id=\"overview-table\" class=\"table-container\"></div>
-<div id=\"static-fallback-overview\">
-<table class=\"simple-table\">
-  <thead><tr><th>Model</th><th>Released</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
-  <tbody>
-""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n"
+<div class=\"leaderboard-hero\">
+  <h1>Model Results</h1>
+  <p class=\"hero-subtitle\">Compare how AI models handle controversial and sensitive requests</p>
+</div>
+<div class=\"leaderboard-content\">
+  <div class=\"leaderboard-intro\">
+    <div class=\"intro-main\">
+      <p>Each model is tested against hundreds of sensitive prompts. Higher <b>Complete</b> scores mean the model engages more directly. Click any model to explore its per-theme breakdown and example responses.</p>
+      <p class=\"column-legend\"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
+    </div>
+  </div>
+  <div id=\"overview-table\" class=\"table-container\"></div>
+  <div id=\"static-fallback-overview\">
+    <table class=\"simple-table\">
+      <thead><tr><th>Model</th><th>Released</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
+      <tbody>
+""" + "\n".join(rows) + "\n      </tbody>\n    </table>\n  </div>\n</div>\n"
     return _page_head(title, canon, depth=depth, active_tab='models') + table + _page_foot(depth=depth)
 
 

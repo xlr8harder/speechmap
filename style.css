@@ -751,12 +751,17 @@ nav.view-selector a:hover:not(.active) {
 
 
 /* --- Tables --- */
-.table-container { margin-top: 15px; border: 1px solid #ccc; min-height: 100px; max-height: 65vh; overflow: hidden; }
-.tabulator { border: none; }
-.tabulator .tabulator-header { position: sticky; top: 0; z-index: 10; background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; font-weight: 600;}
-.tabulator .tabulator-col-title { font-weight: 600; color: #495057; }
-.tabulator-row { border-bottom: 1px solid #eee; }
-.tabulator-row:hover { background-color: #f0f8ff !important; }
+.table-container { margin-top: 15px; border: 1px solid #e2e8f0; border-radius: 8px; min-height: 100px; max-height: 65vh; overflow: hidden; background: transparent; }
+.tabulator { border: none !important; background: transparent !important; background-color: transparent !important; }
+.tabulator .tabulator-tableholder { background: transparent !important; background-color: transparent !important; }
+.tabulator .tabulator-tableholder .tabulator-table { background: transparent !important; background-color: transparent !important; }
+.tabulator .tabulator-header { position: sticky; top: 0; z-index: 10; background-color: #f1f5f9 !important; border-bottom: 2px solid #e2e8f0; font-weight: 600;}
+.tabulator .tabulator-header .tabulator-col { background: #f1f5f9 !important; background-color: #f1f5f9 !important; }
+.tabulator .tabulator-col-title { font-weight: 600; color: #64748b; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.03em; }
+.tabulator-row { border-bottom: 1px solid #e2e8f0; background: transparent !important; background-color: transparent !important; }
+.tabulator-row.tabulator-row-even { background: transparent !important; background-color: transparent !important; }
+.tabulator-row.tabulator-row-odd { background: transparent !important; background-color: transparent !important; }
+.tabulator-row:hover { background-color: #e8f4fc !important; }
 .tabulator-row .tabulator-cell { border-right: 1px solid #eee; padding: 8px 10px; }
 /* Styling for clickable cells */
 .tabulator-row .tabulator-cell.clickable-cell {
