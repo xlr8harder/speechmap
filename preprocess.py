@@ -1083,20 +1083,29 @@ def render_lab_standings_page(lab_standings):
     if not cards:
         cards.append("<tr><td colspan=\"5\" class=\"empty\">No labs with releases in this window.</td></tr>")
     table = f"""
-<div class=\"lab-standings-intro\">
-  <h2>Lab Leaderboard</h2>
-  <p>Labs ranked by their SpeechMap Index Score, a time-based EMA of SpeechMap scores for
-  all models released by the lab in the last 6 months, bucketed monthly. For a
-  detailed view, see the full <a href=\"/models/\">Model Results</a> page.</p>
-  <p class=\"meta-note\">Last update: {as_of_date.isoformat()}</p>
+<div class=\"leaderboard-hero\">
+  <h1>Lab Leaderboard</h1>
+  <p class=\"hero-subtitle\">Which AI labs build models that best support user speech?</p>
 </div>
-<div class=\"lab-leaderboard-table-wrap\">
-<table class=\"leaderboard-table\">
-  <thead><tr><th>Rank</th><th>Lab</th><th>Index</th><th>Peak Score</th><th>Models</th></tr></thead>
-  <tbody>
+<div class=\"leaderboard-content\">
+  <div class=\"leaderboard-intro\">
+    <div class=\"intro-main\">
+      <h3>What We Measure</h3>
+      <p><b>SpeechMap.AI</b> tests how AI models respond to sensitive and controversial prompts. We measure what models refuse to say, redirect, or filter. Higher scores mean models engage more directly with difficult requests rather than declining or deflecting.</p>
+      <p>Labs are ranked by their <b>Free Speech Index Score</b>, a time-weighted average of all models released in the last 6 months. For individual model results, see the <a href=\"/models/\">Models</a> page.</p>
+    </div>
+    <div class=\"intro-meta\">
+      <p class=\"meta-note\">Last updated: {as_of_date.isoformat()}</p>
+    </div>
+  </div>
+  <div class=\"lab-leaderboard-table-wrap\">
+    <table class=\"leaderboard-table\">
+      <thead><tr><th>Rank</th><th>Lab</th><th>Index</th><th>Peak Score</th><th>Models</th></tr></thead>
+      <tbody>
 {''.join(cards)}
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
 </div>
 """
     return _page_head(title, canon, depth=depth, active_tab='labs') + table + _page_foot(depth=depth)

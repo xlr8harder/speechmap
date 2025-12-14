@@ -4,4 +4,4 @@
   --disable-gpu \
   --screenshot=/Users/jlb/git/speechmap/out.png \
   --window-size=1280,2000 \
-  http://localhost:8001
+  http://localhost:8001/labs/
