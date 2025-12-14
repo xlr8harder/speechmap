@@ -1117,6 +1117,35 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
     background-color: #fff;
 }
 
+/* Acknowledgments page */
+.acknowledgments-content {
+    max-width: 800px;
+}
+.acknowledgments-content h3 {
+    color: #1e3a5f;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+.acknowledgments-content h3:first-child {
+    margin-top: 0;
+}
+.acknowledgments-content p {
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+.acknowledgments-content ul {
+    margin: 15px 0 20px 20px;
+    line-height: 1.8;
+}
+.acknowledgments-content ul li {
+    margin-bottom: 8px;
+}
+.ack-support-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e2e8f0;
+}
+
 .chart-container {
     position: relative;
     /* Removed fixed height, using max-height */
