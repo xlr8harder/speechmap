@@ -1,14 +1,13 @@
-// script.js (timeline only)
+// script.js (client hydration)
 const COMPLIANCE_COLORS = { 'COMPLETE': '#2ecc71', 'EVASIVE': '#f1c40f', 'DENIAL': '#e74c3c', 'ERROR': '#9b59b6', 'UNKNOWN': '#bdc3c7' };
 const JUDGMENT_KEYS = {
-  'pct_complete_overall': { label: '% Complete', key: 'k', color: COMPLIANCE_COLORS.COMPLETE },
-  'pct_evasive':          { label: '% Evasive',   key: 'e', color: COMPLIANCE_COLORS.EVASIVE },
-  'pct_denial':           { label: '% Denial',    key: 'd', color: COMPLIANCE_COLORS.DENIAL },
-  'pct_error':            { label: '% Error',     key: 'r', color: COMPLIANCE_COLORS.ERROR }
+  'pct_complete_overall': { label: '% Complete', color: COMPLIANCE_COLORS.COMPLETE },
+  'pct_evasive':          { label: '% Evasive',  color: COMPLIANCE_COLORS.EVASIVE },
+  'pct_denial':           { label: '% Denial',   color: COMPLIANCE_COLORS.DENIAL },
+  'pct_error':            { label: '% Error',    color: COMPLIANCE_COLORS.ERROR }
 };
 const HIGHLIGHT_COLORS = { fadedBackground: 'rgba(200,200,200,0.7)', fadedBorder: 'rgba(180,180,180,0.7)' };
 const CORE_META_PATH = '/data/metadata-core.json?1';
-const MODEL_DOMAIN_SUMMARY_PATH = '/data/model-domain-summary.json?1';
 function atPath(re){ try{ return re.test(window.location.pathname); }catch(e){ return false; } }
 function safeName(t){ if(!t) return 'id'; const n=t.normalize('NFKD').replace(/[\u0300-\u036f]/g,''); let s=n.toLowerCase().replace(/[^\w\s-]/g,'-').replace(/[\s-]+/g,'-'); s=s.replace(/^-+|-+$/g,'').substring(0,100); return s||'id'; }
 async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); if(!r.ok) throw new Error(`HTTP ${r.status} ${path}`); return await r.json(); }
@@ -242,55 +241,50 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
   async function hydrateTimeline(){
     const cvs = document.getElementById('timeline-chart-canvas'); if (!cvs) return;
     try{
-      const [core, domainSummary] = await Promise.all([ fetchJSON(CORE_META_PATH), fetchJSON(MODEL_DOMAIN_SUMMARY_PATH) ]);
+      const core = await fetchJSON(CORE_META_PATH);
       const modelMeta = core && core.model_metadata ? core.model_metadata : {};
+      const modelSummary = core && Array.isArray(core.model_summary) ? core.model_summary : [];
       const labMeta = core && core.lab_metadata ? core.lab_metadata : {};
       const params = new URLSearchParams(window.location.search);
-      let domain = params.get('domain') || 'all';
       let metric = params.get('metric') || 'pct_complete_overall';
       let creator = params.get('creator') || 'all';
       let highlight = params.get('highlight') || 'none';
       // Populate selects
-      const selDomain = document.getElementById('timeline-domain-filter');
       const selMetric = document.getElementById('timeline-metric-filter');
       const selCreator = document.getElementById('timeline-creator-filter');
       const selHighlight = document.getElementById('timeline-highlight-creator-filter');
-      const domainSet = new Set(); for (const mid in domainSummary){ Object.keys(domainSummary[mid]||{}).forEach(d=>domainSet.add(d)); }
       const creatorSet = new Set(['all']); for (const mid in modelMeta){ creatorSet.add(modelMeta[mid]?.creator || 'Unknown Creator'); }
       function setOptions(sel, arr, labelMap){ if(!sel) return; sel.innerHTML=''; arr.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=labelMap?labelMap[v]:v; sel.appendChild(o); }); }
       function labLabel(lab){ const m = labMeta && lab ? labMeta[lab] : null; const n = m && typeof m.full_name === 'string' ? m.full_name.trim() : ''; return n || lab; }
       if (selMetric && !selMetric.dataset.wired){ const metricLabels={}; Object.keys(JUDGMENT_KEYS).forEach(k=>metricLabels[k]=JUDGMENT_KEYS[k].label); setOptions(selMetric, Object.keys(JUDGMENT_KEYS), metricLabels); selMetric.value=metric; selMetric.dataset.wired='1'; }
       if (selCreator && !selCreator.dataset.wired){ const creators = Array.from(creatorSet).filter(c=>c!=='all').sort(); const labels={ all:'all' }; creators.forEach(c=>labels[c]=labLabel(c)); setOptions(selCreator, ['all', ...creators], labels); selCreator.value=creator; selCreator.dataset.wired='1'; }
       if (selHighlight && !selHighlight.dataset.wired){ const creators = Array.from(creatorSet).filter(c=>c!=='all').sort(); const labels={ none:'none' }; creators.forEach(c=>labels[c]=labLabel(c)); setOptions(selHighlight, ['none', ...creators], labels); selHighlight.value=highlight; selHighlight.dataset.wired='1'; }
-      function updateURL(){ const p=new URLSearchParams(); if (selDomain && selDomain.value!=='all') p.set('domain', selDomain.value); if (selCreator && selCreator.value!=='all') p.set('creator', selCreator.value); if (selMetric && selMetric.value!=='pct_complete_overall') p.set('metric', selMetric.value); if (selHighlight && selHighlight.value!=='none') p.set('highlight', selHighlight.value); history.replaceState(null,'',p.toString()?`?${p.toString()}`:location.pathname); }
+      function updateURL(){ const p=new URLSearchParams(); if (selCreator && selCreator.value!=='all') p.set('creator', selCreator.value); if (selMetric && selMetric.value!=='pct_complete_overall') p.set('metric', selMetric.value); if (selHighlight && selHighlight.value!=='none') p.set('highlight', selHighlight.value); history.replaceState(null,'',p.toString()?`?${p.toString()}`:location.pathname); }
       function wire(sel){ if(!sel||sel.dataset.changeWired==='1') return; sel.addEventListener('change',()=>{ updateURL(); hydrateTimeline(); }); sel.dataset.changeWired='1'; }
-      wire(selDomain); wire(selMetric); wire(selCreator); wire(selHighlight);
+      wire(selMetric); wire(selCreator); wire(selHighlight);
       // Normalize
-      domain = selDomain ? selDomain.value : domain;
       metric = selMetric ? selMetric.value : metric;
       creator = selCreator ? selCreator.value : creator;
       highlight = selHighlight ? selHighlight.value : highlight;
       const ji = JUDGMENT_KEYS[metric] || JUDGMENT_KEYS['pct_complete_overall'];
-      const jsk = ji.key;
       const points = [];
-      for (const mid in modelMeta){
-        const meta = modelMeta[mid];
+      for (const m of modelSummary){
+        const mid = m && m.model ? String(m.model) : '';
+        if (!mid) continue;
+        const meta = modelMeta[mid] || {};
         const cr = meta && meta.creator ? meta.creator : 'Unknown Creator';
         if (creator !== 'all' && cr !== creator) continue;
         let rd = null; if (meta && meta.release_date){ const p = Date.parse(meta.release_date); if (!isNaN(p)) rd = new Date(p); }
         if (!rd) continue;
-        const perDom = domainSummary[mid] || {};
-        let c = 0, ycount = 0;
-        if (domain === 'all'){ for (const d in perDom){ const s = perDom[d]; c += (s.c||0); ycount += (s[jsk]||0); } }
-        else { const s = perDom[domain] || {}; c += (s.c||0); ycount += (s[jsk]||0); }
-        if (c === 0) continue;
+        const y = Number(m && m[metric]);
+        if (!Number.isFinite(y)) continue;
         const isoDay = (meta && meta.release_date) ? String(meta.release_date) : (function(dt){
           const y = dt.getUTCFullYear();
           const m = String(dt.getUTCMonth() + 1).padStart(2, '0');
           const da = String(dt.getUTCDate()).padStart(2, '0');
           return `${y}-${m}-${da}`;
         })(rd);
-        points.push({ x: rd, y: (ycount / c) * 100.0, label: mid, creator: cr, dateStr: isoDay });
+        points.push({ x: rd, y, label: mid, creator: cr, dateStr: isoDay });
       }
       points.sort((a,b)=>a.x-b.x);
       if (window.__timelineChart) { try { window.__timelineChart.destroy(); } catch (e) {} }

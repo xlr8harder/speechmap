@@ -26,7 +26,6 @@ CACHE_DIR = ".cache"
 DATA_DIR = "data"
 # Runtime JSON used by the client at runtime (keep under /data)
 OUTPUT_CORE_METADATA_FILE = os.path.join(DATA_DIR, "metadata-core.json")
-OUTPUT_MODEL_DOMAIN_SUMMARY_FILE = os.path.join(DATA_DIR, "model-domain-summary.json")
 
 # Build-only artifacts moved under /.cache
 OUTPUT_QTHEME_SUMMARY_DIR = os.path.join(CACHE_DIR, "question-theme-summary")
@@ -168,15 +167,28 @@ def preprocess_us_hard_data(analysis_dir):
                         #api_model = rec.get("api_model")
                         #original_api_provider = rec.get("original_api_provider")
 
+                        if not model:
+                            error_count += 1
+                            print(f"    ERR Proc Line {line_num+1} in {fname}: Missing model - Rec: {rec}")
+                            continue
 
-                        sub_topic_key = original_question_id
+                        if not original_question_id:
+                            original_question_id = f"unknown_id_{i}_{line_num+1}"
+
+                        if not compliance:
+                            compliance = "UNKNOWN"
+                        elif not isinstance(compliance, str):
+                            compliance = str(compliance)
+
+                        question_id_str = str(original_question_id)
+                        sub_topic_key = question_id_str
                         variation = "0"
-                        match = ID_REGEX.match(original_question_id)
+                        match = ID_REGEX.match(question_id_str)
                         if match:
                             sub_topic_key = match.group(1)
                             variation = match.group(2)
                         else:
-                            if not original_question_id.startswith("unknown_id_"):
+                            if not question_id_str.startswith("unknown_id_"):
                                 skipped_id_format += 1
                         grouping_key = sub_topic_key
 
@@ -217,7 +229,7 @@ def preprocess_us_hard_data(analysis_dir):
                                     judge_analysis = JUDGE_ANALYSIS_FOR_ERROR
 
                         if compliance not in COMPLIANCE_ORDER:
-                            raise(f"Unrecognized compliance result: {compliance}")
+                            print(f"    Warning: Unrecognized compliance result: {compliance} (defaulting to UNKNOWN)")
                             compliance = "UNKNOWN"
 
                         safe_model_id_part = generate_safe_id(model)
@@ -484,22 +496,6 @@ def save_question_theme_bins(output_dir, model_theme_summary, model_metadata, al
             raise
 
 
-def compute_model_domain_summary(model_theme_summary):
-    # Aggregate per model per domain: { model: { domain: {c,k,e,d,r} } }
-    model_domain = {}
-    for model, themes in model_theme_summary.items():
-        dom_map = model_domain.setdefault(model, {})
-        for key, s in themes.items():
-            dom = s.get("domain") or "Unknown"
-            stats = dom_map.setdefault(dom, {"c": 0, "k": 0, "e": 0, "d": 0, "r": 0})
-            stats["c"] += int(s.get("c", 0))
-            stats["k"] += int(s.get("k", 0))
-            stats["e"] += int(s.get("e", 0))
-            stats["d"] += int(s.get("d", 0))
-            stats["r"] += int(s.get("r", 0))
-    return model_domain
-
-
 def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WINDOW_MONTHS, ema_alpha=None, half_life_months=LAB_STANDINGS_HALFLIFE_MONTHS):
     """
     Build standings per lab (creator) over the last `months` calendar months.
@@ -595,17 +591,6 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
         "half_life_months": half_life_months,
         "standings": standings,
     }
-
-
-def save_model_domain_summary(filepath, model_domain_summary):
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    try:
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(model_domain_summary, f, ensure_ascii=False, separators=(",", ":"))
-        print(f"Saved model domain summary to {filepath}")
-    except Exception as e:
-        print(f"Error saving model domain summary: {e}")
-        raise
 
 
 def save_per_model_theme_breakdowns(output_dir, model_theme_summary):
@@ -726,7 +711,7 @@ try:
     import cmarkgfm
     from cmarkgfm import Options as _COptions
 except Exception:
-    print("ERROR: cmarkgfm is not installed. Please run 'pip install -r requirements.txt' and retry.")
+    print("ERROR: cmarkgfm is not installed. Please install dependencies (e.g., `uv sync`) and retry.")
     sys.exit(1)
 
 def md_to_html(text):
@@ -1424,6 +1409,70 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
     _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
 
+    # Acknowledgments static page
+    ack_html = _page_head("Acknowledgments", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
+        "<div class=\"leaderboard-hero\">"
+        "  <h1>Acknowledgments</h1>"
+        "  <p class=\"hero-subtitle\">Thank you to our supporters</p>"
+        "</div>"
+        "<div class=\"leaderboard-content\">"
+        "<div class=\"acknowledgments-content\">"
+        "<h3>Our Supporters</h3>"
+        "<p>We're deeply indebted to <a href=\"https://x.com/jon_durbin\">Jon Durbin</a>, who provided the initial seed funds needed to launch the project.</p>"
+        "<p>We're grateful to <a href=\"https://openrouter.ai\">OpenRouter</a> for their generous support shortly after our launch. Their contribution helped us complete coverage of all key models from all major model providers for our initial post-launch milestone, and their infrastructure made this project far more feasible than it would have been otherwise.</p>"
+        "<div class=\"ack-support-section\">"
+        "<h3>Support the Project</h3>"
+        "<p>Running comprehensive evaluations across hundreds of AI models is expensive. Each model evaluation can cost <b>tens to hundreds of dollars</b> in API fees, and we're committed to maintaining exhaustive coverage as new models are released.</p>"
+        "<p>Your support helps us:</p>"
+        "<ul>"
+        "<li>Evaluate new models as they're released</li>"
+        "<li>Maintain coverage of existing models over time</li>"
+        "<li>Expand our prompt coverage to new domains</li>"
+        "<li>Keep the project independent and ad-free</li>"
+        "</ul>"
+        "<p>If you find this research valuable, please consider supporting us:</p>"
+        "<div class=\"support-links\">"
+        "<a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
+        "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z\"/></svg>"
+        "Support us on Ko-fi"
+        "</a>"
+        "</div>"
+        "</div>"
+        "</div></div>"
+    ) + _page_foot(depth=0)
+    _write_file(os.path.join("acknowledgments", "index.html"), ack_html)
+
+    # Timeline static shell (Chart hydration allowed to load data/*)
+    timeline_head = _page_head("Model Timeline", f"{SITE_BASE_URL}/timeline/", depth=0, active_tab='timeline')
+    timeline_body = (
+        "<div class=\"leaderboard-hero\">"
+        "  <h1>Model Timeline</h1>"
+        "  <p class=\"hero-subtitle\">Track how model compliance changes over time</p>"
+        "</div>"
+        "<div class=\"leaderboard-content\">"
+        "<div class=\"timeline-view-container\">"
+        "<div class=\"leaderboard-intro\"><div class=\"intro-main\">"
+        "<p>This scatter plot shows each model's release date against its compliance rate. Use the filters to explore by metric or creator. Click any point to view that model's details.</p>"
+        "</div></div>"
+        "<div class=\"timeline-filters filter-controls\">"
+        "  <div class=\"filter-item\"><label for=\"timeline-metric-filter\">Y-Axis Metric:</label>"
+        "    <select id=\"timeline-metric-filter\"></select></div>"
+        "  <div class=\"filter-item\"><label for=\"timeline-creator-filter\">Creator:</label>"
+        "    <select id=\"timeline-creator-filter\"></select></div>"
+        "  <div class=\"filter-item\"><label for=\"timeline-highlight-creator-filter\">Highlight Creator:</label>"
+        "    <select id=\"timeline-highlight-creator-filter\"></select></div>"
+        "</div>"
+        "<div class=\"chart-container\"><canvas id=\"timeline-chart-canvas\"></canvas></div>"
+        "</div></div>"
+    )
+    timeline_foot = (
+        "\n<script src=\"https://cdn.jsdelivr.net/npm/chart.js@^4\"></script>\n"
+        "<script src=\"https://cdn.jsdelivr.net/npm/date-fns@^2\"></script>\n"
+        "<script src=\"https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@^3\"></script>\n"
+        + _page_foot(depth=0)
+    )
+    _write_file(os.path.join("timeline", "index.html"), timeline_head + timeline_body + timeline_foot)
+
 
 def generate_sitemap_and_robots(model_summary, theme_keys):
     # Build sitemap.xml
@@ -1434,6 +1483,8 @@ def generate_sitemap_and_robots(model_summary, theme_keys):
     urls.append((f"{SITE_BASE_URL}/models/", today_iso))
     urls.append((f"{SITE_BASE_URL}/themes/", today_iso))
     urls.append((f"{SITE_BASE_URL}/labs/", today_iso))
+    urls.append((f"{SITE_BASE_URL}/timeline/", today_iso))
+    urls.append((f"{SITE_BASE_URL}/acknowledgments/", today_iso))
     # Model pages with release dates if available
     for m in model_summary:
         mid = m.get("model")
@@ -1485,6 +1536,7 @@ def load_core_artifacts():
     with open(qts_all_path, "r", encoding="utf-8") as f:
         qts_all = json.load(f)
 
+    compliance_order = core.get("complianceOrder") or COMPLIANCE_ORDER
     model_meta_dict = core.get("model_metadata", {})
     model_summary = core.get("model_summary", [])
     stats = core.get("stats", {})
@@ -1503,14 +1555,22 @@ def load_core_artifacts():
                 print(f"Warning: Failed to load model themes for {mid}: {e}")
         else:
             print(f"Warning: Missing model theme breakdown for {mid}: {p}")
-    return model_meta_dict, model_summary, qts_all, model_theme_summary, stats
+    return model_meta_dict, model_summary, qts_all, model_theme_summary, stats, compliance_order
 
 
 def generate_static_pages_from_artifacts(skip_theme_pages=False):
     print("Regenerating static pages from existing artifacts...")
-    model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats = load_core_artifacts()
+    model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats, compliance_order = load_core_artifacts()
     lab_metadata = load_lab_metadata(LAB_METADATA_FILE)
     lab_standings = compute_lab_standings(model_summary, model_meta_dict)
+    save_core_metadata(
+        OUTPUT_CORE_METADATA_FILE,
+        compliance_order,
+        core_stats,
+        model_meta_dict,
+        model_summary,
+        lab_metadata=lab_metadata,
+    )
 
     # Root index (About) page — overwrite with correct static content
     _write_file("index.html", render_home_page(core_stats, qts_all, lab_standings, lab_metadata=lab_metadata))
@@ -1533,6 +1593,14 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
     # Lab standings page
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
     _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
+
+    # Sitemap + robots (keep in sync for static-only deploys too)
+    theme_keys_for_sitemap = [
+        t.get("grouping_key")
+        for t in (qts_all or [])
+        if isinstance(t, dict) and t.get("grouping_key")
+    ]
+    generate_sitemap_and_robots(model_summary, theme_keys_for_sitemap)
 
     # Per-theme pages (load gz on demand)
     if not skip_theme_pages:
@@ -1711,11 +1779,7 @@ def main():
     # 2) Question theme summaries (time-binned + all)
     save_question_theme_bins(OUTPUT_QTHEME_SUMMARY_DIR, summaries["model_theme_summary"], model_meta_dict, summaries["question_theme_summary"])
 
-    # 3) Model domain summary for timeline
-    model_domain_summary = compute_model_domain_summary(summaries["model_theme_summary"])
-    save_model_domain_summary(OUTPUT_MODEL_DOMAIN_SUMMARY_FILE, model_domain_summary)
-
-    # 3b) Lab standings for the Lab Standings view (stored in memory for rendering only)
+    # 3) Lab standings for the Lab Standings view (stored in memory for rendering only)
 
     # 4) Per-model theme breakdowns (lazy-loaded by model detail view)
     save_per_model_theme_breakdowns(OUTPUT_MODEL_THEMES_DIR, summaries["model_theme_summary"])

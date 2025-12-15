@@ -1,5 +1,6 @@
 # Build artifacts and caches
 __pycache__/
+.venv/
 
 # Generated artifacts to exclude
 .cache/
