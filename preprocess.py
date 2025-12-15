@@ -16,6 +16,7 @@ import argparse
 # --- Configuration ---
 ANALYSIS_DIR = "analysis"
 MODEL_METADATA_FILE = "model_metadata.json"
+LAB_METADATA_FILE = "lab_metadata.jsonl"
 
 # Cache directory for build-only artifacts (not needed at runtime; not committed)
 CACHE_DIR = ".cache"
@@ -88,6 +89,50 @@ def load_model_metadata(filepath):
     except Exception as e:
         print(f"Error reading model metadata file {filepath}: {e}")
     return metadata
+
+
+def load_lab_metadata(filepath):
+    metadata = {}
+    if not os.path.exists(filepath):
+        print(f"Warning: Lab metadata file not found: {filepath}")
+        return metadata
+
+    print(f"Loading lab metadata from {filepath}...")
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            for i, line in enumerate(f):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    data = json.loads(line)
+                    lab = data.get("lab")
+                    if lab:
+                        metadata[lab] = data
+                    else:
+                        print(f"  Warning: Missing 'lab' on line {i+1} in {filepath}")
+                except json.JSONDecodeError as e:
+                    print(f"  Error parsing JSON on line {i+1} in {filepath}: {e}")
+                except Exception as e:
+                    print(f"  Unexpected error processing line {i+1} in {filepath}: {e}")
+        print(f"Successfully loaded metadata for {len(metadata)} labs.")
+    except Exception as e:
+        print(f"Error reading lab metadata file {filepath}: {e}")
+    return metadata
+
+
+def lab_display_name(lab, lab_metadata):
+    lab_id = lab or ""
+    if not lab_id:
+        return lab_id
+    try:
+        meta = (lab_metadata or {}).get(lab_id) or {}
+        full_name = meta.get("full_name")
+        if isinstance(full_name, str) and full_name.strip():
+            return full_name.strip()
+    except Exception:
+        pass
+    return lab_id
 
 
 def preprocess_us_hard_data(analysis_dir):
@@ -579,12 +624,13 @@ def save_per_model_theme_breakdowns(output_dir, model_theme_summary):
     print(f"Saved per-model theme breakdowns for {count} models to {output_dir}")
 
 
-def save_core_metadata(filename, compliance_order, stats, model_metadata, model_summary):
+def save_core_metadata(filename, compliance_order, stats, model_metadata, model_summary, lab_metadata=None):
     core = {
         "complianceOrder": compliance_order,
         "stats": stats,
         "model_metadata": model_metadata,
         "model_summary": model_summary,
+        "lab_metadata": lab_metadata or {},
     }
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     print(f"\nSaving core metadata to {filename}...")
@@ -759,7 +805,7 @@ def _page_foot(depth=0):
         + "</div></body></html>"
     )
 
-def render_home_page(stats, theme_summary=None, lab_standings=None):
+def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata=None):
     title = "SpeechMap.AI Explorer"
     canon = f"{SITE_BASE_URL}/"
     head = _page_head(title, canon, depth=0, active_tab='about')
@@ -820,7 +866,7 @@ def render_home_page(stats, theme_summary=None, lab_standings=None):
         if standings:
             lab = standings[0].get("lab")
             if lab:
-                top_lab_name = _html_escape(lab)
+                top_lab_name = _html_escape(lab_display_name(lab, lab_metadata))
     except Exception:
         pass
 
@@ -961,13 +1007,14 @@ def render_models_index(model_summary):
     return _page_head(title, canon, depth=depth, active_tab='models') + table + _page_foot(depth=depth)
 
 
-def render_model_detail(model_id, meta, theme_stats_for_model):
+def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None):
     title = f"Model: {model_id}"
     canon = f"{SITE_BASE_URL}/models/{generate_safe_id(model_id)}/"
     depth = 2
 
     # Extract key metadata
     creator = (meta or {}).get("creator", "Unknown")
+    creator_display = lab_display_name(creator, lab_metadata)
     model_name = (meta or {}).get("model_name", model_id)
     release_date = (meta or {}).get("release_date", "")
     model_family = (meta or {}).get("model_family", "")
@@ -977,7 +1024,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model):
     hero_html = f"""
 <div class="leaderboard-hero">
   <h1>{_html_escape(model_name)}</h1>
-  <p class="hero-subtitle">{_html_escape(creator)}</p>
+  <p class="hero-subtitle">{_html_escape(creator_display)}</p>
 </div>
 <div class="leaderboard-content">
 <p class="back-link"><a href="../">← Back to Models</a></p>
@@ -1005,7 +1052,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model):
 
     # Model info card - include all key fields
     info_items = []
-    info_items.append(f'<div class="info-item"><span class="info-label">Creator</span><span class="info-value">{_html_escape(creator)}</span></div>')
+    info_items.append(f'<div class="info-item"><span class="info-label">Creator</span><span class="info-value">{_html_escape(creator_display)}</span></div>')
     info_items.append(f'<div class="info-item"><span class="info-label">Model Name</span><span class="info-value">{_html_escape(model_name)}</span></div>')
     if model_family:
         info_items.append(f'<div class="info-item"><span class="info-label">Family</span><span class="info-value">{_html_escape(model_family)}</span></div>')
@@ -1106,7 +1153,7 @@ def render_themes_index(theme_summary_all):
     return _page_head(title, canon, depth=depth, active_tab='themes') + header_html + table + _page_foot(depth=depth)
 
 
-def render_lab_standings_page(lab_standings):
+def render_lab_standings_page(lab_standings, lab_metadata=None):
     title = "Lab Leaderboard"
     canon = f"{SITE_BASE_URL}/labs/"
     depth = 0
@@ -1122,7 +1169,7 @@ def render_lab_standings_page(lab_standings):
     cutoff_date = _months_ago(as_of_date, window_months)
     cards = []
     for i, row in enumerate(standings, start=1):
-        lab = row.get("lab", "")
+        lab = lab_display_name(row.get("lab", ""), lab_metadata)
         trend = _pct_value(row.get("consistency", 0))
         peak = _pct_value(row.get("peak_score", 0))
         models_ct = int(row.get("models_in_window", 0))
@@ -1337,7 +1384,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     return head + body_html + _page_foot(depth=depth)
 
 
-def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, include_theme_pages=True):
+def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, lab_metadata=None, include_theme_pages=True):
     # Models index
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
     models_index_path = os.path.join(STATIC_MODELS_DIR, "index.html")
@@ -1350,7 +1397,7 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
         path = os.path.join(STATIC_MODELS_DIR, safe, "index.html")
         meta = model_meta_dict.get(mid, {})
         theme_stats_for_model = summaries["model_theme_summary"].get(mid, {})
-        _write_file(path, render_model_detail(mid, meta, theme_stats_for_model))
+        _write_file(path, render_model_detail(mid, meta, theme_stats_for_model, lab_metadata=lab_metadata))
 
     # Themes index (use all-time summary already computed)
     os.makedirs(STATIC_THEMES_DIR, exist_ok=True)
@@ -1375,7 +1422,7 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
 
     # Lab standings page
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
-    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings))
+    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
 
 
 def generate_sitemap_and_robots(model_summary, theme_keys):
@@ -1462,10 +1509,11 @@ def load_core_artifacts():
 def generate_static_pages_from_artifacts(skip_theme_pages=False):
     print("Regenerating static pages from existing artifacts...")
     model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats = load_core_artifacts()
+    lab_metadata = load_lab_metadata(LAB_METADATA_FILE)
     lab_standings = compute_lab_standings(model_summary, model_meta_dict)
 
     # Root index (About) page — overwrite with correct static content
-    _write_file("index.html", render_home_page(core_stats, qts_all, lab_standings))
+    _write_file("index.html", render_home_page(core_stats, qts_all, lab_standings, lab_metadata=lab_metadata))
 
     # Models index and detail pages
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
@@ -1476,7 +1524,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
         path = os.path.join(STATIC_MODELS_DIR, safe, "index.html")
         meta = model_meta_dict.get(mid, {})
         mt = model_theme_summary.get(mid, {})
-        _write_file(path, render_model_detail(mid, meta, mt))
+        _write_file(path, render_model_detail(mid, meta, mt, lab_metadata=lab_metadata))
 
     # Themes index
     os.makedirs(STATIC_THEMES_DIR, exist_ok=True)
@@ -1484,7 +1532,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
 
     # Lab standings page
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
-    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings))
+    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
 
     # Per-theme pages (load gz on demand)
     if not skip_theme_pages:
@@ -1595,6 +1643,7 @@ def main():
         return
 
     model_meta_dict = load_model_metadata(MODEL_METADATA_FILE)
+    lab_meta_dict = load_lab_metadata(LAB_METADATA_FILE)
     all_data = preprocess_us_hard_data(ANALYSIS_DIR)
 
     if not all_data:
@@ -1657,7 +1706,7 @@ def main():
 
     # Phase 1: Save split data artifacts
     # 1) Core metadata (small)
-    save_core_metadata(OUTPUT_CORE_METADATA_FILE, COMPLIANCE_ORDER, stats_summary, model_meta_dict, summaries["model_summary"])
+    save_core_metadata(OUTPUT_CORE_METADATA_FILE, COMPLIANCE_ORDER, stats_summary, model_meta_dict, summaries["model_summary"], lab_metadata=lab_meta_dict)
 
     # 2) Question theme summaries (time-binned + all)
     save_question_theme_bins(OUTPUT_QTHEME_SUMMARY_DIR, summaries["model_theme_summary"], model_meta_dict, summaries["question_theme_summary"])
@@ -1673,12 +1722,12 @@ def main():
 
     # Phase 2: Generate static pages for SEO
     print("\nGenerating static pages (Phase 2)...")
-    generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, include_theme_pages=not args.no_themes)
+    generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, lab_metadata=lab_meta_dict, include_theme_pages=not args.no_themes)
     # Use theme keys from summary (not data_by_theme) so sitemap still includes theme URLs even when skipping regeneration
     theme_keys_for_sitemap = [t.get("grouping_key") for t in summaries["question_theme_summary"] if t.get("grouping_key")]
     generate_sitemap_and_robots(summaries["model_summary"], theme_keys_for_sitemap)
     # Overwrite root About page with static content using real stats
-    _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"], lab_standings))
+    _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"], lab_standings, lab_metadata=lab_meta_dict))
 
     print("\nPreprocessing and saving complete (Phase 1 split outputs).")
 

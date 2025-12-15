@@ -244,6 +244,7 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
     try{
       const [core, domainSummary] = await Promise.all([ fetchJSON(CORE_META_PATH), fetchJSON(MODEL_DOMAIN_SUMMARY_PATH) ]);
       const modelMeta = core && core.model_metadata ? core.model_metadata : {};
+      const labMeta = core && core.lab_metadata ? core.lab_metadata : {};
       const params = new URLSearchParams(window.location.search);
       let domain = params.get('domain') || 'all';
       let metric = params.get('metric') || 'pct_complete_overall';
@@ -257,9 +258,10 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       const domainSet = new Set(); for (const mid in domainSummary){ Object.keys(domainSummary[mid]||{}).forEach(d=>domainSet.add(d)); }
       const creatorSet = new Set(['all']); for (const mid in modelMeta){ creatorSet.add(modelMeta[mid]?.creator || 'Unknown Creator'); }
       function setOptions(sel, arr, labelMap){ if(!sel) return; sel.innerHTML=''; arr.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=labelMap?labelMap[v]:v; sel.appendChild(o); }); }
+      function labLabel(lab){ const m = labMeta && lab ? labMeta[lab] : null; const n = m && typeof m.full_name === 'string' ? m.full_name.trim() : ''; return n || lab; }
       if (selMetric && !selMetric.dataset.wired){ const metricLabels={}; Object.keys(JUDGMENT_KEYS).forEach(k=>metricLabels[k]=JUDGMENT_KEYS[k].label); setOptions(selMetric, Object.keys(JUDGMENT_KEYS), metricLabels); selMetric.value=metric; selMetric.dataset.wired='1'; }
-      if (selCreator && !selCreator.dataset.wired){ const creators = Array.from(creatorSet).filter(c=>c!=='all').sort(); setOptions(selCreator, ['all', ...creators]); selCreator.value=creator; selCreator.dataset.wired='1'; }
-      if (selHighlight && !selHighlight.dataset.wired){ const creators = Array.from(creatorSet).filter(c=>c!=='all').sort(); setOptions(selHighlight, ['none', ...creators]); selHighlight.value=highlight; selHighlight.dataset.wired='1'; }
+      if (selCreator && !selCreator.dataset.wired){ const creators = Array.from(creatorSet).filter(c=>c!=='all').sort(); const labels={ all:'all' }; creators.forEach(c=>labels[c]=labLabel(c)); setOptions(selCreator, ['all', ...creators], labels); selCreator.value=creator; selCreator.dataset.wired='1'; }
+      if (selHighlight && !selHighlight.dataset.wired){ const creators = Array.from(creatorSet).filter(c=>c!=='all').sort(); const labels={ none:'none' }; creators.forEach(c=>labels[c]=labLabel(c)); setOptions(selHighlight, ['none', ...creators], labels); selHighlight.value=highlight; selHighlight.dataset.wired='1'; }
       function updateURL(){ const p=new URLSearchParams(); if (selDomain && selDomain.value!=='all') p.set('domain', selDomain.value); if (selCreator && selCreator.value!=='all') p.set('creator', selCreator.value); if (selMetric && selMetric.value!=='pct_complete_overall') p.set('metric', selMetric.value); if (selHighlight && selHighlight.value!=='none') p.set('highlight', selHighlight.value); history.replaceState(null,'',p.toString()?`?${p.toString()}`:location.pathname); }
       function wire(sel){ if(!sel||sel.dataset.changeWired==='1') return; sel.addEventListener('change',()=>{ updateURL(); hydrateTimeline(); }); sel.dataset.changeWired='1'; }
       wire(selDomain); wire(selMetric); wire(selCreator); wire(selHighlight);
