@@ -227,3 +227,5 @@
 {"model_identifier": "prime-intellect/intellect-3", "creator": "prime-intellect", "model_name": "intellect-3", "model_family": "intellect-3", "release_date": "2025-11-27", "reasoning_model": true, "notes": ""}
 {"model_identifier": "arcee-ai/trinity-mini", "creator": "arcee-ai", "model_name": "trinity-mini", "model_family": "trinity-mini", "release_date": "2025-12-02", "reasoning_model": false, "notes": ""}
 {"model_identifier": "xiaomi/mimo-v2-flash-thinking", "creator": "xiaomi", "model_name": "mimo-v2-flash-thinking", "model_family": "mimo-v2-flash", "release_date": "2025-12-16", "reasoning_model": true, "notes": ""}
+{"model_identifier": "bytedance/seed-1.6", "creator": "bytedance", "model_name": "seed-1.6", "model_family": "seed-1.6", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
+{"model_identifier": "bytedance/seed-1.6-flash", "creator": "bytedance", "model_name": "seed-1.6-flash", "model_family": "seed-1.6-flash", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
