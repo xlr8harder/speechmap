@@ -172,6 +172,7 @@
 {"model_identifier": "z-ai/glm-4.6-thinking", "creator": "z-ai", "model_name": "glm-4.6-thinking", "model_family": "glm-4.6-thinking", "release_date": "2025-09-30", "reasoning_model": true, "notes": ""}
 {"model_identifier": "z-ai/glm-4.6v", "creator": "z-ai", "model_name": "glm-4.6v", "model_family": "glm-4.6v", "release_date": "2025-12-08", "reasoning_model": true, "notes": ""}
 {"model_identifier": "z-ai/glm-4.7", "creator": "z-ai", "model_name": "glm-4.7", "model_family": "glm-4.7", "release_date": "2025-12-22", "reasoning_model": true, "notes": ""}
+{"model_identifier": "z-ai/glm-4.7-flash", "creator": "z-ai", "model_name": "glm-4.7-flash", "model_family": "glm-4.7-flash", "release_date": "2026-01-19", "reasoning_model": true, "notes": ""}
 {"model_identifier": "thudm/glm-4-9b-0414", "creator": "thudm", "model_name": "glm-4-9b-0414", "model_family": "glm-4-9b", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
 {"model_identifier": "thudm/glm-4-z1-32b-0414", "creator": "thudm", "model_name": "glm-4-z1-32b-0414", "model_family": "glm-4-32b", "release_date": "2025-04-14", "reasoning_model": true, "notes": ""}
 {"model_identifier": "nvidia/nemotron-nano-9b-v2", "creator": "nvidia", "model_name": "nemotron-nano-9b", "model_family": "nemotron-nano-9b", "release_date": "2025-08-18", "reasoning_model": false, "notes": ""}
