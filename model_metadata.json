@@ -203,6 +203,8 @@
 {"model_identifier": "moonshotai/kimi-k2-instruct", "creator": "moonshotai", "model_name": "kimi-k2-instruct", "model_family": "kimi-k2", "release_date": "2025-07-11", "reasoning_model": false, "notes": ""}
 {"model_identifier": "moonshotai/kimi-k2-thinking", "creator": "moonshotai", "model_name": "kimi-k2-thinking", "model_family": "kimi-k2", "release_date": "2025-11-08", "reasoning_model": true, "notes": ""}
 {"model_identifier": "moonshotai/kimi-k2-0905", "creator": "moonshotai", "model_name": "kimi-k2-0905", "model_family": "kimi-k2", "release_date": "2025-09-05", "reasoning_model": false, "notes": ""}
+{"model_identifier": "moonshotai/kimi-k2.5", "creator": "moonshotai", "model_name": "kimi-k2.5", "model_family": "kimi-k2", "release_date": "2026-01-26", "reasoning_model": false, "notes": ""}
+{"model_identifier": "moonshotai/kimi-k2.5-thinking", "creator": "moonshotai", "model_name": "kimi-k2.5-thinking", "model_family": "kimi-k2", "release_date": "2026-01-26", "reasoning_model": true, "notes": ""}
 {"model_identifier": "baidu/ernie-4.5-300b-a47b", "creator": "baidu", "model_name": "ernie-4.5-300b-a47b", "model_family": "ernie-4.5-300b-a47b", "release_date": "2025-06-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-oss-120b", "creator": "openai", "model_name": "gpt-oss-120b", "model_family": "gpt-oss-120b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-oss-20b", "creator": "openai", "model_name": "gpt-oss-20b", "model_family": "gpt-oss-20b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
@@ -227,6 +229,7 @@
 {"model_identifier": "allenai/olmo-3.1-32b-think", "creator": "allenai", "model_name": "olmo-3.1-32b-thing", "model_family": "olmo-3-32b", "release_date": "2025-12-12", "reasoning_model": true, "notes": ""}
 {"model_identifier": "prime-intellect/intellect-3", "creator": "prime-intellect", "model_name": "intellect-3", "model_family": "intellect-3", "release_date": "2025-11-27", "reasoning_model": true, "notes": ""}
 {"model_identifier": "arcee-ai/trinity-mini", "creator": "arcee-ai", "model_name": "trinity-mini", "model_family": "trinity-mini", "release_date": "2025-12-02", "reasoning_model": false, "notes": ""}
+{"model_identifier": "arcee-ai/trinity-large-preview", "creator": "arcee-ai", "model_name": "trinity-large-preview", "model_family": "trinity-large", "release_date": "2026-01-27", "reasoning_model": false, "notes": ""}
 {"model_identifier": "xiaomi/mimo-v2-flash-thinking", "creator": "xiaomi", "model_name": "mimo-v2-flash-thinking", "model_family": "mimo-v2-flash", "release_date": "2025-12-16", "reasoning_model": true, "notes": ""}
 {"model_identifier": "bytedance/seed-1.6", "creator": "bytedance", "model_name": "seed-1.6", "model_family": "seed-1.6", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
 {"model_identifier": "bytedance/seed-1.6-flash", "creator": "bytedance", "model_name": "seed-1.6-flash", "model_family": "seed-1.6-flash", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
