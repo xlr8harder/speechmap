@@ -237,3 +237,8 @@
 {"model_identifier": "bytedance/seed-1.6", "creator": "bytedance", "model_name": "seed-1.6", "model_family": "seed-1.6", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
 {"model_identifier": "bytedance/seed-1.6-flash", "creator": "bytedance", "model_name": "seed-1.6-flash", "model_family": "seed-1.6-flash", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
 {"model_identifier": "stepfun/step-3.5-flash", "creator": "stepfun", "model_name": "step-3.5-flash", "model_family": "step-3.5-flash", "release_date": "2026-02-03", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openrouter/aurora-alpha", "creator": "unknown", "model_name": "aurora-alpha", "model_family": "unknown", "release_date": "2026-02-09", "reasoning_model": false, "notes": ""}
+{"model_identifier": "qwen/qwen3-max-thinking", "creator": "alibaba", "model_name": "qwen3-max-thinking", "model_family": "qwen3-max", "release_date": "2026-01-25", "reasoning_model": true, "notes": ""}
+{"model_identifier": "z-ai/glm-5", "creator": "z-ai", "model_name": "glm-5", "model_family": "glm-5", "release_date": "2026-02-11", "reasoning_model": false, "notes": ""}
+{"model_identifier": "z-ai/glm-5-thinking", "creator": "z-ai", "model_name": "glm-5-thinking", "model_family": "glm-5", "release_date": "2026-02-11", "reasoning_model": true, "notes": ""}
+{"model_identifier": "minimax/minimax-m2.5", "creator": "minimax", "model_name": "minimax-m2.5", "model_family": "minimax-m2", "release_date": "2026-02-12", "reasoning_model": true, "notes": ""}
