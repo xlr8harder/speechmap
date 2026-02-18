@@ -29,6 +29,8 @@
 {"model_identifier": "anthropic/claude-sonnet-4-thinking", "creator": "anthropic", "model_name": "claude-sonnet-4", "model_family": "claude-sonnet-4", "release_date": "2025-05-22", "reasoning_model": true, "notes": "reasoning_tokens: 512"}
 {"model_identifier": "anthropic/claude-sonnet-4.5", "creator": "anthropic", "model_name": "claude-sonnet-4.5", "model_family": "claude-sonnet-4.5", "release_date": "2025-09-29", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-sonnet-4.5-thinking", "creator": "anthropic", "model_name": "claude-sonnet-4.5", "model_family": "claude-sonnet-4.5", "release_date": "2025-09-29", "reasoning_model": true, "notes": ""}
+{"model_identifier": "anthropic/claude-sonnet-4.6", "creator": "anthropic", "model_name": "claude-sonnet-4.6", "model_family": "claude-sonnet-4.6", "release_date": "2026-02-18", "reasoning_model": true, "notes": "hybrid reasoning model"}
+{"model_identifier": "anthropic/claude-sonnet-4.6-thinking", "creator": "anthropic", "model_name": "claude-sonnet-4.6", "model_family": "claude-sonnet-4.6", "release_date": "2026-02-18", "reasoning_model": true, "notes": "hybrid reasoning model"}
 {"model_identifier": "anthropic/claude-haiku-4.5", "creator": "anthropic", "model_name": "claude-haiku-4.5", "model_family": "claude-haiku-4.5", "release_date": "2025-10-15", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-haiku-4.5-thinking", "creator": "anthropic", "model_name": "claude-haiku-4.5-thinking", "model_family": "claude-haiku-4.5", "release_date": "2025-10-15", "reasoning_model": true, "notes": ""}
 {"model_identifier": "deepseek/deepseek-chat-v3-0324", "creator": "deepseek", "model_name": "deepseek-chat-v3-0324", "model_family": "deepseek-v3", "release_date": "2025-03-24", "reasoning_model": false, "notes": ""}
@@ -242,3 +244,5 @@
 {"model_identifier": "z-ai/glm-5", "creator": "z-ai", "model_name": "glm-5", "model_family": "glm-5", "release_date": "2026-02-11", "reasoning_model": false, "notes": ""}
 {"model_identifier": "z-ai/glm-5-thinking", "creator": "z-ai", "model_name": "glm-5-thinking", "model_family": "glm-5", "release_date": "2026-02-11", "reasoning_model": true, "notes": ""}
 {"model_identifier": "minimax/minimax-m2.5", "creator": "minimax", "model_name": "minimax-m2.5", "model_family": "minimax-m2", "release_date": "2026-02-12", "reasoning_model": true, "notes": ""}
+{"model_identifier": "qwen/qwen3.5-plus-02-15", "creator": "alibaba", "model_name": "qwen3.5-plus-02-15", "model_family": "qwen3.5", "release_date": "2026-02-17", "reasoning_model": true, "notes": ""}
+{"model_identifier": "qwen/qwen3.5-397b-a17b", "creator": "alibaba", "model_name": "qwen3.5-397b-a17b", "model_family": "qwen3.5", "release_date": "2026-02-17", "reasoning_model": true, "notes": ""}
