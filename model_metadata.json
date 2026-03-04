@@ -253,3 +253,5 @@
 {"model_identifier": "qwen/qwen3.5-122b-a10b", "creator": "alibaba", "model_name": "qwen3.5-122b-a10b", "model_family": "qwen3.5", "release_date": "2026-02-24", "reasoning_model": true, "notes": ""}
 {"model_identifier": "qwen/qwen3.5-flash-02-23", "creator": "alibaba", "model_name": "qwen3.5-flash-02-23", "model_family": "qwen3.5", "release_date": "2026-02-23", "reasoning_model": true, "notes": ""}
 {"model_identifier": "liquid/lfm-2-24b-a2b", "creator": "liquid", "model_name": "lfm-2-24b-a2b", "model_family": "lfm-2", "release_date": "2026-02-24", "reasoning_model": false, "notes": ""}
+{"model_identifier": "google/gemini-3.1-flash-lite-preview", "creator": "google", "model_name": "gemini-3.1-flash-lite-preview", "model_family": "gemini-3.1-flash-lite", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-5.3-chat", "creator": "openai", "model_name": "gpt-5.3-chat", "model_family": "gpt-5.3", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
