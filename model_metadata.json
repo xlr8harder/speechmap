@@ -255,3 +255,5 @@
 {"model_identifier": "liquid/lfm-2-24b-a2b", "creator": "liquid", "model_name": "lfm-2-24b-a2b", "model_family": "lfm-2", "release_date": "2026-02-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemini-3.1-flash-lite-preview", "creator": "google", "model_name": "gemini-3.1-flash-lite-preview", "model_family": "gemini-3.1-flash-lite", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.3-chat", "creator": "openai", "model_name": "gpt-5.3-chat", "model_family": "gpt-5.3", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
+{"model_identifier": "inception/mercury-2", "creator": "inception", "model_name": "mercury-2", "model_family": "mercury-2", "release_date": "2026-02-24", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-5.4", "creator": "openai", "model_name": "gpt-5.4", "model_family": "gpt-5.4", "release_date": "2026-03-05", "reasoning_model": false, "notes": ""}
