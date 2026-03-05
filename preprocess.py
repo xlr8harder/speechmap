@@ -498,9 +498,12 @@ def save_question_theme_bins(output_dir, model_theme_summary, model_metadata, al
 
 def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WINDOW_MONTHS, ema_alpha=None, half_life_months=LAB_STANDINGS_HALFLIFE_MONTHS):
     """
-    Build standings per lab (creator) over the last `months` calendar months.
-    - Peak score: best COMPLETE percentage among models released in the window.
-    - Consistency: EMA across monthly average scores (one bucket per month), ordered by month, with gap-aware decay.
+    Build standings per lab (creator) using a per-lab anchored release window.
+    - For each lab, anchor date is that lab's most recent release date.
+    - Window is `months` calendar months ending at the lab's anchor date.
+    - Peak score: best COMPLETE percentage among models in that lab window.
+    - Consistency: EMA across monthly average scores (one bucket per month),
+      ordered by month, with gap-aware decay.
     """
     if ema_alpha is None:
         # Alpha derived so the weight halves every `half_life_months` buckets
@@ -518,7 +521,6 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
     if base_decay > 1:
         base_decay = 1.0
     today = date.today()
-    cutoff = _months_ago(today, months)
     labs = defaultdict(list)
     for m in model_summary:
         mid = m.get("model")
@@ -527,7 +529,7 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
         if not creator or creator.strip().lower() == "unknown":
             continue  # exclude placeholder/unknown labs
         rd = _parse_date_safe(meta.get("release_date"))
-        if not rd or rd < cutoff:
+        if not rd:
             continue
         try:
             score = float(m.get("pct_complete_overall", 0) or 0.0)
@@ -536,12 +538,20 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
         labs[creator].append({"model": mid, "release_date": rd, "score": score})
 
     standings = []
-    for lab, items in labs.items():
+    for lab, all_items in labs.items():
+        if not all_items:
+            continue
+        # Anchor each lab to its latest release date, then take that lab's
+        # lookback window.
+        anchor_date = max(it["release_date"] for it in all_items)
+        cutoff = _months_ago(anchor_date, months)
+        items = [it for it in all_items if it["release_date"] >= cutoff and it["release_date"] <= anchor_date]
         if not items:
             continue
-        # Peak over models in window
+
+        # Peak over models in the lab-specific window.
         peak = max(items, key=lambda x: (x["score"], x["release_date"], x["model"]))
-        # Bucket scores by month, then apply EMA across monthly averages
+        # Bucket scores by month, then apply EMA across monthly averages.
         monthly_scores = defaultdict(list)
         for it in items:
             ym = (it["release_date"].year, it["release_date"].month)
@@ -581,6 +591,8 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
                 "peak_score": peak["score"],
                 "consistency": ema if ema is not None else 0.0,
                 "models_in_window": len(items),
+                "window_start": cutoff.isoformat(),
+                "window_end": anchor_date.isoformat(),
             }
         )
     standings.sort(key=lambda x: (-(x.get("consistency") or 0), -(x["peak_score"]), x["lab"]))
@@ -589,6 +601,7 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
         "window_months": months,
         "ema_alpha": base_alpha,
         "half_life_months": half_life_months,
+        "window_mode": "per_lab_anchor",
         "standings": standings,
     }
 
@@ -1145,13 +1158,12 @@ def render_lab_standings_page(lab_standings, lab_metadata=None):
     data = lab_standings or {}
     standings = data.get("standings") or []
     window_months = data.get("window_months", LAB_STANDINGS_WINDOW_MONTHS)
-    ema_alpha = data.get("ema_alpha", LAB_STANDINGS_EMA_ALPHA)
+    window_mode = data.get("window_mode") or "rolling_global"
     as_of_str = data.get("as_of") or date.today().isoformat()
     try:
         as_of_date = date.fromisoformat(as_of_str)
     except Exception:
         as_of_date = date.today()
-    cutoff_date = _months_ago(as_of_date, window_months)
     cards = []
     for i, row in enumerate(standings, start=1):
         lab = lab_display_name(row.get("lab", ""), lab_metadata)
@@ -1179,7 +1191,7 @@ def render_lab_standings_page(lab_standings, lab_metadata=None):
     <div class=\"intro-main\">
       <h3>What We Measure</h3>
       <p><b>SpeechMap.AI</b> tests how AI models respond to sensitive and controversial prompts. We measure what models refuse to say, redirect, or filter. Higher scores mean models engage more directly with difficult requests rather than declining or deflecting.</p>
-      <p>Labs are ranked by their <b>Free Speech Index Score</b>, a time-weighted average of all models released in the last 6 months. For individual model results, see the <a href=\"/models/\">Models</a> page.</p>
+      <p>Labs are ranked by their <b>Free Speech Index Score</b>, a time-weighted average of models in each lab's latest release cycle ({window_months} months, anchored to that lab's most recent release). For individual model results, see the <a href=\"/models/\">Models</a> page.</p>
     </div>
     <div class=\"intro-meta\">
       <p class=\"meta-note\">Last updated: {as_of_date.isoformat()}</p>
@@ -1558,6 +1570,49 @@ def load_core_artifacts():
     return model_meta_dict, model_summary, qts_all, model_theme_summary, stats, compliance_order
 
 
+def load_core_metadata_only():
+    """
+    Load only the lightweight runtime metadata needed for lab standings.
+    """
+    core_path = OUTPUT_CORE_METADATA_FILE
+    if not os.path.exists(core_path):
+        raise RuntimeError(f"Missing core metadata: {core_path}")
+
+    with open(core_path, "r", encoding="utf-8") as f:
+        core = json.load(f)
+
+    compliance_order = core.get("complianceOrder") or COMPLIANCE_ORDER
+    model_meta_dict = core.get("model_metadata", {})
+    model_summary = core.get("model_summary", [])
+    stats = core.get("stats", {})
+    return model_meta_dict, model_summary, stats, compliance_order
+
+
+def generate_lab_standings_from_artifacts():
+    """
+    Regenerate lab standings page from existing runtime artifacts only.
+    This avoids loading heavy theme/model artifacts and full analysis data.
+    """
+    print("Regenerating lab standings from lightweight artifacts...")
+    model_meta_dict, model_summary, core_stats, compliance_order = load_core_metadata_only()
+    lab_metadata = load_lab_metadata(LAB_METADATA_FILE)
+    lab_standings = compute_lab_standings(model_summary, model_meta_dict)
+
+    # Keep core metadata in sync with latest lab metadata.
+    save_core_metadata(
+        OUTPUT_CORE_METADATA_FILE,
+        compliance_order,
+        core_stats,
+        model_meta_dict,
+        model_summary,
+        lab_metadata=lab_metadata,
+    )
+
+    os.makedirs(STATIC_LABS_DIR, exist_ok=True)
+    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
+    print("Lab standings regeneration complete.")
+
+
 def generate_static_pages_from_artifacts(skip_theme_pages=False):
     print("Regenerating static pages from existing artifacts...")
     model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats, compliance_order = load_core_artifacts()
@@ -1697,9 +1752,18 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
 def main():
     print("Starting preprocessing...")
     parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('--labs-only', action='store_true')
     parser.add_argument('--static-only', action='store_true')
     parser.add_argument('--no-themes', action='store_true')
     args, _ = parser.parse_known_args()
+
+    if args.labs_only:
+        try:
+            generate_lab_standings_from_artifacts()
+        except Exception as e:
+            print(f"Lab standings regeneration failed: {e}")
+            sys.exit(1)
+        return
 
     if args.static_only:
         try:
