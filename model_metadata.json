@@ -214,14 +214,16 @@
 {"model_identifier": "baidu/ernie-4.5-300b-a47b", "creator": "baidu", "model_name": "ernie-4.5-300b-a47b", "model_family": "ernie-4.5-300b-a47b", "release_date": "2025-06-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-oss-120b", "creator": "openai", "model_name": "gpt-oss-120b", "model_family": "gpt-oss-120b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-oss-20b", "creator": "openai", "model_name": "gpt-oss-20b", "model_family": "gpt-oss-20b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
-{"model_identifier": "openai/gpt-5-chat-2025-08-07", "creator": "openai", "model_name": "gpt-5-chat-2025-08-07", "model_family": "gpt-5-chat", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
-{"model_identifier": "openai/gpt-5-2025-08-07", "creator": "openai", "model_name": "gpt-5-2025-08-07", "model_family": "gpt-5", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5-chat", "creator": "openai", "model_name": "gpt-5-chat", "model_family": "gpt-5-chat", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5", "creator": "openai", "model_name": "gpt-5", "model_family": "gpt-5", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-5.1-chat-2025-11-13", "creator": "openai", "model_name": "gpt-5.1-chat-2025-11-13", "model_family": "gpt-5-chat", "release_date": "2025-11-13", "reasoning_model": true, "notes": ""}
-{"model_identifier": "openai/gpt-5.1-2025-11-13", "creator": "openai", "model_name": "gpt-5.1-2025-11-13", "model_family": "gpt-5", "release_date": "2025-11-13", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5.1-reasoning", "creator": "openai", "model_name": "gpt-5.1-reasoning", "model_family": "gpt-5.1", "release_date": "2025-11-13", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5.1", "creator": "openai", "model_name": "gpt-5.1", "model_family": "gpt-5.1", "release_date": "2025-11-13", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.2-chat", "creator": "openai", "model_name": "gpt-5.2-chat", "model_family": "gpt-5-chat", "release_date": "2025-12-11", "reasoning_model": true, "notes": ""}
-{"model_identifier": "openai/gpt-5.2", "creator": "openai", "model_name": "gpt-5.2", "model_family": "gpt-5", "release_date": "2025-12-11", "reasoning_model": true, "notes": ""}
-{"model_identifier": "openai/gpt-5-mini-2025-08-07", "creator": "openai", "model_name": "gpt-5-mini-2025-08-07", "model_family": "gpt-5-mini", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
-{"model_identifier": "openai/gpt-5-nano-2025-08-07", "creator": "openai", "model_name": "gpt-5-nano-2025-08-07", "model_family": "gpt-5-nano", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5.2", "creator": "openai", "model_name": "gpt-5.2", "model_family": "gpt-5.2", "release_date": "2025-12-11", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-5.2-reasoning", "creator": "openai", "model_name": "gpt-5.2-reasoning", "model_family": "gpt-5.2", "release_date": "2025-12-11", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5-mini", "creator": "openai", "model_name": "gpt-5-mini", "model_family": "gpt-5-mini", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5-nano", "creator": "openai", "model_name": "gpt-5-nano", "model_family": "gpt-5-nano", "release_date": "2025-08-07", "reasoning_model": true, "notes": ""}
 {"model_identifier": "minimax/minimax-m1-40k", "creator": "minimax", "model_name": "minimax-m1-40k", "model_family": "minimax-m1", "release_date": "2025-06-18", "reasoning_model": true, "notes": ""}
 {"model_identifier": "minimax/minimax-m2.1", "creator": "minimax", "model_name": "minimax-m2.1", "model_family": "minimax-m2", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
 {"model_identifier": "nousresearch/hermes-4-405b", "creator": "nousresearch", "model_name": "hermes-4-405b", "model_family": "hermes-4-405b", "release_date": "2025-08-27", "reasoning_model": false, "notes": ""}
@@ -257,3 +259,4 @@
 {"model_identifier": "openai/gpt-5.3-chat", "creator": "openai", "model_name": "gpt-5.3-chat", "model_family": "gpt-5.3", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
 {"model_identifier": "inception/mercury-2", "creator": "inception", "model_name": "mercury-2", "model_family": "mercury-2", "release_date": "2026-02-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.4", "creator": "openai", "model_name": "gpt-5.4", "model_family": "gpt-5.4", "release_date": "2026-03-05", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-5.4-reasoning", "creator": "openai", "model_name": "gpt-5.4-reasoning", "model_family": "gpt-5.4", "release_date": "2026-03-05", "reasoning_model": true, "notes": ""}
