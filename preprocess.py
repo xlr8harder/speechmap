@@ -17,6 +17,7 @@ import argparse
 ANALYSIS_DIR = "analysis"
 MODEL_METADATA_FILE = "model_metadata.json"
 LAB_METADATA_FILE = "lab_metadata.jsonl"
+MODEL_METADATA_SKIP_FLAG = "skip"
 
 # Cache directory for build-only artifacts (not needed at runtime; not committed)
 CACHE_DIR = ".cache"
@@ -88,6 +89,31 @@ def load_model_metadata(filepath):
     except Exception as e:
         print(f"Error reading model metadata file {filepath}: {e}")
     return metadata
+
+
+def _is_truthy_flag(value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+    return False
+
+
+def model_is_skipped(meta):
+    return _is_truthy_flag((meta or {}).get(MODEL_METADATA_SKIP_FLAG, False))
+
+
+def split_model_metadata(metadata_dict):
+    included = {}
+    skipped = {}
+    for model_id, meta in (metadata_dict or {}).items():
+        if model_is_skipped(meta):
+            skipped[model_id] = meta
+        else:
+            included[model_id] = meta
+    return included, skipped
 
 
 def load_lab_metadata(filepath):
@@ -273,19 +299,23 @@ def preprocess_us_hard_data(analysis_dir):
     return all_records
 
 
-def calculate_summaries(all_records, model_metadata_dict):
+def calculate_summaries(all_records, model_metadata_dict, skipped_models=None):
     print("Calculating summaries...")
     model_stats = defaultdict(lambda: {"c": 0, "k": 0, "e": 0, "d": 0, "r": 0})
     theme_stats = defaultdict(lambda: {"d": "", "c": 0, "p": 0, "e": 0, "de": 0, "er": 0, "models": set()})
     model_theme_stats = defaultdict(lambda: defaultdict(lambda: {"domain": "", "c": 0, "k": 0, "e": 0, "d": 0, "r": 0}))
     # Use dict to store missing model info { model_id: {provider: ..., api_model: ...} }
     missing_models_info = {}
+    skipped_model_ids = set(skipped_models or [])
 
     for r in all_records:
         model = r["model"]
         key = r["grouping_key"]
         domain = r["domain"]
         compliance = r["compliance"]
+
+        if model in skipped_model_ids:
+            continue
 
         # Check if model metadata exists BEFORE calculating stats
         if model not in model_metadata_dict:
@@ -1596,6 +1626,12 @@ def generate_lab_standings_from_artifacts():
     print("Regenerating lab standings from lightweight artifacts...")
     model_meta_dict, model_summary, core_stats, compliance_order = load_core_metadata_only()
     lab_metadata = load_lab_metadata(LAB_METADATA_FILE)
+    _, skipped_model_meta = split_model_metadata(load_model_metadata(MODEL_METADATA_FILE))
+    if skipped_model_meta:
+        skipped_models = set(skipped_model_meta.keys())
+        model_meta_dict = {mid: meta for mid, meta in model_meta_dict.items() if mid not in skipped_models}
+        model_summary = [m for m in model_summary if m.get("model") not in skipped_models]
+        print(f"Applied metadata skip filter in labs-only mode: excluded {len(skipped_models)} model(s).")
     lab_standings = compute_lab_standings(model_summary, model_meta_dict)
 
     # Keep core metadata in sync with latest lab metadata.
@@ -1616,6 +1652,15 @@ def generate_lab_standings_from_artifacts():
 def generate_static_pages_from_artifacts(skip_theme_pages=False):
     print("Regenerating static pages from existing artifacts...")
     model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats, compliance_order = load_core_artifacts()
+    _, skipped_model_meta = split_model_metadata(load_model_metadata(MODEL_METADATA_FILE))
+    if skipped_model_meta:
+        skipped_models = set(skipped_model_meta.keys())
+        model_meta_dict = {mid: meta for mid, meta in model_meta_dict.items() if mid not in skipped_models}
+        model_summary = [m for m in model_summary if m.get("model") not in skipped_models]
+        model_theme_summary = {mid: tm for mid, tm in model_theme_summary.items() if mid not in skipped_models}
+        included_models = {m.get("model") for m in model_summary if m.get("model")}
+        qts_all = _aggregate_question_theme_summary_for_models(model_theme_summary, included_models)
+        print(f"Applied metadata skip filter in static-only mode: excluded {len(skipped_models)} model(s).")
     lab_metadata = load_lab_metadata(LAB_METADATA_FILE)
     lab_standings = compute_lab_standings(model_summary, model_meta_dict)
     save_core_metadata(
@@ -1775,6 +1820,7 @@ def main():
         return
 
     model_meta_dict = load_model_metadata(MODEL_METADATA_FILE)
+    model_meta_included, skipped_model_meta = split_model_metadata(model_meta_dict)
     lab_meta_dict = load_lab_metadata(LAB_METADATA_FILE)
     all_data = preprocess_us_hard_data(ANALYSIS_DIR)
 
@@ -1784,9 +1830,18 @@ def main():
 
     total_records = len(all_data)
     print(f"\nTotal records processed: {total_records}")
+    if skipped_model_meta:
+        skipped_models = set(skipped_model_meta.keys())
+        before = len(all_data)
+        all_data = [r for r in all_data if r.get("model") not in skipped_models]
+        print(
+            f"Applied metadata skip filter: excluded {before - len(all_data)} records from "
+            f"{len(skipped_models)} skipped model(s)."
+        )
 
     # Calculate summaries - check for failure (missing metadata)
-    summaries = calculate_summaries(all_data, model_meta_dict)
+    skipped_model_ids = set(skipped_model_meta.keys())
+    summaries = calculate_summaries(all_data, model_meta_included, skipped_models=skipped_model_ids)
     if summaries is None:
         print("\nAborting preprocessing due to missing model metadata.")
         sys.exit(1) # Exit script if metadata was missing
@@ -1794,24 +1849,22 @@ def main():
     # Calculate overall stats
     num_models = len(summaries["model_summary"])
     num_themes = len(summaries["question_theme_summary"])
-    # Use total_records before filtering for missing metadata
-    num_judgments = total_records
-    # Recalculate complete count based on models *with* metadata
-    valid_models = set(model_meta_dict.keys())
+    valid_models = set(model_meta_included.keys())
+    num_judgments = len([i for i in all_data if i["model"] in valid_models])
     num_complete = sum([1 for i in all_data if i["model"] in valid_models and i["compliance"] == "COMPLETE"])
 
     stats_summary = {"models": num_models, "themes": num_themes, "judgments": num_judgments, "complete": num_complete}
     print("Calculated Stats:", stats_summary)
 
     # Lab standings (last N months) derived from summary + metadata (rendered only)
-    lab_standings = compute_lab_standings(summaries["model_summary"], model_meta_dict)
+    lab_standings = compute_lab_standings(summaries["model_summary"], model_meta_included)
 
     # Group data by grouping_key for saving individual files (optional)
     data_by_theme = defaultdict(list)
     if not args.no_themes:
         for record in all_data:
             # Only include records for models that HAVE metadata
-            if record["model"] in model_meta_dict:
+            if record["model"] in valid_models:
                 data_by_theme[record["grouping_key"]].append(record)
 
     if not args.no_themes:
@@ -1838,10 +1891,22 @@ def main():
 
     # Phase 1: Save split data artifacts
     # 1) Core metadata (small)
-    save_core_metadata(OUTPUT_CORE_METADATA_FILE, COMPLIANCE_ORDER, stats_summary, model_meta_dict, summaries["model_summary"], lab_metadata=lab_meta_dict)
+    save_core_metadata(
+        OUTPUT_CORE_METADATA_FILE,
+        COMPLIANCE_ORDER,
+        stats_summary,
+        model_meta_included,
+        summaries["model_summary"],
+        lab_metadata=lab_meta_dict,
+    )
 
     # 2) Question theme summaries (time-binned + all)
-    save_question_theme_bins(OUTPUT_QTHEME_SUMMARY_DIR, summaries["model_theme_summary"], model_meta_dict, summaries["question_theme_summary"])
+    save_question_theme_bins(
+        OUTPUT_QTHEME_SUMMARY_DIR,
+        summaries["model_theme_summary"],
+        model_meta_included,
+        summaries["question_theme_summary"],
+    )
 
     # 3) Lab standings for the Lab Standings view (stored in memory for rendering only)
 
@@ -1850,7 +1915,14 @@ def main():
 
     # Phase 2: Generate static pages for SEO
     print("\nGenerating static pages (Phase 2)...")
-    generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, lab_metadata=lab_meta_dict, include_theme_pages=not args.no_themes)
+    generate_static_pages(
+        model_meta_included,
+        summaries,
+        data_by_theme,
+        lab_standings,
+        lab_metadata=lab_meta_dict,
+        include_theme_pages=not args.no_themes,
+    )
     # Use theme keys from summary (not data_by_theme) so sitemap still includes theme URLs even when skipping regeneration
     theme_keys_for_sitemap = [t.get("grouping_key") for t in summaries["question_theme_summary"] if t.get("grouping_key")]
     generate_sitemap_and_robots(summaries["model_summary"], theme_keys_for_sitemap)
