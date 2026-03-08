@@ -6,6 +6,7 @@ import re
 import sys
 import gzip
 import math
+import shutil
 from collections import defaultdict
 import unicodedata
 import html as htmlmod
@@ -782,6 +783,33 @@ def _write_file(path, content):
     print(f"Wrote {path}")
 
 
+def _prune_stale_model_dirs(model_summary):
+    """
+    Remove stale model detail directories under /models that are no longer
+    present in the current dataset.
+    """
+    os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
+    expected = set()
+    for m in model_summary or []:
+        mid = m.get("model")
+        if mid:
+            expected.add(generate_safe_id(mid))
+
+    removed = 0
+    for name in os.listdir(STATIC_MODELS_DIR):
+        path = os.path.join(STATIC_MODELS_DIR, name)
+        if not os.path.isdir(path):
+            continue
+        if name in expected:
+            continue
+        shutil.rmtree(path)
+        removed += 1
+        print(f"Removed stale model directory: {path}")
+
+    if removed:
+        print(f"Pruned {removed} stale model directory(s).")
+
+
 def _page_head(title, canonical_url, depth=0, active_tab=None):
     desc = "SpeechMap.AI — Explore model compliance across sensitive prompts."
     ogimg = f"{SITE_BASE_URL}/og-image.png"
@@ -1414,6 +1442,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
 def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, lab_metadata=None, include_theme_pages=True):
     # Models index
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
+    _prune_stale_model_dirs(summaries.get("model_summary"))
     models_index_path = os.path.join(STATIC_MODELS_DIR, "index.html")
     _write_file(models_index_path, render_models_index(summaries["model_summary"]))
 
@@ -1677,6 +1706,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
 
     # Models index and detail pages
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
+    _prune_stale_model_dirs(model_summary)
     _write_file(os.path.join(STATIC_MODELS_DIR, "index.html"), render_models_index(model_summary))
     for m in model_summary:
         mid = m.get("model")
