@@ -262,3 +262,9 @@
 {"model_identifier": "inception/mercury-2", "creator": "inception", "model_name": "mercury-2", "model_family": "mercury-2", "release_date": "2026-02-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.4", "creator": "openai", "model_name": "gpt-5.4", "model_family": "gpt-5.4", "release_date": "2026-03-05", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.4-reasoning", "creator": "openai", "model_name": "gpt-5.4-reasoning", "model_family": "gpt-5.4", "release_date": "2026-03-05", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openrouter/hunter-alpha", "creator": "unknown", "model_name": "hunter-alpha", "model_family": "hunter-alpha", "release_date": "2026-03-12", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openrouter/hunter-alpha-reasoning", "creator": "unknown", "model_name": "hunter-alpha", "model_family": "hunter-alpha", "release_date": "2026-03-12", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openrouter/healer-alpha", "creator": "unknown", "model_name": "healer-alpha", "model_family": "healer-alpha", "release_date": "2026-03-12", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openrouter/healer-alpha-reasoning", "creator": "unknown", "model_name": "healer-alpha", "model_family": "healer-alpha", "release_date": "2026-03-12", "reasoning_model": true, "notes": ""}
+{"model_identifier": "nvidia/nemotron-3-super-120b-a12b", "creator": "nvidia", "model_name": "nemotron-3-super-120b-a12b", "model_family": "nemotron-3-super", "release_date": "2026-03-11", "reasoning_model": false, "notes": ""}
+{"model_identifier": "nvidia/nemotron-3-super-120b-a12b-reasoning", "creator": "nvidia", "model_name": "nemotron-3-super-120b-a12b", "model_family": "nemotron-3-super", "release_date": "2026-03-11", "reasoning_model": true, "notes": ""}
