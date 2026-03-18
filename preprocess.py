@@ -15,7 +15,7 @@ from datetime import date
 import argparse
 
 # --- Configuration ---
-ANALYSIS_DIR = "analysis"
+ANALYSIS_DIR = "../llm-compliance/analysis"
 MODEL_METADATA_FILE = "model_metadata.json"
 LAB_METADATA_FILE = "lab_metadata.jsonl"
 MODEL_METADATA_SKIP_FLAG = "skip"
