@@ -535,8 +535,12 @@ def save_question_theme_bins(output_dir, model_theme_summary, model_metadata, al
 
 def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WINDOW_MONTHS, ema_alpha=None, half_life_months=LAB_STANDINGS_HALFLIFE_MONTHS):
     """
-    Build standings per lab (creator) using a per-lab anchored release window.
-    - For each lab, anchor date is that lab's most recent release date.
+    Build standings per lab (creator) using a recent-only, per-lab anchored
+    release window.
+    - A lab is eligible only if its most recent release falls within the last
+      `months` calendar months relative to today.
+    - For each eligible lab, anchor date is that lab's most recent release
+      date.
     - Window is `months` calendar months ending at the lab's anchor date.
     - Peak score: best COMPLETE percentage among models in that lab window.
     - Consistency: EMA across monthly average scores (one bucket per month),
@@ -558,6 +562,7 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
     if base_decay > 1:
         base_decay = 1.0
     today = date.today()
+    recent_cutoff = _months_ago(today, months)
     labs = defaultdict(list)
     for m in model_summary:
         mid = m.get("model")
@@ -578,9 +583,14 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
     for lab, all_items in labs.items():
         if not all_items:
             continue
-        # Anchor each lab to its latest release date, then take that lab's
-        # lookback window.
         anchor_date = max(it["release_date"] for it in all_items)
+        # Exclude inactive labs whose latest release is outside the global
+        # freshness window. Otherwise an old lab can remain on the leaderboard
+        # forever because its scoring window is anchored to itself.
+        if anchor_date < recent_cutoff:
+            continue
+        # Anchor each remaining lab to its latest release date, then take that
+        # lab's lookback window.
         cutoff = _months_ago(anchor_date, months)
         items = [it for it in all_items if it["release_date"] >= cutoff and it["release_date"] <= anchor_date]
         if not items:
@@ -638,7 +648,8 @@ def compute_lab_standings(model_summary, model_metadata, months=LAB_STANDINGS_WI
         "window_months": months,
         "ema_alpha": base_alpha,
         "half_life_months": half_life_months,
-        "window_mode": "per_lab_anchor",
+        "window_mode": "recent_only_per_lab_anchor",
+        "recent_cutoff": recent_cutoff.isoformat(),
         "standings": standings,
     }
 
@@ -1256,7 +1267,7 @@ def render_lab_standings_page(lab_standings, lab_metadata=None):
     <div class=\"intro-main\">
       <h3>What We Measure</h3>
       <p><b>SpeechMap.AI</b> tests how AI models respond to sensitive and controversial prompts. We measure what models refuse to say, redirect, or filter. Higher scores mean models engage more directly with difficult requests rather than declining or deflecting.</p>
-      <p>Labs are ranked by their <b>Free Speech Index Score</b>, a time-weighted average of models in each lab's latest release cycle ({window_months} months, anchored to that lab's most recent release). For individual model results, see the <a href=\"/models/\">Models</a> page.</p>
+      <p>Labs are ranked by their <b>Free Speech Index Score</b>, a time-weighted average of models in each lab's latest release cycle ({window_months} months, anchored to that lab's most recent release). Only labs with a release in the last {window_months} months are shown. For individual model results, see the <a href=\"/models/\">Models</a> page.</p>
     </div>
     <div class=\"intro-meta\">
       <p class=\"meta-note\">Last updated: {as_of_date.isoformat()}</p>
