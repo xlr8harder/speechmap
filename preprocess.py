@@ -49,6 +49,12 @@ LAB_STANDINGS_WINDOW_MONTHS = 6
 LAB_STANDINGS_HALFLIFE_MONTHS = 3
 # Derived EMA alpha so weight halves every LAB_STANDINGS_HALFLIFE_MONTHS buckets
 LAB_STANDINGS_EMA_ALPHA = 1 - (0.5 ** (1 / LAB_STANDINGS_HALFLIFE_MONTHS))
+CLOUDFLARE_ANALYTICS_SNIPPET = (
+    "<!-- Cloudflare Web Analytics -->"
+    "<script defer src='https://static.cloudflareinsights.com/beacon.min.js' "
+    "data-cf-beacon='{\"token\": \"d1b43eda5db840b380aeaed5d798d3a2\"}'></script>"
+    "<!-- End Cloudflare Web Analytics -->"
+)
 
 
 def generate_safe_id(text):
@@ -835,6 +841,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 <meta name=\"twitter:card\" content=\"summary_large_image\">
 <link href=\"https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css\" rel=\"stylesheet\">
 <link href=\"/style.css\" rel=\"stylesheet\">
+{CLOUDFLARE_ANALYTICS_SNIPPET}
 </head><body>
 <div class=\"top-nav-wrapper\">
   <div class=\"top-nav-inner\">
