@@ -170,6 +170,8 @@
 {"model_identifier": "google/gemma-3-12b-it", "creator": "google", "model_name": "gemma-3-12b-it", "model_family": "gemma-3", "release_date": "2025-03-10", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemma-2-27b-it", "creator": "google", "model_name": "gemma-2-27b-it", "model_family": "gemma-2", "release_date": "2024-06-27", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemma-2-9b-it", "creator": "google", "model_name": "gemma-2-9b-it", "model_family": "gemma-2", "release_date": "2024-06-27", "reasoning_model": false, "notes": ""}
+{"model_identifier": "google/gemma-4-31b-it", "creator": "google", "model_name": "gemma-4-31b-it", "model_family": "gemma-4", "release_date": "2026-04-02", "reasoning_model": false, "notes": ""}
+{"model_identifier": "google/gemma-4-31b-it-reasoning", "creator": "google", "model_name": "gemma-4-31b-it-reasoning", "model_family": "gemma-4", "release_date": "2026-04-02", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-4.1-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-4.1-mini-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-mini-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-4.1-nano-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-nano-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
@@ -240,7 +242,12 @@
 {"model_identifier": "prime-intellect/intellect-3", "creator": "prime-intellect", "model_name": "intellect-3", "model_family": "intellect-3", "release_date": "2025-11-27", "reasoning_model": true, "notes": ""}
 {"model_identifier": "arcee-ai/trinity-mini", "creator": "arcee-ai", "model_name": "trinity-mini", "model_family": "trinity-mini", "release_date": "2025-12-02", "reasoning_model": false, "notes": ""}
 {"model_identifier": "arcee-ai/trinity-large-preview", "creator": "arcee-ai", "model_name": "trinity-large-preview", "model_family": "trinity-large", "release_date": "2026-01-27", "reasoning_model": false, "notes": ""}
+{"model_identifier": "arcee-ai/trinity-large-thinking", "creator": "arcee-ai", "model_name": "trinity-large-thinking", "model_family": "trinity-large", "release_date": "2026-04-01", "reasoning_model": true, "notes": "reasoning-only model; reasoning cannot be disabled"}
 {"model_identifier": "xiaomi/mimo-v2-flash-thinking", "creator": "xiaomi", "model_name": "mimo-v2-flash-thinking", "model_family": "mimo-v2-flash", "release_date": "2025-12-16", "reasoning_model": true, "notes": ""}
+{"model_identifier": "xiaomi/mimo-v2-omni", "creator": "xiaomi", "model_name": "mimo-v2-omni", "model_family": "mimo-v2-omni", "release_date": "2026-03-18", "reasoning_model": false, "notes": ""}
+{"model_identifier": "xiaomi/mimo-v2-omni-reasoning", "creator": "xiaomi", "model_name": "mimo-v2-omni-reasoning", "model_family": "mimo-v2-omni", "release_date": "2026-03-18", "reasoning_model": true, "notes": ""}
+{"model_identifier": "xiaomi/mimo-v2-pro", "creator": "xiaomi", "model_name": "mimo-v2-pro", "model_family": "mimo-v2-pro", "release_date": "2026-03-18", "reasoning_model": false, "notes": ""}
+{"model_identifier": "xiaomi/mimo-v2-pro-reasoning", "creator": "xiaomi", "model_name": "mimo-v2-pro-reasoning", "model_family": "mimo-v2-pro", "release_date": "2026-03-18", "reasoning_model": true, "notes": ""}
 {"model_identifier": "bytedance/seed-1.6", "creator": "bytedance", "model_name": "seed-1.6", "model_family": "seed-1.6", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
 {"model_identifier": "bytedance/seed-1.6-flash", "creator": "bytedance", "model_name": "seed-1.6-flash", "model_family": "seed-1.6-flash", "release_date": "2025-12-23", "reasoning_model": true, "notes": ""}
 {"model_identifier": "stepfun/step-3.5-flash", "creator": "stepfun", "model_name": "step-3.5-flash", "model_family": "step-3.5-flash", "release_date": "2026-02-03", "reasoning_model": true, "notes": ""}
@@ -248,6 +255,8 @@
 {"model_identifier": "qwen/qwen3-max-thinking", "creator": "alibaba", "model_name": "qwen3-max-thinking", "model_family": "qwen3-max", "release_date": "2026-01-25", "reasoning_model": true, "notes": ""}
 {"model_identifier": "z-ai/glm-5", "creator": "z-ai", "model_name": "glm-5", "model_family": "glm-5", "release_date": "2026-02-11", "reasoning_model": false, "notes": ""}
 {"model_identifier": "z-ai/glm-5-thinking", "creator": "z-ai", "model_name": "glm-5-thinking", "model_family": "glm-5", "release_date": "2026-02-11", "reasoning_model": true, "notes": ""}
+{"model_identifier": "z-ai/glm-5v-turbo", "creator": "z-ai", "model_name": "glm-5v-turbo", "model_family": "glm-5v", "release_date": "2026-04-01", "reasoning_model": false, "notes": ""}
+{"model_identifier": "z-ai/glm-5v-turbo-reasoning", "creator": "z-ai", "model_name": "glm-5v-turbo-reasoning", "model_family": "glm-5v", "release_date": "2026-04-01", "reasoning_model": true, "notes": ""}
 {"model_identifier": "minimax/minimax-m2.5", "creator": "minimax", "model_name": "minimax-m2.5", "model_family": "minimax-m2", "release_date": "2026-02-12", "reasoning_model": true, "notes": ""}
 {"model_identifier": "qwen/qwen3.5-plus-02-15", "creator": "alibaba", "model_name": "qwen3.5-plus-02-15", "model_family": "qwen3.5", "release_date": "2026-02-16", "reasoning_model": true, "notes": ""}
 {"model_identifier": "qwen/qwen3.5-397b-a17b", "creator": "alibaba", "model_name": "qwen3.5-397b-a17b", "model_family": "qwen3.5", "release_date": "2026-02-16", "reasoning_model": true, "notes": ""}
@@ -256,6 +265,8 @@
 {"model_identifier": "qwen/qwen3.5-27b", "creator": "alibaba", "model_name": "qwen3.5-27b", "model_family": "qwen3.5", "release_date": "2026-02-24", "reasoning_model": true, "notes": ""}
 {"model_identifier": "qwen/qwen3.5-122b-a10b", "creator": "alibaba", "model_name": "qwen3.5-122b-a10b", "model_family": "qwen3.5", "release_date": "2026-02-24", "reasoning_model": true, "notes": ""}
 {"model_identifier": "qwen/qwen3.5-flash-02-23", "creator": "alibaba", "model_name": "qwen3.5-flash-02-23", "model_family": "qwen3.5", "release_date": "2026-02-24", "reasoning_model": true, "notes": ""}
+{"model_identifier": "qwen/qwen3.6-plus", "creator": "alibaba", "model_name": "qwen3.6-plus", "model_family": "qwen3.6", "release_date": "2026-04-02", "reasoning_model": false, "notes": ""}
+{"model_identifier": "qwen/qwen3.6-plus-reasoning", "creator": "alibaba", "model_name": "qwen3.6-plus-reasoning", "model_family": "qwen3.6", "release_date": "2026-04-02", "reasoning_model": true, "notes": ""}
 {"model_identifier": "liquid/lfm-2-24b-a2b", "creator": "liquid", "model_name": "lfm-2-24b-a2b", "model_family": "lfm-2", "release_date": "2026-02-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemini-3.1-flash-lite-preview", "creator": "google", "model_name": "gemini-3.1-flash-lite-preview", "model_family": "gemini-3.1-flash-lite", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.3-chat", "creator": "openai", "model_name": "gpt-5.3-chat", "model_family": "gpt-5.3", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
