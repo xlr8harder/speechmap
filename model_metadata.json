@@ -172,6 +172,8 @@
 {"model_identifier": "google/gemma-2-9b-it", "creator": "google", "model_name": "gemma-2-9b-it", "model_family": "gemma-2", "release_date": "2024-06-27", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemma-4-31b-it", "creator": "google", "model_name": "gemma-4-31b-it", "model_family": "gemma-4", "release_date": "2026-04-02", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemma-4-31b-it-reasoning", "creator": "google", "model_name": "gemma-4-31b-it-reasoning", "model_family": "gemma-4", "release_date": "2026-04-02", "reasoning_model": true, "notes": ""}
+{"model_identifier": "google/gemma-4-26b-a4b-it", "creator": "google", "model_name": "gemma-4-26b-a4b-it", "model_family": "gemma-4", "release_date": "2026-04-02", "reasoning_model": false, "notes": ""}
+{"model_identifier": "google/gemma-4-26b-a4b-it-reasoning", "creator": "google", "model_name": "gemma-4-26b-a4b-it-reasoning", "model_family": "gemma-4", "release_date": "2026-04-02", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-4.1-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-4.1-mini-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-mini-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-4.1-nano-2025-04-14", "creator": "openai", "model_name": "gpt-4.1-nano-2025-04-14", "model_family": "gpt-4.1", "release_date": "2025-04-14", "reasoning_model": false, "notes": ""}
