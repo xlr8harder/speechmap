@@ -294,3 +294,4 @@
 {"model_identifier": "openai/gpt-5.4-nano", "creator": "openai", "model_name": "gpt-5.4-nano", "model_family": "gpt-5.4", "release_date": "2026-03-17", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.4-nano-reasoning", "creator": "openai", "model_name": "gpt-5.4-nano", "model_family": "gpt-5.4", "release_date": "2026-03-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "minimax/minimax-m2.7", "creator": "minimax", "model_name": "minimax-m2.7", "model_family": "minimax-m2", "release_date": "2026-03-18", "reasoning_model": true, "notes": "reasoning-only endpoint"}
+{"model_identifier": "openrouter/elephant-alpha", "creator": "unknown", "model_name": "elephant-alpha", "model_family": "elephant-alpha", "release_date": "2026-04-13", "reasoning_model": false, "notes": "No reasoning traces observed in OpenRouter probe."}

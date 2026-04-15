@@ -1441,6 +1441,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
             )
 
         model_link = f"/models/{safe}/"
+        cards_html = "".join(cards)
         sections.append(
             f"""<details class="model-details" id="model-{safe}">
   <summary class="model-summary">
@@ -1448,7 +1449,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     <span class="model-badges">{badges_html}</span>
   </summary>
   <div class="model-responses">
-    {"".join(cards)}
+{cards_html}
   </div>
 </details>"""
         )
