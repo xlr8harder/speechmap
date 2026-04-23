@@ -219,6 +219,8 @@
 {"model_identifier": "moonshotai/kimi-k2-0905", "creator": "moonshotai", "model_name": "kimi-k2-0905", "model_family": "kimi-k2", "release_date": "2025-09-05", "reasoning_model": false, "notes": ""}
 {"model_identifier": "moonshotai/kimi-k2.5", "creator": "moonshotai", "model_name": "kimi-k2.5", "model_family": "kimi-k2", "release_date": "2026-01-26", "reasoning_model": false, "notes": ""}
 {"model_identifier": "moonshotai/kimi-k2.5-thinking", "creator": "moonshotai", "model_name": "kimi-k2.5-thinking", "model_family": "kimi-k2", "release_date": "2026-01-26", "reasoning_model": true, "notes": ""}
+{"model_identifier": "moonshotai/kimi-k2.6", "creator": "moonshotai", "model_name": "kimi-k2.6", "model_family": "kimi-k2", "release_date": "2026-04-20", "reasoning_model": false, "notes": ""}
+{"model_identifier": "moonshotai/kimi-k2.6-thinking", "creator": "moonshotai", "model_name": "kimi-k2.6-thinking", "model_family": "kimi-k2", "release_date": "2026-04-20", "reasoning_model": true, "notes": ""}
 {"model_identifier": "baidu/ernie-4.5-300b-a47b", "creator": "baidu", "model_name": "ernie-4.5-300b-a47b", "model_family": "ernie-4.5-300b-a47b", "release_date": "2025-06-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-oss-120b", "creator": "openai", "model_name": "gpt-oss-120b", "model_family": "gpt-oss-120b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-oss-20b", "creator": "openai", "model_name": "gpt-oss-20b", "model_family": "gpt-oss-20b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
