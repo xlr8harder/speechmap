@@ -306,3 +306,6 @@
 {"model_identifier": "tencent/hy3-preview", "creator": "tencent", "model_name": "hy3-preview", "model_family": "hy3-preview", "release_date": "2026-04-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "tencent/hy3-preview-reasoning", "creator": "tencent", "model_name": "hy3-preview", "model_family": "hy3-preview", "release_date": "2026-04-24", "reasoning_model": true, "notes": ""}
 {"model_identifier": "inclusionai/ling-2.6-1t", "creator": "inclusionai", "model_name": "ling-2.6-1t", "model_family": "ling-2.6", "release_date": "2026-04-24", "reasoning_model": false, "notes": ""}
+{"model_identifier": "x-ai/grok-4.3", "creator": "x-ai", "model_name": "grok-4.3", "model_family": "grok-4.3", "release_date": "2026-05-01", "reasoning_model": true, "notes": "Reasoning-only in OpenRouter probe; reasoning.disabled was rejected."}
+{"model_identifier": "ibm/granite-4.1-8b", "creator": "ibm", "model_name": "granite-4.1-8b", "model_family": "granite-4.1", "release_date": "2026-04-29", "reasoning_model": false, "notes": "No reasoning traces observed in OpenRouter probe."}
+{"model_identifier": "openrouter/owl-alpha", "creator": "unknown", "model_name": "owl-alpha", "model_family": "owl-alpha", "release_date": "2026-04-28", "reasoning_model": false, "notes": "No reasoning traces observed in OpenRouter probe."}
