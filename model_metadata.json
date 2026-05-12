@@ -279,6 +279,7 @@
 {"model_identifier": "qwen/qwen3.6-plus-reasoning", "creator": "alibaba", "model_name": "qwen3.6-plus-reasoning", "model_family": "qwen3.6", "release_date": "2026-04-02", "reasoning_model": true, "notes": ""}
 {"model_identifier": "liquid/lfm-2-24b-a2b", "creator": "liquid", "model_name": "lfm-2-24b-a2b", "model_family": "lfm-2", "release_date": "2026-02-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "google/gemini-3.1-flash-lite-preview", "creator": "google", "model_name": "gemini-3.1-flash-lite-preview", "model_family": "gemini-3.1-flash-lite", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
+{"model_identifier": "google/gemini-3.1-flash-lite", "creator": "google", "model_name": "gemini-3.1-flash-lite", "model_family": "gemini-3.1-flash-lite", "release_date": "2026-05-08", "reasoning_model": true, "notes": "Reasoning traces observed in all successful responses; no non-reasoning mode was observed in OpenRouter probe."}
 {"model_identifier": "openai/gpt-5.3-chat", "creator": "openai", "model_name": "gpt-5.3-chat", "model_family": "gpt-5.3", "release_date": "2026-03-03", "reasoning_model": false, "notes": ""}
 {"model_identifier": "inception/mercury-2", "creator": "inception", "model_name": "mercury-2", "model_family": "mercury-2", "release_date": "2026-02-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.4", "creator": "openai", "model_name": "gpt-5.4", "model_family": "gpt-5.4", "release_date": "2026-03-05", "reasoning_model": false, "notes": ""}
@@ -306,6 +307,7 @@
 {"model_identifier": "tencent/hy3-preview", "creator": "tencent", "model_name": "hy3-preview", "model_family": "hy3-preview", "release_date": "2026-04-24", "reasoning_model": false, "notes": ""}
 {"model_identifier": "tencent/hy3-preview-reasoning", "creator": "tencent", "model_name": "hy3-preview", "model_family": "hy3-preview", "release_date": "2026-04-24", "reasoning_model": true, "notes": ""}
 {"model_identifier": "inclusionai/ling-2.6-1t", "creator": "inclusionai", "model_name": "ling-2.6-1t", "model_family": "ling-2.6", "release_date": "2026-04-24", "reasoning_model": false, "notes": ""}
-{"model_identifier": "x-ai/grok-4.3", "creator": "x-ai", "model_name": "grok-4.3", "model_family": "grok-4.3", "release_date": "2026-05-01", "reasoning_model": true, "notes": "Reasoning-only in OpenRouter probe; reasoning.disabled was rejected."}
+{"model_identifier": "x-ai/grok-4.3", "creator": "x-ai", "model_name": "grok-4.3", "model_family": "grok-4.3", "release_date": "2026-05-01", "reasoning_model": false, "notes": ""}
+{"model_identifier": "x-ai/grok-4.3-reasoning", "creator": "x-ai", "model_name": "grok-4.3", "model_family": "grok-4.3", "release_date": "2026-05-01", "reasoning_model": true, "notes": ""}
 {"model_identifier": "ibm/granite-4.1-8b", "creator": "ibm", "model_name": "granite-4.1-8b", "model_family": "granite-4.1", "release_date": "2026-04-29", "reasoning_model": false, "notes": "No reasoning traces observed in OpenRouter probe."}
 {"model_identifier": "openrouter/owl-alpha", "creator": "unknown", "model_name": "owl-alpha", "model_family": "owl-alpha", "release_date": "2026-04-28", "reasoning_model": false, "notes": "No reasoning traces observed in OpenRouter probe."}
