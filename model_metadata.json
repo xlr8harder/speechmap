@@ -326,3 +326,5 @@
 {"model_identifier": "anthropic/claude-opus-4.8", "creator": "anthropic", "model_name": "claude-opus-4.8", "model_family": "claude-opus-4", "release_date": "2026-05-28", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-opus-4.8-reasoning", "creator": "anthropic", "model_name": "claude-opus-4.8", "model_family": "claude-opus-4", "release_date": "2026-05-28", "reasoning_model": true, "notes": "Adaptive thinking with max effort via Anthropic Messages."}
 {"model_identifier": "stepfun/step-3.7-flash", "creator": "stepfun", "model_name": "step-3.7-flash", "model_family": "step-3.7", "release_date": "2026-05-28", "reasoning_model": true, "notes": "Reasoning traces observed in most successful responses."}
+{"model_identifier": "minimax/minimax-m3", "creator": "minimax", "model_name": "minimax-m3", "model_family": "minimax-m3", "release_date": "2026-06-01", "reasoning_model": false, "notes": ""}
+{"model_identifier": "minimax/minimax-m3-reasoning", "creator": "minimax", "model_name": "minimax-m3", "model_family": "minimax-m3", "release_date": "2026-06-01", "reasoning_model": true, "notes": ""}
