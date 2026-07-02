@@ -1028,7 +1028,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
     models_active = "active" if active_tab == "models" else ""
     themes_active = "active" if active_tab == "themes" else ""
     timeline_active = "active" if active_tab == "timeline" else ""
-    ack_active = "active" if active_tab == "ack" else ""
+    resources_active = "active" if active_tab == "resources" else ""
     return f"""<!DOCTYPE html>
 <html lang=\"en\"><head>
 <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
@@ -1041,7 +1041,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 <meta property=\"og:url\" content=\"{_html_escape(canonical_url)}\">
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
-<link href=\"/style.css\" rel=\"stylesheet\">
+<link href=\"/style.css?1\" rel=\"stylesheet\">
 {CLOUDFLARE_ANALYTICS_SNIPPET}
 </head><body>
 <div class=\"top-nav-wrapper\">
@@ -1053,7 +1053,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
       <button onclick=\"location.assign('/models/')\" class=\"{models_active}\">Models</button>
       <button onclick=\"location.assign('/themes/')\" class=\"{themes_active}\">Themes</button>
       <button onclick=\"location.assign('/timeline/')\" class=\"{timeline_active}\">Timeline</button>
-      <button onclick=\"location.assign('/acknowledgments/')\" class=\"{ack_active}\">Acknowledgments</button>
+      <button onclick=\"location.assign('/resources/')\" class=\"{resources_active}\">Resources &amp; Data</button>
     </nav>
   </div>
 </div>
@@ -1217,10 +1217,6 @@ def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata
         "      <a href=\"https://speechmap.substack.com/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
         "        <svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z\"/></svg>"
         "        Subscribe on Substack"
-        "      </a>"
-        "      <a href=\"https://github.com/xlr8harder/llm-compliance\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
-        "        <svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z\"/></svg>"
-        "        View on GitHub"
         "      </a>"
         "    </div>"
         "  </div>"
@@ -1599,6 +1595,97 @@ def render_timeline_page(lab_metadata=None):
     return head + body + foot
 
 
+def _resource_card(href, title, desc, external=True):
+    ext_attrs = ' target="_blank" rel="noopener noreferrer"' if external else ""
+    ext_cls = " external" if external else ""
+    return (
+        f'<a class="resource-card{ext_cls}" href="{_html_escape(href)}"{ext_attrs}>'
+        f'<span class="resource-title">{_html_escape(title)}</span>'
+        f'<span class="resource-desc">{_html_escape(desc)}</span></a>'
+    )
+
+
+def render_resources_page():
+    head = _page_head("Resources & Data", f"{SITE_BASE_URL}/resources/", depth=0, active_tab='resources')
+    body = (
+        "<div class=\"leaderboard-hero\">"
+        "  <h1>Resources &amp; Data</h1>"
+        "  <p class=\"hero-subtitle\">Our data, code, and writing — and how to support the project</p>"
+        "</div>"
+        "<div class=\"leaderboard-content\"><div class=\"resources-content\">"
+        "<h3>Data</h3>"
+        + _resource_card(
+            "https://huggingface.co/collections/xlr8harder/speechmap",
+            "SpeechMap collection on Hugging Face",
+            "Formal data releases: packaged datasets of model responses and judge assessments, published periodically.",
+        )
+        + _resource_card(
+            "https://github.com/xlr8harder/llm-compliance",
+            "llm-compliance on GitHub",
+            "The complete, up-to-date working dataset — every response and judgment behind the current site — plus the evaluation harness that produces it (question sets, scraping, judging, and analysis tools).",
+        )
+        + "<h3>Code</h3>"
+        + _resource_card(
+            "https://github.com/xlr8harder/speechmap",
+            "speechmap on GitHub",
+            "This website: the static site generator and the aggregate data behind the pages you're reading.",
+        )
+        + "<h3>Writing &amp; Updates</h3>"
+        + _resource_card(
+            "https://speechmap.substack.com/",
+            "SpeechMap on Substack",
+            "Analysis, lab leaderboard updates, and new-model announcements.",
+        )
+        + "<h3>Support &amp; Thanks</h3>"
+        + _resource_card(
+            "https://ko-fi.com/speechmap",
+            "Support us on Ko-fi",
+            "Evaluating a single model can cost tens to hundreds of dollars in API fees — donations directly fund coverage.",
+        )
+        + _resource_card(
+            "/acknowledgments/",
+            "Acknowledgments",
+            "The supporters who made this project possible.",
+            external=False,
+        )
+        + "</div></div>"
+    )
+    return head + body + _page_foot(depth=0)
+
+
+def render_acknowledgments_page():
+    return _page_head("Acknowledgments", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
+        "<div class=\"leaderboard-hero\">"
+        "  <h1>Acknowledgments</h1>"
+        "  <p class=\"hero-subtitle\">Thank you to our supporters</p>"
+        "</div>"
+        "<div class=\"leaderboard-content\">"
+        "<div class=\"acknowledgments-content\">"
+        "<h3>Our Supporters</h3>"
+        "<p>We're deeply indebted to <a href=\"https://x.com/jon_durbin\">Jon Durbin</a>, who provided the initial seed funds needed to launch the project.</p>"
+        "<p>We're grateful to <a href=\"https://openrouter.ai\">OpenRouter</a> for their generous support shortly after our launch. Their contribution helped us complete coverage of all key models from all major model providers for our initial post-launch milestone, and their infrastructure made this project far more feasible than it would have been otherwise.</p>"
+        "<div class=\"ack-support-section\">"
+        "<h3>Support the Project</h3>"
+        "<p>Running comprehensive evaluations across hundreds of AI models is expensive. Each model evaluation can cost <b>tens to hundreds of dollars</b> in API fees, and we're committed to maintaining exhaustive coverage as new models are released.</p>"
+        "<p>Your support helps us:</p>"
+        "<ul>"
+        "<li>Evaluate new models as they're released</li>"
+        "<li>Maintain coverage of existing models over time</li>"
+        "<li>Expand our prompt coverage to new domains</li>"
+        "<li>Keep the project independent and ad-free</li>"
+        "</ul>"
+        "<p>If you find this research valuable, please consider supporting us:</p>"
+        "<div class=\"support-links\">"
+        "<a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
+        "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z\"/></svg>"
+        "Support us on Ko-fi"
+        "</a>"
+        "</div>"
+        "</div>"
+        "</div></div>"
+    ) + _page_foot(depth=0)
+
+
 def _summarize_theme_across_models(theme_key, model_theme_summary):
     # Build per-model summary rows for one theme
     rows = []
@@ -1829,38 +1916,10 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
     _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
 
-    # Acknowledgments static page
-    ack_html = _page_head("Acknowledgments", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
-        "<div class=\"leaderboard-hero\">"
-        "  <h1>Acknowledgments</h1>"
-        "  <p class=\"hero-subtitle\">Thank you to our supporters</p>"
-        "</div>"
-        "<div class=\"leaderboard-content\">"
-        "<div class=\"acknowledgments-content\">"
-        "<h3>Our Supporters</h3>"
-        "<p>We're deeply indebted to <a href=\"https://x.com/jon_durbin\">Jon Durbin</a>, who provided the initial seed funds needed to launch the project.</p>"
-        "<p>We're grateful to <a href=\"https://openrouter.ai\">OpenRouter</a> for their generous support shortly after our launch. Their contribution helped us complete coverage of all key models from all major model providers for our initial post-launch milestone, and their infrastructure made this project far more feasible than it would have been otherwise.</p>"
-        "<div class=\"ack-support-section\">"
-        "<h3>Support the Project</h3>"
-        "<p>Running comprehensive evaluations across hundreds of AI models is expensive. Each model evaluation can cost <b>tens to hundreds of dollars</b> in API fees, and we're committed to maintaining exhaustive coverage as new models are released.</p>"
-        "<p>Your support helps us:</p>"
-        "<ul>"
-        "<li>Evaluate new models as they're released</li>"
-        "<li>Maintain coverage of existing models over time</li>"
-        "<li>Expand our prompt coverage to new domains</li>"
-        "<li>Keep the project independent and ad-free</li>"
-        "</ul>"
-        "<p>If you find this research valuable, please consider supporting us:</p>"
-        "<div class=\"support-links\">"
-        "<a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
-        "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z\"/></svg>"
-        "Support us on Ko-fi"
-        "</a>"
-        "</div>"
-        "</div>"
-        "</div></div>"
-    ) + _page_foot(depth=0)
-    _write_file(os.path.join("acknowledgments", "index.html"), ack_html)
+    # Acknowledgments + Resources static pages
+    _write_file(os.path.join("acknowledgments", "index.html"), render_acknowledgments_page())
+    os.makedirs("resources", exist_ok=True)
+    _write_file(os.path.join("resources", "index.html"), render_resources_page())
 
     # Timeline static shell (Chart hydration allowed to load data/*)
     _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))
@@ -1877,6 +1936,7 @@ def generate_sitemap_and_robots(model_summary, theme_keys):
     urls.append((f"{SITE_BASE_URL}/labs/", today_iso))
     urls.append((f"{SITE_BASE_URL}/timeline/", today_iso))
     urls.append((f"{SITE_BASE_URL}/acknowledgments/", today_iso))
+    urls.append((f"{SITE_BASE_URL}/resources/", today_iso))
     # Model pages with release dates if available
     for m in model_summary:
         mid = m.get("model")
@@ -2080,38 +2140,10 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
             # Render ALL records for full static detail
             _write_file(out_path, render_theme_detail(key, domain_guess, None, records))
 
-    # Acknowledgments static page
-    ack_html = _page_head("Acknowledgments", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
-        "<div class=\"leaderboard-hero\">"
-        "  <h1>Acknowledgments</h1>"
-        "  <p class=\"hero-subtitle\">Thank you to our supporters</p>"
-        "</div>"
-        "<div class=\"leaderboard-content\">"
-        "<div class=\"acknowledgments-content\">"
-        "<h3>Our Supporters</h3>"
-        "<p>We're deeply indebted to <a href=\"https://x.com/jon_durbin\">Jon Durbin</a>, who provided the initial seed funds needed to launch the project.</p>"
-        "<p>We're grateful to <a href=\"https://openrouter.ai\">OpenRouter</a> for their generous support shortly after our launch. Their contribution helped us complete coverage of all key models from all major model providers for our initial post-launch milestone, and their infrastructure made this project far more feasible than it would have been otherwise.</p>"
-        "<div class=\"ack-support-section\">"
-        "<h3>Support the Project</h3>"
-        "<p>Running comprehensive evaluations across hundreds of AI models is expensive. Each model evaluation can cost <b>tens to hundreds of dollars</b> in API fees, and we're committed to maintaining exhaustive coverage as new models are released.</p>"
-        "<p>Your support helps us:</p>"
-        "<ul>"
-        "<li>Evaluate new models as they're released</li>"
-        "<li>Maintain coverage of existing models over time</li>"
-        "<li>Expand our prompt coverage to new domains</li>"
-        "<li>Keep the project independent and ad-free</li>"
-        "</ul>"
-        "<p>If you find this research valuable, please consider supporting us:</p>"
-        "<div class=\"support-links\">"
-        "<a href=\"https://ko-fi.com/speechmap\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"support-link\">"
-        "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z\"/></svg>"
-        "Support us on Ko-fi"
-        "</a>"
-        "</div>"
-        "</div>"
-        "</div></div>"
-    ) + _page_foot(depth=0)
-    _write_file(os.path.join("acknowledgments", "index.html"), ack_html)
+    # Acknowledgments + Resources static pages
+    _write_file(os.path.join("acknowledgments", "index.html"), render_acknowledgments_page())
+    os.makedirs("resources", exist_ok=True)
+    _write_file(os.path.join("resources", "index.html"), render_resources_page())
 
     # Timeline static shell (Chart hydration allowed to load data/*)
     _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))

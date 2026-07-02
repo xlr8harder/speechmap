@@ -34,6 +34,7 @@ capture only the top of the page.
   fixtures (local site server, theme-slug discovery) instead of one-off setups.
 - When changing `script.js`, bump the `?N` cache-buster in `_page_foot` and
   regenerate — including during local dev-cycle review, not just for deploys.
+  Same for `style.css` (its `?N` lives in `_page_head`).
   Browsers cache `script.js` across localhost sessions, so after a JS change
   the user reviewing at the local server can silently get the stale script and
   report features as broken (this has happened). Bump the buster (or tell them

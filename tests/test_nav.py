@@ -7,8 +7,14 @@ TABS = [
     ("Models", "/models/"),
     ("Themes", "/themes/"),
     ("Timeline", "/timeline/"),
-    ("Acknowledgments", "/acknowledgments/"),
+    ("Resources & Data", "/resources/"),
 ]
+
+
+def test_acknowledgments_reachable_from_resources(page, site_url):
+    page.goto(site_url + "/resources/")
+    page.click('a.resource-card[href="/acknowledgments/"]')
+    page.wait_for_url("**/acknowledgments/")
 
 
 @pytest.mark.parametrize("label,path", TABS)
