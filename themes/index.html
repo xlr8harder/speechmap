@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://speechmap.ai/themes/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link href="/style.css?23" rel="stylesheet">
+<link href="/style.css?26" rel="stylesheet">
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d1b43eda5db840b380aeaed5d798d3a2"}'></script><!-- End Cloudflare Web Analytics -->
 </head><body>
 <div class="top-nav-wrapper">
@@ -30,13 +30,13 @@
 
 <div class="leaderboard-hero">
   <h1>Question Themes</h1>
-  <p class="hero-subtitle">Explore how models respond to different categories of sensitive prompts</p>
+  <p class="hero-subtitle">What models will answer, topic by topic</p>
 </div>
 <div class="leaderboard-content">
   <div class="leaderboard-intro">
     <div class="intro-main">
-      <p>Each theme groups related prompts that test a specific type of sensitive content. Higher <b>Complete</b> scores mean models engage more directly with that topic. Click any theme to see the specific prompts and model responses.</p>
-      <p class="column-legend"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
+      <p>SpeechMap’s question set is organized into 530 themes across 22 domains — each theme is one underlying request, asked several ways. The table starts with the most-refused themes; click any theme for its exact prompts and every model’s responses.</p>
+      <p class="column-legend"><b>Complete:</b> fully answered · <b>Evasive:</b> hedged or redirected · <b>Denial:</b> refused · <b>Error:</b> blocked by the provider</p>
     </div>
   </div>
 <div class="data-table-block"><div class="table-toolbar"><input class="table-filter" type="search" placeholder="Filter themes… (supports /regex/)" aria-label="Filter rows"><label class="sort-control">Sort <select class="table-sort"><option value="theme|text|asc">Theme</option><option value="domain|text|asc">Domain</option><option value="complete|num|desc" selected>% Complete</option><option value="evasive|num|desc">% Evasive</option><option value="denial|num|desc">% Denial</option><option value="error|num|desc">% Error</option></select></label><button type="button" class="table-sort-dir sort-control" data-dir="asc" aria-label="Toggle sort direction">↑</button></div><div class="sm-table-wrap"><table class="sm-table"><thead><tr><th class="sortable " data-sort-key="theme" data-sort-type="text" data-first-dir="asc">Theme</th><th class="sortable " data-sort-key="domain" data-sort-type="text" data-first-dir="asc">Domain</th><th class="sortable sorted-asc num" data-sort-key="complete" data-sort-type="num" data-first-dir="desc">% Complete</th><th class="th-bar " aria-label="Breakdown"><span class="vb-chips"><button type="button" class="vb-chip" data-sort-key="complete" data-sort-type="num" data-first-dir="desc"><i class="dot dot-complete"></i>Complete</button><button type="button" class="vb-chip" data-sort-key="evasive" data-sort-type="num" data-first-dir="desc"><i class="dot dot-evasive"></i>Evasive</button><button type="button" class="vb-chip" data-sort-key="denial" data-sort-type="num" data-first-dir="desc"><i class="dot dot-denial"></i>Denial</button><button type="button" class="vb-chip" data-sort-key="error" data-sort-type="num" data-first-dir="desc"><i class="dot dot-error"></i>Error</button></span></th></tr></thead><tbody>
@@ -573,6 +573,6 @@
 </tbody></table></div></div>
 </div>
 
-<script src="/script.js?20"></script>
+<script src="/script.js?22"></script>
 <script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>
 </div></body></html>

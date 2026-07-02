@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://speechmap.ai/models/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link href="/style.css?23" rel="stylesheet">
+<link href="/style.css?26" rel="stylesheet">
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d1b43eda5db840b380aeaed5d798d3a2"}'></script><!-- End Cloudflare Web Analytics -->
 </head><body>
 <div class="top-nav-wrapper">
@@ -30,13 +30,13 @@
 
 <div class="leaderboard-hero">
   <h1>Model Results</h1>
-  <p class="hero-subtitle">Compare how AI models handle controversial and sensitive requests</p>
+  <p class="hero-subtitle">Refusal rates for every model release from every major provider</p>
 </div>
 <div class="leaderboard-content">
   <div class="leaderboard-intro">
     <div class="intro-main">
-      <p>Each model is tested against hundreds of sensitive prompts. Higher <b>Complete</b> scores mean the model engages more directly. Click any model to explore its per-theme breakdown and example responses.</p>
-      <p class="column-legend"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
+      <p>Every model below faced the same 2,120 sensitive and controversial prompts. <b>% Complete</b> is the share it answered in full — the bar shows the full outcome mix. Click a model for its per-theme breakdown, or use the filter to compare labs and model families.</p>
+      <p class="column-legend"><b>Complete:</b> fully answered · <b>Evasive:</b> hedged or redirected · <b>Denial:</b> refused · <b>Error:</b> blocked by the provider</p>
     </div>
   </div>
 <div class="data-table-block"><div class="table-toolbar"><input class="table-filter" type="search" placeholder="Filter models… (supports /regex/)" aria-label="Filter rows"><label class="sort-control">Sort <select class="table-sort"><option value="model|text|asc">Model</option><option value="released|text|desc" selected>Released</option><option value="resp|num|desc"># Resp</option><option value="complete|num|desc">% Complete</option><option value="evasive|num|desc">% Evasive</option><option value="denial|num|desc">% Denial</option><option value="error|num|desc">% Error</option></select></label><button type="button" class="table-sort-dir sort-control" data-dir="desc" aria-label="Toggle sort direction">↓</button></div><div class="sm-table-wrap"><table class="sm-table"><thead><tr><th class="sortable " data-sort-key="model" data-sort-type="text" data-first-dir="asc">Model</th><th class="sortable sorted-desc " data-sort-key="released" data-sort-type="text" data-first-dir="desc">Released</th><th class="sortable num" data-sort-key="resp" data-sort-type="num" data-first-dir="desc"># Resp</th><th class="sortable num" data-sort-key="complete" data-sort-type="num" data-first-dir="desc">% Complete</th><th class="th-bar " aria-label="Breakdown"><span class="vb-chips"><button type="button" class="vb-chip" data-sort-key="complete" data-sort-type="num" data-first-dir="desc"><i class="dot dot-complete"></i>Complete</button><button type="button" class="vb-chip" data-sort-key="evasive" data-sort-type="num" data-first-dir="desc"><i class="dot dot-evasive"></i>Evasive</button><button type="button" class="vb-chip" data-sort-key="denial" data-sort-type="num" data-first-dir="desc"><i class="dot dot-denial"></i>Denial</button><button type="button" class="vb-chip" data-sort-key="error" data-sort-type="num" data-first-dir="desc"><i class="dot dot-error"></i>Error</button></span></th></tr></thead><tbody>
@@ -373,6 +373,6 @@
 </tbody></table></div></div>
 </div>
 
-<script src="/script.js?20"></script>
+<script src="/script.js?22"></script>
 <script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>
 </div></body></html>
