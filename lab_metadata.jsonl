@@ -7,6 +7,10 @@
 {"lab": "bytedance", "full_name": "ByteDance"}
 {"lab": "deepseek", "full_name": "DeepSeek", "color": "#6ba6e8"}
 {"lab": "google", "full_name": "Google DeepMind", "color": "#2547b8"}
+{"lab": "ibm", "full_name": "IBM"}
+{"lab": "inception", "full_name": "Inception"}
+{"lab": "inclusionai", "full_name": "InclusionAI"}
+{"lab": "liquid", "full_name": "Liquid AI"}
 {"lab": "meituan", "full_name": "Meituan"}
 {"lab": "meta-llama", "full_name": "Meta (Llama)"}
 {"lab": "microsoft", "full_name": "Microsoft"}
@@ -17,10 +21,14 @@
 {"lab": "nvidia", "full_name": "NVIDIA"}
 {"lab": "openai", "full_name": "OpenAI", "color": "#0793a8"}
 {"lab": "perplexity", "full_name": "Perplexity"}
+{"lab": "poolside", "full_name": "Poolside"}
 {"lab": "prime-intellect", "full_name": "Prime Intellect"}
 {"lab": "rekaai", "full_name": "Reka AI"}
+{"lab": "stepfun", "full_name": "StepFun"}
+{"lab": "tencent", "full_name": "Tencent"}
 {"lab": "thudm", "full_name": "THUDM"}
 {"lab": "tngtech", "full_name": "TNG Technology Consulting"}
 {"lab": "unknown", "full_name": "Unknown"}
 {"lab": "x-ai", "full_name": "xAI", "color": "#2f3742"}
+{"lab": "xiaomi", "full_name": "Xiaomi"}
 {"lab": "z-ai", "full_name": "Zhipu AI", "color": "#d13a8b"}

@@ -33,6 +33,8 @@ OUTPUT_CORE_METADATA_FILE = os.path.join(DATA_DIR, "metadata-core.json")
 OUTPUT_QTHEME_SUMMARY_DIR = os.path.join(CACHE_DIR, "question-theme-summary")
 OUTPUT_MODEL_THEMES_DIR = os.path.join(CACHE_DIR, "model-themes")
 OUTPUT_THEME_DETAIL_DIR = os.path.join(CACHE_DIR, "theme_details")
+SUBSTACK_FEED_URL = "https://speechmap.substack.com/feed"
+SUBSTACK_CACHE_FILE = os.path.join(CACHE_DIR, "substack-posts.json")
 
 # Phase 2 static site generation
 SITE_BASE_URL = "https://speechmap.ai"
@@ -827,22 +829,6 @@ def _pct_value(v):
         return "0.0"
 
 
-def _pct_color_style(pct):
-    try:
-        p = float(pct)
-    except Exception:
-        p = 0.0
-    # Thresholds aligned with SPA
-    if p >= 90:
-        bg = "#2ecc71"  # green
-    elif p >= 25:
-        bg = "#f1c40f"  # yellow
-    else:
-        bg = "#e74c3c"  # red
-    text = "#333" if bg in ("#f1c40f", "#bdc3c7") else "white"
-    return f"background-color:{bg};color:{text};"
-
-
 # --- Data table rendering (prerendered, hydrated by script.js) ---
 
 VERDICT_SEGMENTS = (
@@ -1018,8 +1004,12 @@ def _prune_stale_model_dirs(model_summary):
         print(f"Pruned {removed} stale model directory(s).")
 
 
-def _page_head(title, canonical_url, depth=0, active_tab=None):
-    desc = "SpeechMap.AI — Explore model compliance across sensitive prompts."
+def _page_head(title, canonical_url, depth=0, active_tab=None, description=None):
+    desc = description or (
+        "SpeechMap.AI measures AI censorship and refusal rates: how ChatGPT, Claude, "
+        "Gemini, Grok, and 300+ language models handle controversial speech, with a "
+        "free-speech leaderboard tracking changes over time."
+    )
     ogimg = f"{SITE_BASE_URL}/og-image.png"
     prefix = "../" * depth
     # Build active class strings
@@ -1041,18 +1031,18 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 <meta property=\"og:url\" content=\"{_html_escape(canonical_url)}\">
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
-<link href=\"/style.css?1\" rel=\"stylesheet\">
+<link href=\"/style.css?23\" rel=\"stylesheet\">
 {CLOUDFLARE_ANALYTICS_SNIPPET}
 </head><body>
 <div class=\"top-nav-wrapper\">
   <div class=\"top-nav-inner\">
-    <div class=\"site-header\"><img src=\"/speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\"><h1>SpeechMap.AI</h1></div>
+    <div class=\"site-header\"><a class=\"brand\" href=\"/\"><img src=\"/speechmap-logo.png\" alt=\"SpeechMap.AI Logo\" id=\"site-logo\"><span class=\"brand-word\">Speech<b>Map</b><span class=\"brand-tld\">.AI</span></span></a></div>
     <nav class=\"view-selector\">
       <button onclick=\"location.assign('/')\" class=\"{about_active}\">About</button>
       <button onclick=\"location.assign('/labs/')\" class=\"{labs_active}\">Leaderboard</button>
+      <button onclick=\"location.assign('/timeline/')\" class=\"{timeline_active}\">Timeline</button>
       <button onclick=\"location.assign('/models/')\" class=\"{models_active}\">Models</button>
       <button onclick=\"location.assign('/themes/')\" class=\"{themes_active}\">Themes</button>
-      <button onclick=\"location.assign('/timeline/')\" class=\"{timeline_active}\">Timeline</button>
       <button onclick=\"location.assign('/resources/')\" class=\"{resources_active}\">Resources &amp; Data</button>
     </nav>
   </div>
@@ -1063,12 +1053,177 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 
 def _page_foot(depth=0):
     return (
-        f"\n<script src=\"/script.js?18\"></script>\n"
+        f"\n<script src=\"/script.js?20\"></script>\n"
         + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
         + "</div></body></html>"
     )
 
-def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata=None):
+def refresh_substack_cache(feed_url=SUBSTACK_FEED_URL, limit=5):
+    """Fetch the Substack RSS feed into the build cache. Network access
+    happens ONLY here (via --substack-refresh); normal builds just read
+    the cache file and fall back to a static link card if it's absent."""
+    import urllib.request
+    import xml.etree.ElementTree as ET
+    from email.utils import parsedate_to_datetime
+
+    req = urllib.request.Request(feed_url, headers={"User-Agent": "Mozilla/5.0 (speechmap-build)"})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        data = resp.read()
+    root = ET.fromstring(data)
+    posts = []
+    for item in root.findall(".//item")[:limit]:
+        title = htmlmod.unescape((item.findtext("title") or "").strip())
+        link = (item.findtext("link") or "").strip()
+        desc = htmlmod.unescape(re.sub(r"<[^>]+>", "", item.findtext("description") or "")).strip()
+        pub = item.findtext("pubDate") or ""
+        try:
+            iso = parsedate_to_datetime(pub).date().isoformat()
+        except Exception:
+            iso = ""
+        if title and link:
+            posts.append({"title": title, "link": link, "description": desc, "date": iso})
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with open(SUBSTACK_CACHE_FILE, "w", encoding="utf-8") as f:
+        json.dump({"fetched": date.today().isoformat(), "posts": posts}, f, ensure_ascii=False, indent=1)
+    print(f"Wrote {len(posts)} Substack posts to {SUBSTACK_CACHE_FILE}")
+    return posts
+
+
+def load_substack_posts():
+    try:
+        with open(SUBSTACK_CACHE_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+        return [p for p in (data.get("posts") or []) if p.get("title") and p.get("link")]
+    except Exception:
+        return []
+
+
+def _monthly_ema_series(pairs, half_life_months=3):
+    """Monthly-average buckets smoothed by a gap-aware EMA (the lab-standings
+    weighting). `pairs`: iterable of (YYYY-MM, value) -> [(month, ema), ...]."""
+    buckets = defaultdict(list)
+    for mon, v in pairs:
+        buckets[mon].append(v)
+    months = sorted(buckets)
+    decay = 0.5 ** (1.0 / max(1, half_life_months))
+    series = []
+    ema = None
+    prev = None
+    for mon in months:
+        avg = sum(buckets[mon]) / len(buckets[mon])
+        if ema is None:
+            ema = avg
+        else:
+            gap = max(1, (int(mon[:4]) - int(prev[:4])) * 12 + (int(mon[5:7]) - int(prev[5:7])))
+            alpha = min(1.0, max(0.0, 1.0 - decay ** gap))
+            ema = ema * (1 - alpha) + avg * alpha
+        prev = mon
+        series.append((mon, ema))
+    return series
+
+
+def _model_month_pairs(model_summary):
+    out = []
+    for m in model_summary or []:
+        mon = (m.get("release_date") or "")[:7]
+        if len(mon) == 7:
+            try:
+                out.append((mon, float(m.get("pct_complete_overall") or 0.0)))
+            except (TypeError, ValueError):
+                pass
+    return out
+
+
+def _overall_trend_svg(model_summary, width=640, height=190, scatter=False):
+    """Inline SVG of a %-complete trend (monthly averages + gap-aware EMA).
+    With scatter=True, individual model releases are drawn as translucent
+    dots under the trend line (used on lab pages)."""
+    pts = _monthly_ema_series(_model_month_pairs(model_summary))
+    if len(pts) < 2:
+        return ""
+    months = [mon for mon, _ in pts]
+
+    def mnum(mon):
+        return int(mon[:4]) * 12 + int(mon[5:7])
+
+    x0, x1 = mnum(months[0]), mnum(months[-1])
+    pad_l, pad_r, pad_t, pad_b = 38, 52, 12, 26
+    iw, ih = width - pad_l - pad_r, height - pad_t - pad_b
+
+    def x_frac(frac):
+        return pad_l + (frac - x0) / max(1, (x1 - x0)) * iw
+
+    def x_of(mon):
+        return x_frac(mnum(mon))
+
+    def y_of(v):
+        return pad_t + (100.0 - v) / 100.0 * ih
+
+    dots = ""
+    if scatter:
+        marks = []
+        for m in model_summary or []:
+            rd = m.get("release_date") or ""
+            if len(rd) >= 7:
+                try:
+                    v = float(m.get("pct_complete_overall") or 0.0)
+                except (TypeError, ValueError):
+                    continue
+                day = int(rd[8:10]) if len(rd) >= 10 else 15
+                frac = mnum(rd[:7]) + (day - 1) / 31.0
+                frac = min(max(frac, x0), x1)
+                marks.append(
+                    f'<circle cx="{x_frac(frac):.1f}" cy="{y_of(v):.1f}" r="3.5" fill="rgba(45,90,135,0.35)"/>'
+                )
+        dots = "".join(marks)
+    line = " ".join(f"{x_of(mon):.1f},{y_of(v):.1f}" for mon, v in pts)
+    area = f"{pad_l:.1f},{y_of(0):.1f} " + line + f" {x_of(months[-1]):.1f},{y_of(0):.1f}"
+    grid = "".join(
+        f'<line x1="{pad_l}" y1="{y_of(v):.1f}" x2="{width - pad_r}" y2="{y_of(v):.1f}" stroke="#e2e8f0" stroke-width="1"/>'
+        f'<text x="{pad_l - 6}" y="{y_of(v) + 4:.1f}" text-anchor="end" font-size="11" fill="#94a3b8">{v}%</text>'
+        for v in (0, 50, 100)
+    )
+    month_names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    def label(mon):
+        return f"{month_names[int(mon[5:7])]} {mon[:4]}"
+
+    end_x, end_y = x_of(months[-1]), y_of(pts[-1][1])
+    return (
+        f'<svg viewBox="0 0 {width} {height}" role="img" preserveAspectRatio="xMidYMid meet" '
+        f'aria-label="Overall share of requests answered completely, {label(months[0])} to {label(months[-1])}">'
+        + grid
+        + f'<polygon points="{area}" fill="rgba(45,90,135,0.08)"/>'
+        + dots
+        + f'<polyline points="{line}" fill="none" stroke="#2d5a87" stroke-width="2.5" stroke-linejoin="round"/>'
+        + f'<circle cx="{end_x:.1f}" cy="{end_y:.1f}" r="4" fill="#2d5a87"/>'
+        + f'<text x="{end_x + 8:.1f}" y="{end_y + 4:.1f}" font-size="12" font-weight="600" fill="#2d5a87">{pts[-1][1]:.0f}%</text>'
+        + f'<text x="{pad_l}" y="{height - 8}" font-size="11" fill="#94a3b8">{label(months[0])}</text>'
+        + f'<text x="{width - pad_r}" y="{height - 8}" text-anchor="end" font-size="11" fill="#94a3b8">{label(months[-1])}</text>'
+        + "</svg>"
+    )
+
+
+def _hero_trend_svg(model_summary):
+    """Minimal, label-free version of the overall trend polyline, drawn
+    faintly behind the hero text."""
+    series = _monthly_ema_series(_model_month_pairs(model_summary))
+    if len(series) < 2:
+        return ""
+    pts = [v for _, v in series]
+    w, h = 1000, 300
+    n = len(pts)
+    line = " ".join(
+        f"{i / (n - 1) * w:.1f},{(100.0 - v) / 100.0 * h:.1f}" for i, v in enumerate(pts)
+    )
+    return (
+        f'<svg class="hero-bgchart" viewBox="0 0 {w} {h}" preserveAspectRatio="none" aria-hidden="true">'
+        f'<polyline points="{line}" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="3"/>'
+        "</svg>"
+    )
+
+
+def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata=None, model_summary=None):
     title = "SpeechMap.AI Explorer"
     canon = f"{SITE_BASE_URL}/"
     head = _page_head(title, canon, depth=0, active_tab='about')
@@ -1076,7 +1231,7 @@ def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata
     models = int((stats or {}).get('models', 0))
     themes = int((stats or {}).get('themes', 0))
     judgments = int((stats or {}).get('judgments', 0))
-    # Derived percentage of filtered/denied (non-complete)
+    # Derived percentage of not-fully-answered (non-complete)
     filtered_pct = 0.0
     try:
         if judgments > 0:
@@ -1098,10 +1253,6 @@ def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata
             theme_index = {}
 
     def _format_pct_for_key(grouping_key, fallback):
-        """
-        Return a human-readable percentage string for a given theme key,
-        falling back to the provided static value if data is missing.
-        """
         if not theme_index:
             return fallback
         row = theme_index.get(grouping_key)
@@ -1114,98 +1265,205 @@ def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata
         s = f"{val:.1f}".rstrip("0").rstrip(".")
         return f"{s}%"
 
-    # Dynamic figures for the "What We Found" examples
-    pct_gender_traditional = _format_pct_for_key("gender_roles_traditional_strict", "61%")
-    pct_gender_reversed = _format_pct_for_key("gender_roles_reversed_defense", "92.6%")
-    pct_outlaw_judaism = _format_pct_for_key("religion_outlaw_judaism", "10.5%")
-    pct_outlaw_witchcraft = _format_pct_for_key("religion_outlaw_witchcraft", "68.5%")
-    pct_ban_ai = _format_pct_for_key("tech_ai_ban_existential_risk", "92.7%")
-    pct_destroy_ai = _format_pct_for_key("tech_ai_destroy_existing_cbrn", "75%")
+    def _pct_float_for_key(grouping_key, fallback):
+        row = theme_index.get(grouping_key) if theme_index else None
+        if row:
+            try:
+                return float(row.get("pct_complete_overall", 0.0))
+            except (TypeError, ValueError):
+                pass
+        return fallback
 
-    # Lab leaderboard (top lab in window)
-    top_lab_name = "top lab"
-    try:
-        standings = (lab_standings or {}).get("standings") or []
-        if standings:
-            lab = standings[0].get("lab")
-            if lab:
-                top_lab_name = _html_escape(lab_display_name(lab, lab_metadata))
-    except Exception:
-        pass
+    def _finding_row(theme_key, fallback, desc):
+        v = _pct_float_for_key(theme_key, fallback)
+        link = f"/themes/{generate_safe_id(theme_key)}/"
+        return (
+            f'<a class="fb-row" href="{link}">'
+            f'<span class="fb-desc">{_html_escape(desc)}</span>'
+            f'<span class="fb-bar"><i style="width:{min(100.0, max(0.0, v)):.1f}%"></i></span>'
+            f'<span class="fb-val">{v:.1f}%</span></a>'
+        )
 
-    stats_ul = (
-        f"      <ul><li><strong class=\"stat-value\">{models}</strong> AI Models Compared</li>"
-        f"          <li><strong class=\"stat-value\">{themes}</strong> Question Themes</li>"
-        f"          <li><strong class=\"stat-value\">{judgments:,}</strong> Model Responses Analyzed</li></ul>"
+    findings_html = (
+        '<div class="finding-comparisons">'
+        '<div class="finding"><div class="finding-label">Argue for traditional gender roles</div>'
+        + _finding_row("gender_roles_traditional_strict", 61.0, "as asked")
+        + _finding_row("gender_roles_reversed_defense", 92.6, "genders reversed")
+        + "</div>"
+        '<div class="finding"><div class="finding-label">Argue for outlawing a religion</div>'
+        + _finding_row("religion_outlaw_judaism", 10.5, "Judaism")
+        + _finding_row("religion_outlaw_witchcraft", 68.5, "Witchcraft")
+        + "</div>"
+        '<div class="finding"><div class="finding-label">Argue for abolishing US democracy</div>'
+        + _finding_row("communism_us_defense_explicit", 45.0, "for communism")
+        + _finding_row("fascism_us_defense_explicit", 15.0, "for fascism")
+        + "</div>"
+        '<div class="finding"><div class="finding-label">Argue that AI should be banned</div>'
+        + _finding_row("tech_ai_ban_existential_risk", 92.7, "as asked")
+        + _finding_row("tech_ai_destroy_existing_cbrn", 75.0, "destroy all AI")
+        + "</div>"
+        '<p class="findings-note">% of models answering the request completely</p>'
+        "%%TREND_IN_BOX%%"
+        "</div>"
     )
+
+    # Lab standings module (top 5)
+    standings_rows = []
+    as_of = ""
+    try:
+        as_of = (lab_standings or {}).get("as_of") or ""
+        for i, s in enumerate(((lab_standings or {}).get("standings") or [])[:5]):
+            lab = s.get("lab") or ""
+            name = lab_display_name(lab, lab_metadata)
+            score = float(s.get("consistency") or 0.0)
+            standings_rows.append(
+                f'<div class="mini-standing">'
+                f'<span class="ms-rank">#{i + 1}</span>'
+                f'<span class="ms-name">{_html_escape(name)}</span>'
+                f'<span class="ms-bar"><i style="width:{min(100.0, max(0.0, score)):.1f}%"></i></span>'
+                f'<span class="ms-score">{score:.1f}</span>'
+                f"</div>"
+            )
+    except Exception:
+        standings_rows = []
+    standings_html = ""
+    if standings_rows:
+        standings_html = (
+            '<div class="home-module">'
+            '<div class="home-module-head"><h3>Lab Leaderboard</h3>'
+            + (f'<span class="module-note">as of {_html_escape(as_of)}</span>' if as_of else "")
+            + "</div>"
+            '<p class="module-blurb">Labs ranked by the Free Speech Index: a time-weighted average of how completely each lab\'s recent models answer.</p>'
+            + "".join(standings_rows)
+            + '<p class="module-more"><a href="/labs/">Full leaderboard →</a></p>'
+            + "</div>"
+        )
+
+    # Trend chart lives inside the What We Found box: inconsistency across
+    # questions and declining willingness over time are one finding.
+    trend_svg = _overall_trend_svg(model_summary, width=430, height=185)
+    trend_in_box = ""
+    if trend_svg:
+        trend_in_box = (
+            '<div class="finding finding-trend">'
+            '<div class="finding-label">…and willingness to answer is falling</div>'
+            f'<div class="trend-figure">{trend_svg}</div>'
+            '<p class="findings-note">Average % answered completely, by release month · <a href="/timeline/">explore the timeline</a></p>'
+            "</div>"
+        )
+    findings_html = findings_html.replace("%%TREND_IN_BOX%%", trend_in_box)
+
+    # Recently added models module
+    recent_html = ""
+    try:
+        recent = sorted(
+            (m for m in (model_summary or []) if m.get("release_date")),
+            key=lambda m: m.get("release_date") or "",
+            reverse=True,
+        )[:6]
+    except Exception:
+        recent = []
+    if recent:
+        rows = []
+        for m in recent:
+            mid = m.get("model", "")
+            link = f"/models/{generate_safe_id(mid)}/"
+            pcts = {
+                "complete": m.get("pct_complete_overall", 0),
+                "evasive": m.get("pct_evasive", 0),
+                "denial": m.get("pct_denial", 0),
+                "error": m.get("pct_error", 0),
+            }
+            rows.append(
+                f'<div class="recent-model">'
+                f'<a class="rm-name" href="{link}">{_html_escape(mid)}</a>'
+                f'<span class="rm-date">{_html_escape(m.get("release_date", "") or "")}</span>'
+                f'<span class="rm-pct">{_pct(m.get("pct_complete_overall", 0))}</span>'
+                f'<span class="rm-bar">{_verdict_bar_html(pcts)}</span>'
+                f"</div>"
+            )
+        legend = (
+            '<div class="verdict-legend">'
+            '<span class="vl-item"><i class="dot dot-complete"></i><b>Complete</b> — fully answered</span>'
+            '<span class="vl-item"><i class="dot dot-evasive"></i><b>Evasive</b> — hedged or redirected</span>'
+            '<span class="vl-item"><i class="dot dot-denial"></i><b>Denial</b> — refused</span>'
+            '<span class="vl-item"><i class="dot dot-error"></i><b>Error</b> — blocked by the provider</span>'
+            "</div>"
+        )
+        recent_html = (
+            '<div class="home-section">'
+            '<div class="home-module-head"><h3>Latest Models</h3></div>'
+            + legend +
+            '<div class="recent-models">' + "".join(rows) + "</div>"
+            f'<p class="module-more"><a href="/models/">View all {models} models →</a></p>'
+            "</div>"
+        )
+
+    # Substack module (build-time cache; static fallback card)
+    posts = load_substack_posts()
+    if posts:
+        cards = []
+        for post in posts[:3]:
+            desc = (post.get("description") or "").strip()
+            if len(desc) > 150:
+                desc = desc[:147].rstrip() + "…"
+            cards.append(
+                f'<a class="post-card" href="{_html_escape(post["link"])}" target="_blank" rel="noopener noreferrer">'
+                f'<span class="post-date">{_html_escape(post.get("date", "") or "")}</span>'
+                f'<span class="post-title">{_html_escape(post["title"])}</span>'
+                f'<span class="post-desc">{_html_escape(desc)}</span></a>'
+            )
+        substack_html = (
+            '<div class="home-section">'
+            '<div class="home-module-head"><h3>From Our Substack</h3></div>'
+            '<div class="post-cards">' + "".join(cards) + "</div>"
+            '<p class="module-more"><a href="https://speechmap.substack.com/" target="_blank" rel="noopener noreferrer">All posts →</a></p>'
+            "</div>"
+        )
+    else:
+        substack_html = (
+            '<div class="home-section">'
+            '<div class="home-module-head"><h3>From Our Substack</h3></div>'
+            '<a class="post-card" href="https://speechmap.substack.com/" target="_blank" rel="noopener noreferrer">'
+            '<span class="post-title">Read our analysis and updates on Substack</span>'
+            '<span class="post-desc">Lab leaderboard updates, new-model results, and commentary on the shifting boundaries of AI speech.</span></a>'
+            "</div>"
+        )
 
     body = (
         # Full-width hero with map background
         "<div class=\"hero-full\">"
+        + _hero_trend_svg(model_summary) +
         "  <div class=\"hero-overlay\">"
         "    <h1>Mapping the Invisible<br>Boundaries of AI Speech</h1>"
         "    <p class=\"hero-subtitle\">Tracking what AI models refuse to say, and how it's changing over time.</p>"
-        "    <p class=\"hero-cta\"><a href=\"/labs/\">Explore Lab Leaderboard</a></p>"
+        "    <p class=\"hero-cta\"><a href=\"/labs/\">Lab Leaderboard</a><a class=\"cta-secondary\" href=\"/timeline/\">Model Timeline</a></p>"
         "  </div>"
         "</div>"
         "<div class=\"about-content\">"
-        # Two-column grid: What is SpeechMap.AI? and What We Found
+        # Two-column grid: narrative + leaderboard stacked left, the tall
+        # What We Found box (findings + trend) spanning on the right.
         "  <div class=\"two-col-grid\">"
         "    <div class=\"text-column\">"
         "      <h3>What is SpeechMap.AI?</h3>"
-        "      <p><b>SpeechMap.AI</b> is a public research project that explores the boundaries of AI-generated speech.</p>"
-        "      <p>We test how language models respond to sensitive and controversial prompts across different providers, countries, and topics. Most AI benchmarks measure what models <i>can</i> do. We focus on what they <i>won't</i>: what they avoid, refuse, or shut down.</p>"
-        "      <p>Our point is not that all requests must be fulfilled. Some are offensive. Some are absurd. But without testing what gets filtered, we can't see where the lines are drawn, or how they're shifting over time.</p>"
+        "      <p><b>SpeechMap.AI</b> is a public research project that maps the boundaries of AI speech. We put the same set of sensitive and controversial requests — political argument, satire, religion, history, rights advocacy — to ChatGPT, Claude, Gemini, Grok, DeepSeek, and hundreds of other AI models, and record what gets answered, what gets hedged, and what gets refused.</p>"
+        "      <p>Most benchmarks measure what language models <i>can</i> do. We measure what they <i>won't</i>: we publish refusal rates for every model release from every major provider. Every model has boundaries, but they're undocumented, inconsistent between providers and topics, and quietly redrawn with each new release.</p>"
+        "      <p>Our point is not that every request deserves an answer. Some are offensive. Some are absurd. But AI assistants are becoming part of how people write, search, learn, and argue — and whether you call it safety, content moderation, or censorship, the limits of machine speech increasingly shape the limits of public speech. SpeechMap makes those limits visible: measured, compared, and tracked over time.</p>"
+        + standings_html +
         "    </div>"
         "    <div class=\"content-box\">"
         "      <h3>What We Found</h3>"
-        "      <p class=\"patterns-label\">Models apply different standards to similar requests:</p>"
-        "      <div class=\"finding-comparisons\">"
-        "        <div class=\"finding\">"
-        "          <div class=\"finding-label\">Argue for traditional gender roles</div>"
-        "          <div class=\"comparison-row\">"
-        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_gender_traditional}</span><span class=\"comparison-desc\">complied</span></div>"
-        "            <div class=\"comparison-vs\">vs</div>"
-        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_gender_reversed}</span><span class=\"comparison-desc\">genders reversed</span></div>"
-        "          </div>"
-        "        </div>"
-        "        <div class=\"finding\">"
-        "          <div class=\"finding-label\">Argue to outlaw a religion</div>"
-        "          <div class=\"comparison-row\">"
-        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_outlaw_judaism}</span><span class=\"comparison-desc\">Judaism</span></div>"
-        "            <div class=\"comparison-vs\">vs</div>"
-        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_outlaw_witchcraft}</span><span class=\"comparison-desc\">Witchcraft</span></div>"
-        "          </div>"
-        "        </div>"
-        "        <div class=\"finding\">"
-        "          <div class=\"finding-label\">Argue that AI should be banned</div>"
-        "          <div class=\"comparison-row\">"
-        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_ban_ai}</span><span class=\"comparison-desc\">complied</span></div>"
-        "            <div class=\"comparison-vs\">vs</div>"
-        f"            <div class=\"comparison-item\"><span class=\"comparison-value\">{pct_destroy_ai}</span><span class=\"comparison-desc\">destroy all AI</span></div>"
-        "          </div>"
-        "        </div>"
+        "      <div class=\"wf-figures\">"
+        f"        <div class=\"wf-fig\"><span class=\"wf-num\">{models}</span><span class=\"wf-cap\">models tested</span></div>"
+        f"        <div class=\"wf-fig\"><span class=\"wf-num\">{judgments / 1000:.0f}k</span><span class=\"wf-cap\">responses analyzed</span></div>"
         "      </div>"
+        "      <p class=\"patterns-label\">Models apply different standards to similar requests:</p>"
+        + findings_html +
         "    </div>"
         "  </div>"
-        # Why This Matters - plain text section
-        "  <div class=\"why-matters\">"
-        "    <h3>Why This Matters</h3>"
-        "    <p>AI models are becoming infrastructure for public speech. They're embedded in how we write, search, learn and argue. That makes them powerful speech-enabling technologies, but also potential speech-limiting ones.</p>"
-        "    <p>If models refuse to talk about certain topics, they shape the boundaries of expression. Some models avoid criticizing certain governments. Others resist satire, protest or controversial moral arguments. Often, the rules are unclear and inconsistently applied.</p>"
-        "    <p><b>SpeechMap.AI reveals where the boundaries of model-generated speech lie.</b></p>"
-        "  </div>"
-        # Full-width stats bar
-        "  <div class=\"stats-section\">"
-        "    <h3>What We Measured</h3>"
-        "    <div class=\"stats-bar\">"
-        f"      <div class=\"stat-item\"><div class=\"stat-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"3\" width=\"20\" height=\"14\" rx=\"2\"/><path d=\"M8 21h8M12 17v4\"/></svg></div><div class=\"stat-number\">{models}</div><div class=\"stat-label\">AI Models</div></div>"
-        f"      <div class=\"stat-item\"><div class=\"stat-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><circle cx=\"12\" cy=\"17\" r=\".5\" fill=\"currentColor\"/></svg></div><div class=\"stat-number\">{themes}</div><div class=\"stat-label\">Question Themes</div></div>"
-        f"      <div class=\"stat-item\"><div class=\"stat-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/></svg></div><div class=\"stat-number\">{judgments:,}</div><div class=\"stat-label\">Responses Analyzed</div></div>"
-        f"      <div class=\"stat-item\"><div class=\"stat-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M4.93 4.93l14.14 14.14\"/></svg></div><div class=\"stat-number\">{filtered_pct:.1f}%</div><div class=\"stat-label\">Requests Failed</div></div>"
-        "    </div>"
-        "  </div>"
-        # Help Us Grow section
+        + substack_html
+        + recent_html +
+        # Support section
         "  <div class=\"help-section\">"
         "    <h3>Support the Project</h3>"
         "    <p>Evaluating one model can cost <b>tens to hundreds of dollars</b> in API fees. Our goal is exhaustive coverage, and older models are already disappearing. You can help:</p>"
@@ -1225,10 +1483,9 @@ def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata
     return head + body + _page_foot(depth=0)
 
 
-def render_models_index(model_summary):
-    title = "Model Results"
-    canon = f"{SITE_BASE_URL}/models/"
-    depth = 1
+def _model_table_html(model_summary, filter_placeholder="Filter models… (supports /regex/)"):
+    """Sortable/filterable model table (shared by the models index and the
+    per-lab pages). Rows are prerendered sorted by release date desc."""
     rows = []
     ordered = sorted(
         model_summary,
@@ -1267,12 +1524,19 @@ def render_models_index(model_summary):
         {"label": "% Complete", "sort_key": "complete", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
         {"label": "Breakdown", "chips": True},
     ]
-    table_html = _data_table_html(
+    return _data_table_html(
         columns,
         "\n".join(rows),
-        filter_placeholder="Filter models… (supports /regex/)",
+        filter_placeholder=filter_placeholder,
         initial_sort=("released", "desc"),
     )
+
+
+def render_models_index(model_summary):
+    title = "Model Results"
+    canon = f"{SITE_BASE_URL}/models/"
+    depth = 1
+    table_html = _model_table_html(model_summary)
     table = """
 <div class=\"leaderboard-hero\">
   <h1>Model Results</h1>
@@ -1357,6 +1621,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
     <div class="stat-box stat-denial"><span class="stat-value">{pct_denial:.1f}%</span><span class="stat-label">Denial</span></div>
     <div class="stat-box stat-error"><span class="stat-value">{pct_error:.1f}%</span><span class="stat-label">Error</span></div>
   </div>
+  <div class="overall-bar">{_verdict_bar_html({"complete": pct_complete, "evasive": pct_evasive, "denial": pct_denial, "error": pct_error})}</div>
 </div>
 """
 
@@ -1408,7 +1673,13 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
         )
         + "\n</div>\n"
     )
-    return _page_head(title, canon, depth=depth, active_tab='models') + hero_html + info_section + stats_html + table + _page_foot(depth=depth)
+    seo_title = f"{model_id} \u2014 Refusal Rates & Censorship Scores | SpeechMap.AI"
+    seo_desc = (
+        f"How {model_name} handles controversial speech: answered {pct_complete:.1f}% of "
+        f"{total_responses} sensitive prompts completely, refused {pct_denial:.1f}%. "
+        f"Per-theme refusal breakdown on SpeechMap.AI."
+    )
+    return _page_head(seo_title, canon, depth=depth, active_tab='models', description=seo_desc) + hero_html + info_section + stats_html + table + _page_foot(depth=depth)
 
 
 def render_themes_index(theme_summary_all):
@@ -1473,7 +1744,7 @@ def render_themes_index(theme_summary_all):
     return _page_head(title, canon, depth=depth, active_tab='themes') + header_html + table + _page_foot(depth=depth)
 
 
-def render_lab_standings_page(lab_standings, lab_metadata=None):
+def render_lab_standings_page(lab_standings, lab_metadata=None, model_summary=None, model_metadata=None):
     title = "Lab Leaderboard"
     canon = f"{SITE_BASE_URL}/labs/"
     depth = 0
@@ -1487,22 +1758,72 @@ def render_lab_standings_page(lab_standings, lab_metadata=None):
     except Exception:
         as_of_date = date.today()
     cards = []
+    # Strip plot data: each lab's model scores within its standings window.
+    lab_models = defaultdict(list)
+    for m in model_summary or []:
+        meta_m = (model_metadata or {}).get(m.get("model"), {})
+        cr = meta_m.get("creator")
+        rd = m.get("release_date") or ""
+        if cr and rd:
+            try:
+                lab_models[cr].append((rd, float(m.get("pct_complete_overall") or 0.0)))
+            except (TypeError, ValueError):
+                pass
+
+    standings_keys = {row.get("lab") for row in standings}
+    other_labs = sorted(
+        (lab_display_name(cr, lab_metadata), generate_safe_id(cr))
+        for cr in lab_models
+        if cr not in standings_keys and cr.strip().lower() != "unknown"
+    )
+    other_labs_html = ""
+    if other_labs:
+        links = " · ".join(
+            f'<a href="/labs/{safe}/">{_html_escape(nm)}</a>' for nm, safe in other_labs
+        )
+        other_labs_html = (
+            '<p class="other-labs">No release in the current window: ' + links + "</p>"
+        )
+
     for i, row in enumerate(standings, start=1):
-        lab = lab_display_name(row.get("lab", ""), lab_metadata)
-        trend = _pct_value(row.get("consistency", 0))
-        peak = _pct_value(row.get("peak_score", 0))
+        lab_key = row.get("lab", "")
+        lab = lab_display_name(lab_key, lab_metadata)
+        try:
+            idx_v = max(0.0, min(100.0, float(row.get("consistency") or 0.0)))
+            peak_v = max(0.0, min(100.0, float(row.get("peak_score") or 0.0)))
+        except (TypeError, ValueError):
+            idx_v, peak_v = 0.0, 0.0
         models_ct = int(row.get("models_in_window", 0))
+        ws = row.get("window_start") or ""
+        we = row.get("window_end") or ""
+        scores = sorted(
+            max(0.0, min(100.0, v))
+            for rd, v in lab_models.get(lab_key, [])
+            if (not ws or rd >= ws) and (not we or rd <= we)
+        )
+        strip = ""
+        if scores:
+            lo, hi = scores[0], scores[-1]
+            dots = "".join(f'<i class="sp-dot" style="left:{v:.1f}%"></i>' for v in scores)
+            strip = (
+                '<span class="stripplot">'
+                f'<i class="sp-band" style="left:{lo:.1f}%;width:{max(0.0, hi - lo):.1f}%"></i>'
+                f"{dots}"
+                f'<i class="sp-index" style="left:{idx_v:.1f}%"></i>'
+                "</span>"
+            )
         cards.append(
             f"<tr>"
             f"<td class=\"rank\">#{i}</td>"
-            f"<td class=\"lab-name\">{_html_escape(lab)}</td>"
-            f"<td class=\"trend\">{trend}</td>"
-            f"<td class=\"peak\">{peak}</td>"
+            f'<td class="lab-name"><a href="/labs/{generate_safe_id(lab_key)}/">{_html_escape(lab)}</a></td>'
+            f"<td class=\"trend\">{_pct_value(idx_v)}</td>"
+            f"<td class=\"peak\">{_pct_value(peak_v)}</td>"
+            f'<td class="spark-cell">{strip}</td>'
             f"<td class=\"count\">{models_ct}</td>"
             f"</tr>"
         )
     if not cards:
-        cards.append("<tr><td colspan=\"5\" class=\"empty\">No labs with releases in this window.</td></tr>")
+        cards.append("<tr><td colspan=\"6\" class=\"empty\">No labs with releases in this window.</td></tr>")
     table = f"""
 <div class=\"leaderboard-hero\">
   <h1>Lab Leaderboard</h1>
@@ -1512,24 +1833,144 @@ def render_lab_standings_page(lab_standings, lab_metadata=None):
   <div class=\"leaderboard-intro\">
     <div class=\"intro-main\">
       <h3>What We Measure</h3>
-      <p><b>SpeechMap.AI</b> tests how AI models respond to sensitive and controversial prompts. We measure what models refuse to say, redirect, or filter. Higher scores mean models engage more directly with difficult requests rather than declining or deflecting.</p>
-      <p>Labs are ranked by their <b>Free Speech Index Score</b>, a time-weighted average of models in each lab's latest release cycle ({window_months} months, anchored to that lab's most recent release). Only labs with a release in the last {window_months} months are shown. For individual model results, see the <a href=\"/models/\">Models</a> page.</p>
+      <p><b>SpeechMap.AI</b> tests how AI models respond to sensitive and controversial prompts. A model's score is the share of requests it answers completely, rather than refusing, hedging, or filtering \u2014 higher means the model engages more directly.</p>
+      <p>Labs are ranked by their <b>Free Speech Index</b>: a time-weighted average of model scores in each lab's latest release cycle ({window_months} months, anchored to that lab's most recent release). <b>Peak</b> is the lab's best single model in that window. Only labs with a release in the last {window_months} months are shown. Click any lab for its full history, or see the <a href=\"/models/\">Models</a> page for individual results.</p>
     </div>
     <div class=\"intro-meta\">
       <p class=\"meta-note\">Last updated: {as_of_date.isoformat()}</p>
     </div>
   </div>
-  <div class=\"lab-leaderboard-table-wrap\">
+  <div class=\"sp-legend\"><span class=\"sp-legend-item\"><i class=\"sp-index sp-demo\"></i> Index</span><span class=\"sp-legend-item\"><i class=\"sp-dot sp-demo\"></i> one model release</span></div>\n  <div class=\"lab-leaderboard-table-wrap\">
     <table class=\"leaderboard-table\">
-      <thead><tr><th>Rank</th><th>Lab</th><th>Index</th><th>Peak Score</th><th>Models</th></tr></thead>
+      <thead><tr><th>Rank</th><th>Lab</th><th>Index</th><th>Peak</th><th class=\"spark-cell\">Model Scores (0\u2013100)</th><th>Models</th></tr></thead>
       <tbody>
 {''.join(cards)}
       </tbody>
     </table>
   </div>
+{other_labs_html}
 </div>
 """
     return _page_head(title, canon, depth=depth, active_tab='labs') + table + _page_foot(depth=depth)
+
+
+def render_lab_page(lab_key, models, standings_entry, rank, lab_metadata=None):
+    """Per-lab hub page: standings summary, aggregate verdict mix, and the
+    lab's models as a sortable table."""
+    name = lab_display_name(lab_key, lab_metadata)
+    safe = generate_safe_id(lab_key)
+    canon = f"{SITE_BASE_URL}/labs/{safe}/"
+
+    # Aggregate verdict mix, weighted by responses per model.
+    tot = 0.0
+    agg = {"complete": 0.0, "evasive": 0.0, "denial": 0.0, "error": 0.0}
+    latest = ""
+    for m in models:
+        n = float(m.get("num_responses") or 0)
+        tot += n
+        agg["complete"] += float(m.get("pct_complete_overall") or 0.0) * n
+        agg["evasive"] += float(m.get("pct_evasive") or 0.0) * n
+        agg["denial"] += float(m.get("pct_denial") or 0.0) * n
+        agg["error"] += float(m.get("pct_error") or 0.0) * n
+        rd = m.get("release_date") or ""
+        if rd > latest:
+            latest = rd
+    pcts = {k: (v / tot if tot else 0.0) for k, v in agg.items()}
+
+    info_items = []
+    if rank and standings_entry:
+        info_items.append(f'<div class="info-item"><span class="info-label">Leaderboard Rank</span><span class="info-value">#{rank}</span></div>')
+        info_items.append(f'<div class="info-item"><span class="info-label">Index</span><span class="info-value">{_pct_value(standings_entry.get("consistency", 0))}</span></div>')
+        info_items.append(f'<div class="info-item"><span class="info-label">Peak</span><span class="info-value">{_pct_value(standings_entry.get("peak_score", 0))}</span></div>')
+    info_items.append(f'<div class="info-item"><span class="info-label">Models Tested</span><span class="info-value">{len(models)}</span></div>')
+    if latest:
+        info_items.append(f'<div class="info-item"><span class="info-label">Latest Release</span><span class="info-value">{_html_escape(latest)}</span></div>')
+    standings_note = "" if (rank and standings_entry) else '<p class="module-blurb">Not currently on the leaderboard (no release in the standings window).</p>'
+
+    n_models = len(models)
+    plural = "s" if n_models != 1 else ""
+    rank_sentence = (
+        f" {name} currently ranks #{rank} on the SpeechMap Free Speech Index."
+        if (rank and standings_entry) else ""
+    )
+    lede = (
+        f"How do {name}\u2019s AI models handle controversial speech? SpeechMap has put "
+        f"{n_models} {name} model{plural} through the same set of sensitive prompts \u2014 "
+        f"political argument, religion, satire, history \u2014 measuring what gets answered "
+        f"and what gets refused. Across {int(tot):,} responses, {name} models answered "
+        f"{pcts['complete']:.1f}% of requests completely and refused {pcts['denial']:.1f}%."
+        + rank_sentence
+    )
+    title = f"{name} \u2014 AI Model Refusal Rates | SpeechMap.AI"
+    description = (
+        f"How censored are {name}\u2019s AI models? Refusal rates and free-speech scores for "
+        f"{n_models} {name} model{plural}: {pcts['complete']:.1f}% of controversial requests "
+        f"answered completely, {pcts['denial']:.1f}% refused. Full results on SpeechMap.AI."
+    )
+    head = _page_head(title, canon, depth=1, active_tab='labs', description=description)
+
+    traj_svg = _overall_trend_svg(models, width=1000, height=240, scatter=True) if n_models >= 2 else ""
+    timeline_link = (
+        f'<a href="/timeline/?highlight={quote_plus(lab_key)}">explore on the interactive timeline →</a>'
+    )
+    if traj_svg:
+        trajectory_html = (
+            "<h3>Score Trajectory</h3>"
+            f'<div class="trend-figure lab-traj">{traj_svg}</div>'
+            f'<p class="findings-note">Model scores by release date, with the time-weighted trend · {timeline_link}</p>'
+        )
+    else:
+        trajectory_html = f'<p class="module-more">{timeline_link}</p>'
+
+    body = (
+        '<div class="leaderboard-hero">'
+        f"  <h1>{_html_escape(name)}</h1>"
+        '  <p class="hero-subtitle">Lab results on SpeechMap</p>'
+        "</div>"
+        '<div class="leaderboard-content">'
+        '<p class="back-link"><a href="/labs/">← Back to Leaderboard</a></p>'
+        f'<p class="lab-lede">{_html_escape(lede)}</p>'
+        f'<div class="model-info-section"><h3>Lab Summary</h3><div class="model-info-bar">{"".join(info_items)}</div></div>'
+        + standings_note +
+        '<div class="theme-stats"><h3>Overall Response Mix</h3>'
+        '<div class="stats-grid">'
+        f'<div class="stat-box stat-complete"><span class="stat-value">{pcts["complete"]:.1f}%</span><span class="stat-label">Complete</span></div>'
+        f'<div class="stat-box stat-evasive"><span class="stat-value">{pcts["evasive"]:.1f}%</span><span class="stat-label">Evasive</span></div>'
+        f'<div class="stat-box stat-denial"><span class="stat-value">{pcts["denial"]:.1f}%</span><span class="stat-label">Denial</span></div>'
+        f'<div class="stat-box stat-error"><span class="stat-value">{pcts["error"]:.1f}%</span><span class="stat-label">Error</span></div>'
+        "</div>"
+        f'<div class="overall-bar">{_verdict_bar_html(pcts)}</div>'
+        "</div>"
+        + trajectory_html +
+        "<h3>Models</h3>"
+        + _model_table_html(models)
+        + "</div>"
+    )
+    return head + body + _page_foot(depth=1)
+
+
+def generate_lab_pages(model_summary, model_metadata, lab_standings, lab_metadata=None):
+    """Write /labs/<slug>/ hub pages for every creator with tested models."""
+    by_lab = defaultdict(list)
+    for m in model_summary or []:
+        meta = (model_metadata or {}).get(m.get("model"), {})
+        cr = meta.get("creator")
+        if cr and cr.strip().lower() != "unknown":
+            by_lab[cr].append(m)
+    ranks = {}
+    entries = {}
+    for i, row in enumerate((lab_standings or {}).get("standings") or [], start=1):
+        ranks[row.get("lab")] = i
+        entries[row.get("lab")] = row
+    for lab_key, models in by_lab.items():
+        safe = generate_safe_id(lab_key)
+        out_dir = os.path.join(STATIC_LABS_DIR, safe)
+        os.makedirs(out_dir, exist_ok=True)
+        _write_file(
+            os.path.join(out_dir, "index.html"),
+            render_lab_page(lab_key, models, entries.get(lab_key), ranks.get(lab_key), lab_metadata=lab_metadata),
+        )
+    return sorted(by_lab.keys())
 
 
 def render_timeline_page(lab_metadata=None):
@@ -1784,6 +2225,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     <div class="stat-box stat-denial"><span class="stat-value">{pct_denial:.1f}%</span><span class="stat-label">Denial</span></div>
     <div class="stat-box stat-error"><span class="stat-value">{pct_error:.1f}%</span><span class="stat-label">Error</span></div>
   </div>
+  <div class="overall-bar">{_verdict_bar_html({"complete": pct_complete, "evasive": pct_evasive, "denial": pct_denial, "error": pct_error})}</div>
 </div>
 """
 
@@ -1914,7 +2356,8 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
 
     # Lab standings page
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
-    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
+    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata, model_summary=summaries["model_summary"], model_metadata=model_meta_dict))
+    generate_lab_pages(summaries["model_summary"], model_meta_dict, lab_standings, lab_metadata=lab_metadata)
 
     # Acknowledgments + Resources static pages
     _write_file(os.path.join("acknowledgments", "index.html"), render_acknowledgments_page())
@@ -1925,7 +2368,7 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
     _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))
 
 
-def generate_sitemap_and_robots(model_summary, theme_keys):
+def generate_sitemap_and_robots(model_summary, theme_keys, lab_keys=None):
     # Build sitemap.xml
     today_iso = date.today().isoformat()
     urls = []
@@ -1937,6 +2380,8 @@ def generate_sitemap_and_robots(model_summary, theme_keys):
     urls.append((f"{SITE_BASE_URL}/timeline/", today_iso))
     urls.append((f"{SITE_BASE_URL}/acknowledgments/", today_iso))
     urls.append((f"{SITE_BASE_URL}/resources/", today_iso))
+    for lk in sorted(lab_keys or []):
+        urls.append((f"{SITE_BASE_URL}/labs/{generate_safe_id(lk)}/", today_iso))
     # Model pages with release dates if available
     for m in model_summary:
         mid = m.get("model")
@@ -2055,8 +2500,26 @@ def generate_lab_standings_from_artifacts():
     )
 
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
-    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
+    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata, model_summary=model_summary, model_metadata=model_meta_dict))
+    generate_lab_pages(model_summary, model_meta_dict, lab_standings, lab_metadata=lab_metadata)
     print("Lab standings regeneration complete.")
+
+
+def regenerate_home_page_from_artifacts():
+    """Re-render only index.html from cache artifacts (fast path used by
+    --substack-refresh)."""
+    model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats, compliance_order = load_core_artifacts()
+    _, skipped_model_meta = split_model_metadata(load_model_metadata(MODEL_METADATA_FILE))
+    if skipped_model_meta:
+        skipped_models = set(skipped_model_meta.keys())
+        model_meta_dict = {mid: meta for mid, meta in model_meta_dict.items() if mid not in skipped_models}
+        model_summary = [m for m in model_summary if m.get("model") not in skipped_models]
+        model_theme_summary = {mid: tm for mid, tm in model_theme_summary.items() if mid not in skipped_models}
+        included_models = {m.get("model") for m in model_summary if m.get("model")}
+        qts_all = _aggregate_question_theme_summary_for_models(model_theme_summary, included_models)
+    lab_metadata = load_lab_metadata(LAB_METADATA_FILE)
+    lab_standings = compute_lab_standings(model_summary, model_meta_dict)
+    _write_file("index.html", render_home_page(core_stats, qts_all, lab_standings, lab_metadata=lab_metadata, model_summary=model_summary))
 
 
 def generate_static_pages_from_artifacts(skip_theme_pages=False):
@@ -2083,7 +2546,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
     )
 
     # Root index (About) page — overwrite with correct static content
-    _write_file("index.html", render_home_page(core_stats, qts_all, lab_standings, lab_metadata=lab_metadata))
+    _write_file("index.html", render_home_page(core_stats, qts_all, lab_standings, lab_metadata=lab_metadata, model_summary=model_summary))
 
     # Models index and detail pages
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
@@ -2103,7 +2566,8 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
 
     # Lab standings page
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
-    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata))
+    _write_file(os.path.join(STATIC_LABS_DIR, "index.html"), render_lab_standings_page(lab_standings, lab_metadata=lab_metadata, model_summary=model_summary, model_metadata=model_meta_dict))
+    generate_lab_pages(model_summary, model_meta_dict, lab_standings, lab_metadata=lab_metadata)
 
     # Sitemap + robots (keep in sync for static-only deploys too)
     theme_keys_for_sitemap = [
@@ -2111,7 +2575,12 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
         for t in (qts_all or [])
         if isinstance(t, dict) and t.get("grouping_key")
     ]
-    generate_sitemap_and_robots(model_summary, theme_keys_for_sitemap)
+    lab_keys_for_sitemap = sorted({
+        (model_meta_dict.get(m.get("model"), {}) or {}).get("creator")
+        for m in model_summary
+        if (model_meta_dict.get(m.get("model"), {}) or {}).get("creator", "").strip().lower() not in ("", "unknown")
+    })
+    generate_sitemap_and_robots(model_summary, theme_keys_for_sitemap, lab_keys=lab_keys_for_sitemap)
 
     # Per-theme pages (load gz on demand)
     if not skip_theme_pages:
@@ -2154,7 +2623,18 @@ def main():
     parser.add_argument('--labs-only', action='store_true')
     parser.add_argument('--static-only', action='store_true')
     parser.add_argument('--no-themes', action='store_true')
+    parser.add_argument('--substack-refresh', action='store_true')
     args, _ = parser.parse_known_args()
+
+    if args.substack_refresh:
+        try:
+            refresh_substack_cache()
+            regenerate_home_page_from_artifacts()
+            print("Substack refresh complete.")
+        except Exception as e:
+            print(f"Substack refresh failed: {e}")
+            sys.exit(1)
+        return
 
     if args.labs_only:
         try:
@@ -2279,9 +2759,14 @@ def main():
     )
     # Use theme keys from summary (not data_by_theme) so sitemap still includes theme URLs even when skipping regeneration
     theme_keys_for_sitemap = [t.get("grouping_key") for t in summaries["question_theme_summary"] if t.get("grouping_key")]
-    generate_sitemap_and_robots(summaries["model_summary"], theme_keys_for_sitemap)
+    lab_keys_for_sitemap = sorted({
+        (model_meta_dict.get(m.get("model"), {}) or {}).get("creator")
+        for m in summaries["model_summary"]
+        if (model_meta_dict.get(m.get("model"), {}) or {}).get("creator", "").strip().lower() not in ("", "unknown")
+    })
+    generate_sitemap_and_robots(summaries["model_summary"], theme_keys_for_sitemap, lab_keys=lab_keys_for_sitemap)
     # Overwrite root About page with static content using real stats
-    _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"], lab_standings, lab_metadata=lab_meta_dict))
+    _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"], lab_standings, lab_metadata=lab_meta_dict, model_summary=summaries["model_summary"]))
 
     print("\nPreprocessing and saving complete (Phase 1 split outputs).")
 

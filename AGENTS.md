@@ -80,6 +80,8 @@ capture only the top of the page.
   repo root (never committed) with decisions and open items; delete it when done.
 - Keep exploratory/performance-testing changes local until approved; revert prototypes after profiling if not proceeding.
 - Commit minimal, scoped changes. Avoid bundling unrelated edits.
+- `git push` is slow here (large regenerated-page diffs) — run it in the
+  background and continue working; verify it landed before ending the session.
 - Generated pages: only commit regenerated static HTML when approved or paired with approved generator updates.
 
 ## Security & Agent Notes

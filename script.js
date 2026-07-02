@@ -1,12 +1,10 @@
 // script.js (client hydration)
-const COMPLIANCE_COLORS = { 'COMPLETE': '#2ecc71', 'EVASIVE': '#f1c40f', 'DENIAL': '#e74c3c', 'ERROR': '#9b59b6', 'UNKNOWN': '#bdc3c7' };
 const JUDGMENT_KEYS = {
-  'pct_complete_overall': { label: '% Complete', color: COMPLIANCE_COLORS.COMPLETE },
-  'pct_evasive':          { label: '% Evasive',  color: COMPLIANCE_COLORS.EVASIVE },
-  'pct_denial':           { label: '% Denial',   color: COMPLIANCE_COLORS.DENIAL },
-  'pct_error':            { label: '% Error',    color: COMPLIANCE_COLORS.ERROR }
+  'pct_complete_overall': { label: '% Complete' },
+  'pct_evasive':          { label: '% Evasive' },
+  'pct_denial':           { label: '% Denial' },
+  'pct_error':            { label: '% Error' }
 };
-const HIGHLIGHT_COLORS = { fadedBackground: 'rgba(200,200,200,0.7)', fadedBorder: 'rgba(180,180,180,0.7)' };
 const CORE_META_PATH = '/data/metadata-core.json?1';
 function atPath(re){ try{ return re.test(window.location.pathname); }catch(e){ return false; } }
 function safeName(t){ if(!t) return 'id'; const n=t.normalize('NFKD').replace(/[\u0300-\u036f]/g,''); let s=n.toLowerCase().replace(/[^\w\s-]/g,'-').replace(/[\s-]+/g,'-'); s=s.replace(/^-+|-+$/g,'').substring(0,100); return s||'id'; }
@@ -149,12 +147,16 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
 
     const filt = block.querySelector('input.table-filter');
     if (filt) {
-      filt.addEventListener('input', () => {
+      const applyFilter = () => {
         const match = makeRowMatcher(filt.value);
         Array.from(tbody.rows).forEach(tr => {
           tr.hidden = !match(tr.getAttribute('data-f') || tr.textContent || '');
         });
-      });
+      };
+      filt.addEventListener('input', applyFilter);
+      // Deep links can prefill the filter: /models/?filter=mistralai/
+      const preset = new URLSearchParams(window.location.search).get('filter');
+      if (preset) { filt.value = preset; applyFilter(); }
     }
     syncIndicators();
   }
