@@ -45,197 +45,116 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
     window.addEventListener('hashchange', () => { setTimeout(reanchorIfNeeded, 0); });
   }
 
-  function percentWithBgBarFormatter(cell){
-    const v = parseFloat(cell.getValue());
-    const pct = isNaN(v) ? 0 : v;
-    const field = cell.getColumn().getField();
-    let color = COMPLIANCE_COLORS.COMPLETE;
-    if (field === 'pct_evasive') color = COMPLIANCE_COLORS.EVASIVE;
-    else if (field === 'pct_denial') color = COMPLIANCE_COLORS.DENIAL;
-    else if (field === 'pct_error') color = COMPLIANCE_COLORS.ERROR;
-    const w = Math.max(0, Math.min(100, pct));
-    return `
-      <div class="percent-bar-container">
-        <div class="percent-bar-bg" style="width:${w}%; background-color:${color}"></div>
-        <span class="percent-bar-text">${pct.toFixed(1)}%</span>
-      </div>`;
+  // Matches a filter query against row text: /regex/ syntax, else
+  // all whitespace-separated terms must appear as substrings.
+  function makeRowMatcher(raw){
+    const q = String(raw || '').trim();
+    if (!q) return () => true;
+    const m = q.match(/^\/(.+)\/([a-z]*)$/i);
+    if (m) {
+      try {
+        const re = new RegExp(m[1], m[2] || 'i');
+        return (text) => re.test(text);
+      } catch (e) { /* fall through to substring search */ }
+    }
+    const parts = q.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!parts.length) return () => true;
+    return (text) => { const t = text.toLowerCase(); return parts.every(p => t.includes(p)); };
   }
 
-  function hydrateModelsIndex(){
-    const container = document.getElementById('overview-table');
-    const fallback = document.querySelector('#static-fallback-overview table.simple-table');
-    if (!container || !fallback) return;
-    if (container.dataset.hydrated === '1') return; // prevent duplicate init
-    // Parse rows
-    const rows = [];
-    fallback.querySelectorAll('tbody tr').forEach(tr => {
-      const tds = tr.querySelectorAll('td');
-      if (tds.length < 7) return;
-      const a = tds[0].querySelector('a');
-      const model = a ? a.textContent.trim() : tds[0].textContent.trim();
-      rows.push({
-        model,
-        release_date: tds[1].textContent.trim() || '',
-        num_responses: parseInt((tds[2].textContent||'0').replace(/[^\d]/g,'')) || 0,
-        pct_complete_overall: parseFloat((tds[3].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_evasive: parseFloat((tds[4].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_denial: parseFloat((tds[5].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_error: parseFloat((tds[6].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
+  function setupDataTable(block){
+    if (block.dataset.wired === '1') return;
+    block.dataset.wired = '1';
+    const table = block.querySelector('table.sm-table');
+    const tbody = table ? table.tBodies[0] : null;
+    if (!tbody) return;
+
+    const controls = Array.from(block.querySelectorAll('[data-sort-key]'));
+    const sel = block.querySelector('select.table-sort');
+    const dirBtn = block.querySelector('button.table-sort-dir');
+    let cur = { key: null, type: 'num', dir: 'desc' };
+    // Initialize from the prerendered sorted header, falling back to the select.
+    const initTh = block.querySelector('th.sorted-asc, th.sorted-desc');
+    if (initTh) {
+      cur = {
+        key: initTh.getAttribute('data-sort-key'),
+        type: initTh.getAttribute('data-sort-type') || 'num',
+        dir: initTh.classList.contains('sorted-asc') ? 'asc' : 'desc',
+      };
+    }
+
+    function syncIndicators(){
+      controls.forEach(c => {
+        c.classList.toggle('sorted-asc', c.getAttribute('data-sort-key') === cur.key && cur.dir === 'asc');
+        c.classList.toggle('sorted-desc', c.getAttribute('data-sort-key') === cur.key && cur.dir === 'desc');
+        if (c.tagName === 'TH') {
+          if (c.getAttribute('data-sort-key') === cur.key) {
+            c.setAttribute('aria-sort', cur.dir === 'asc' ? 'ascending' : 'descending');
+          } else {
+            c.removeAttribute('aria-sort');
+          }
+        }
+      });
+      if (sel) {
+        const want = Array.from(sel.options).find(o => o.value.split('|')[0] === cur.key);
+        if (want) sel.value = want.value;
+      }
+      if (dirBtn) {
+        dirBtn.dataset.dir = cur.dir;
+        dirBtn.textContent = cur.dir === 'asc' ? '↑' : '↓';
+      }
+    }
+
+    function applySort(key, type, dir){
+      cur = { key, type, dir };
+      const mul = dir === 'desc' ? -1 : 1;
+      const rows = Array.from(tbody.rows);
+      rows.sort((a, b) => {
+        const va = a.getAttribute('data-s-' + key) || '';
+        const vb = b.getAttribute('data-s-' + key) || '';
+        if (type === 'num') return ((parseFloat(va) || 0) - (parseFloat(vb) || 0)) * mul;
+        return va.localeCompare(vb) * mul;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+      syncIndicators();
+    }
+
+    controls.forEach(c => {
+      c.addEventListener('click', () => {
+        const key = c.getAttribute('data-sort-key');
+        const type = c.getAttribute('data-sort-type') || 'num';
+        const dir = (cur.key === key)
+          ? (cur.dir === 'asc' ? 'desc' : 'asc')
+          : (c.getAttribute('data-first-dir') || 'desc');
+        applySort(key, type, dir);
       });
     });
-    // Build Tabulator
-    const table = new Tabulator(container, {
-      data: rows,
-      layout: 'fitDataFill',
-      height: '65vh',
-      placeholder: 'No models.',
-      initialSort: [{column:'release_date', dir:'desc'}],
-      columns: [
-        { title:'Model', field:'model', widthGrow:2, headerFilter:'input', headerFilterPlaceholder:'Filter models… (supports /regex/)', headerFilterFunc:(headerValue, rowValue)=>{
-            if (!headerValue) return true;
-            const v = String(rowValue || '');
-            const raw = String(headerValue).trim();
-            const m = raw.match(/^\/(.+)\/([a-z]*)$/i);
-            if (m) {
-              try {
-                const re = new RegExp(m[1], m[2] || 'i');
-                return re.test(v);
-              } catch (e) {
-                // Fall through to substring search on regex errors
-              }
-            }
-            const parts = raw.toLowerCase().split(/\s+/).filter(Boolean);
-            if (!parts.length) return true;
-            const lower = v.toLowerCase();
-            return parts.every(p => lower.includes(p));
-          }, formatter:(cell)=>{
-            const name = cell.getValue();
-            const link = `/models/${safeName(name)}/`;
-            return `<a href="${link}">${name}</a>`;
-          }
-        },
-        { title:'Released', field:'release_date', width:120, hozAlign:'center', sorter:(a,b)=>{
-            const da = Date.parse(a || '');
-            const db = Date.parse(b || '');
-            const aValid = !Number.isNaN(da);
-            const bValid = !Number.isNaN(db);
-            if (!aValid && !bValid) return 0;
-            if (!aValid) return -1;
-            if (!bValid) return 1;
-            return da - db;
-          }
-        },
-        { title:'# Resp', field:'num_responses', width:90, hozAlign:'right', sorter:'number' },
-        { title:'% Comp', field:'pct_complete_overall', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Evas', field:'pct_evasive', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Deny', field:'pct_denial', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Err', field:'pct_error', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-      ],
-    });
-    // Hide static fallback after hydration
-    const fbWrap = document.getElementById('static-fallback-overview');
-    if (fbWrap) fbWrap.style.display = 'none';
-    container.dataset.hydrated = '1';
+    if (sel) {
+      sel.addEventListener('change', () => {
+        const [key, type, firstDir] = sel.value.split('|');
+        applySort(key, type, cur.key === key ? cur.dir : (firstDir || 'desc'));
+      });
+    }
+    if (dirBtn) {
+      dirBtn.addEventListener('click', () => {
+        if (cur.key) applySort(cur.key, cur.type, cur.dir === 'asc' ? 'desc' : 'asc');
+      });
+    }
+
+    const filt = block.querySelector('input.table-filter');
+    if (filt) {
+      filt.addEventListener('input', () => {
+        const match = makeRowMatcher(filt.value);
+        Array.from(tbody.rows).forEach(tr => {
+          tr.hidden = !match(tr.getAttribute('data-f') || tr.textContent || '');
+        });
+      });
+    }
+    syncIndicators();
   }
 
-  function hydrateModelDetail(){
-    const container = document.getElementById('model-detail-table');
-    const fallback = document.querySelector('#static-fallback-model-detail table.simple-table');
-    if (!container || !fallback) return;
-    if (container.dataset.hydrated === '1') return;
-    // Parse static rows
-    const rows = [];
-    fallback.querySelectorAll('tbody tr').forEach(tr => {
-      const tds = tr.querySelectorAll('td');
-      if (tds.length < 7) return;
-      const a = tds[0].querySelector('a');
-      const theme = a ? a.textContent.trim() : tds[0].textContent.trim();
-      const href = a ? a.getAttribute('href') : `/themes/${safeName(theme)}/`;
-      rows.push({
-        theme, href,
-        domain: tds[1].textContent.trim() || '',
-        num_responses: parseInt((tds[2].textContent||'0').replace(/[^\d]/g,'')) || 0,
-        pct_complete_overall: parseFloat((tds[3].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_evasive: parseFloat((tds[4].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_denial: parseFloat((tds[5].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_error: parseFloat((tds[6].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-      });
-    });
-    // Build Tabulator table
-    new Tabulator(container, {
-      data: rows,
-      layout: 'fitDataFill',
-      height: '65vh',
-      placeholder: 'No themes.',
-      initialSort: [{column:'theme', dir:'asc'}],
-      columns: [
-        { title:'Theme', field:'theme', widthGrow:2, formatter:(cell)=>{
-            const r = cell.getRow().getData();
-            const name = r.theme;
-            const link = r.href || `/themes/${safeName(name)}/`;
-            return `<a href="${link}">${name}</a>`;
-          }
-        },
-        { title:'Domain', field:'domain', width:220 },
-        { title:'# Resp', field:'num_responses', width:90, hozAlign:'right', sorter:'number' },
-        { title:'% Comp', field:'pct_complete_overall', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Evas', field:'pct_evasive', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Deny', field:'pct_denial', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Err', field:'pct_error', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-      ],
-    });
-    const fbWrap = document.getElementById('static-fallback-model-detail');
-    if (fbWrap) fbWrap.style.display = 'none';
-    container.dataset.hydrated = '1';
-  }
-
-  function hydrateThemesIndex(){
-    const container = document.getElementById('question-themes-table');
-    const fallback = document.querySelector('#static-fallback-themes table.simple-table');
-    if (!container || !fallback) return;
-    if (container.dataset.hydrated === '1') return; // prevent duplicate init
-    const rows = [];
-    fallback.querySelectorAll('tbody tr').forEach(tr => {
-      const tds = tr.querySelectorAll('td');
-      if (tds.length < 8) return;
-      const a = tds[0].querySelector('a');
-      const theme = a ? a.textContent.trim() : tds[0].textContent.trim();
-      rows.push({
-        grouping_key: theme,
-        domain: tds[1].textContent.trim() || '',
-        num_models: parseInt((tds[2].textContent||'0').replace(/[^\d]/g,'')) || 0,
-        num_responses: parseInt((tds[3].textContent||'0').replace(/[^\d]/g,'')) || 0,
-        pct_complete_overall: parseFloat((tds[4].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_evasive: parseFloat((tds[5].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_denial: parseFloat((tds[6].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-        pct_error: parseFloat((tds[7].textContent||'0').replace(/[^\d\.]/g,'')) || 0,
-      });
-    });
-    new Tabulator(container, {
-      data: rows,
-      layout: 'fitDataFill',
-      height: '65vh',
-      placeholder: 'No themes.',
-      initialSort: [{column:'pct_complete_overall', dir:'asc'}],
-      columns: [
-        { title:'Theme', field:'grouping_key', widthGrow:2, formatter:(cell)=>{
-            const key = cell.getValue(); const link = `/themes/${safeName(key)}/`;
-            return `<a href="${link}">${key}</a>`;
-          }
-        },
-        { title:'Domain', field:'domain', width:180 },
-        { title:'Models', field:'num_models', width:90, hozAlign:'right', sorter:'number' },
-        { title:'# Resp', field:'num_responses', width:90, hozAlign:'right', sorter:'number' },
-        { title:'% Complete', field:'pct_complete_overall', width:120, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Evas', field:'pct_evasive', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Deny', field:'pct_denial', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-        { title:'% Err', field:'pct_error', width:110, hozAlign:'right', sorter:'number', formatter:percentWithBgBarFormatter },
-      ],
-    });
-    // Hide static fallback after hydration
-    const fbWrap = document.getElementById('static-fallback-themes');
-    if (fbWrap) fbWrap.style.display = 'none';
-    container.dataset.hydrated = '1';
+  function initDataTables(){
+    document.querySelectorAll('.data-table-block').forEach(setupDataTable);
   }
 
   async function hydrateTimeline(){
@@ -329,9 +248,7 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
   window.speechmapHydrate = function(){
     // Set up anchor fix on all pages; it runs only when a model hash exists
     setupAnchorFix();
-    if(atPath(/^\/models\/$/)) { hydrateModelsIndex(); return; }
-    if(atPath(/^\/models\/[^/]+\/?$/)) { hydrateModelDetail(); return; }
-    if(atPath(/^\/themes\/$/)) { hydrateThemesIndex(); return; }
+    initDataTables();
     if(atPath(/^\/timeline\/$/)) { hydrateTimeline(); return; }
   };
 })();

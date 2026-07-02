@@ -76,6 +76,28 @@ a:hover { text-decoration: underline; }
     gap: 20px;
 }
 
+/* Small screens: logo row on top, nav as a horizontally scrollable pill row */
+@media (max-width: 760px) {
+    .top-nav-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 4%;
+    }
+    .top-nav-inner nav.view-selector {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .top-nav-inner nav.view-selector::-webkit-scrollbar { display: none; }
+    .top-nav-inner nav.view-selector button,
+    .top-nav-inner nav.view-selector a {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+}
+
 /* Removed SPA loading/error boxes (no longer used) */
 
 /* --- Navigation & Views --- */
@@ -750,60 +772,84 @@ nav.view-selector a:hover:not(.active) {
 }
 
 
-/* --- Tables --- */
-.table-container { margin-top: 15px; border: 1px solid #e2e8f0; border-radius: 8px; min-height: 100px; max-height: 65vh; overflow: hidden; background: transparent; }
-.tabulator { border: none !important; background: transparent !important; background-color: transparent !important; }
-.tabulator .tabulator-tableholder { background: transparent !important; background-color: transparent !important; }
-.tabulator .tabulator-tableholder .tabulator-table { background: transparent !important; background-color: transparent !important; }
-.tabulator .tabulator-header { position: sticky; top: 0; z-index: 10; background-color: #f1f5f9 !important; border-bottom: 2px solid #e2e8f0; font-weight: 600;}
-.tabulator .tabulator-header .tabulator-col { background: #f1f5f9 !important; background-color: #f1f5f9 !important; }
-.tabulator .tabulator-col-title { font-weight: 600; color: #64748b; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.03em; }
-.tabulator-row { border-bottom: 1px solid #e2e8f0; background: transparent !important; background-color: transparent !important; }
-.tabulator-row.tabulator-row-even { background: transparent !important; background-color: transparent !important; }
-.tabulator-row.tabulator-row-odd { background: transparent !important; background-color: transparent !important; }
-.tabulator-row:hover { background-color: #e8f4fc !important; }
-.tabulator-row .tabulator-cell { border-right: 1px solid #eee; padding: 8px 10px; }
-/* Styling for clickable cells */
-.tabulator-row .tabulator-cell.clickable-cell {
-    cursor: pointer;
-    color: #0056b3;
-    font-weight: 500;
-}
-.tabulator-row .tabulator-cell.clickable-cell:hover {
-    text-decoration: underline;
+/* --- Data tables (owned component; prerendered rows, hydrated by script.js) --- */
+:root {
+    --v-complete: #1f9d52;
+    --v-evasive: #b8860b;
+    --v-denial: #d84334;
+    --v-error: #8e4fa8;
 }
 
-/* Styling for custom bar formatter */
-.percent-bar-container {
-    position: relative;
-    overflow: hidden;
-    height: 18px;
-    border-radius: 3px;
-    border: 1px solid #ccc;
-    background-color: #e9ecef;
-    box-sizing: border-box;
+.data-table-block { margin-top: 15px; }
+
+.table-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.table-filter { flex: 1 1 220px; max-width: 340px; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9em; }
+.sort-control { display: none; align-items: center; gap: 6px; font-size: 0.85em; color: #475569; }
+select.table-sort { padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95em; background: #fff; }
+button.table-sort-dir { padding: 6px 11px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; cursor: pointer; font-size: 0.95em; color: #475569; }
+
+.sm-table-wrap { border: 1px solid #e2e8f0; border-radius: 8px; max-height: 72vh; overflow: auto; background: #fff; }
+.sm-table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 0.92em; }
+.sm-table th {
+    position: sticky; top: 0; z-index: 5;
+    background: #f1f5f9; border-bottom: 2px solid #e2e8f0;
+    padding: 9px 12px; text-align: left; white-space: nowrap;
+    font-size: 0.8em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b;
 }
-.percent-bar-bg {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    border-radius: 2px 0 0 2px;
+.sm-table th.num, .sm-table td.td-num { text-align: right; }
+.sm-table th.sortable { cursor: pointer; user-select: none; }
+.sm-table th.sortable:hover { color: #1e3a5f; }
+.sm-table th.sortable::after { content: '↕'; opacity: 0.35; margin-left: 5px; }
+.sm-table th.sortable.sorted-asc::after { content: '↑'; opacity: 1; }
+.sm-table th.sortable.sorted-desc::after { content: '↓'; opacity: 1; }
+.sm-table td { padding: 8px 12px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+.sm-table tbody tr:last-child td { border-bottom: none; }
+.sm-table tbody tr:hover { background-color: #f0f7ff; }
+.sm-table tr[hidden] { display: none; }
+.sm-table .td-name { overflow-wrap: anywhere; }
+.sm-table .td-name a { font-weight: 500; }
+.sm-table .td-meta { color: #64748b; }
+.sm-table .td-complete { font-weight: 600; }
+
+/* Stacked verdict bar */
+.sm-table .td-bar { width: 34%; min-width: 170px; }
+.verdict-bar { display: flex; gap: 2px; height: 14px; border-radius: 4px; overflow: hidden; }
+.vb-seg { flex: 0 1 0%; min-width: 0; }
+.vb-complete { background: var(--v-complete); }
+.vb-evasive { background: var(--v-evasive); }
+.vb-denial { background: var(--v-denial); }
+.vb-error { background: var(--v-error); }
+
+/* Legend chips in the breakdown header double as sort controls */
+.vb-chips { display: inline-flex; gap: 8px; }
+.vb-chip {
+    border: none; background: none; padding: 0; cursor: pointer;
+    font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit;
+    display: inline-flex; align-items: center; gap: 4px;
 }
-.percent-bar-text {
-    position: relative;
-    z-index: 1;
-    display: block;
-    text-align: center;
-    line-height: 16px;
-    font-size: 0.85em;
-    font-weight: 500;
-    color: #333;
-    text-shadow:
-       -1px -1px 0 #fff,
-        1px -1px 0 #fff,
-       -1px  1px 0 #fff,
-        1px  1px 0 #fff;
+.vb-chip:hover { color: #1e3a5f; }
+.vb-chip::after { content: ''; }
+.vb-chip.sorted-asc::after { content: '↑'; }
+.vb-chip.sorted-desc::after { content: '↓'; }
+.vb-chip .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.dot-complete { background: var(--v-complete); }
+.dot-evasive { background: var(--v-evasive); }
+.dot-denial { background: var(--v-denial); }
+.dot-error { background: var(--v-error); }
+
+/* Card collapse on small screens; toolbar select takes over sorting */
+@media (max-width: 760px) {
+    .sort-control { display: inline-flex; }
+    .sm-table-wrap { max-height: none; overflow: visible; border: none; border-radius: 0; background: transparent; }
+    .sm-table thead { display: none; }
+    .sm-table, .sm-table tbody { display: block; width: 100%; }
+    .sm-table tr { display: flex; flex-wrap: wrap; align-items: center; column-gap: 10px; padding: 10px 2px; border-bottom: 1px solid #e2e8f0; }
+    .sm-table td { display: block; padding: 0; border: none; }
+    .sm-table .td-name { order: 1; flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+    .sm-table .td-complete { order: 2; margin-left: auto; }
+    .sm-table .td-bar { order: 3; flex: 1 1 100%; width: auto; min-width: 0; margin-top: 6px; }
+    .sm-table .td-meta { order: 4; font-size: 0.78em; margin-top: 4px; }
+    .sm-table .td-hide-m { display: none; }
 }
 
 /* --- TOC Styles --- */
@@ -946,12 +992,6 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 .response-card-nested > .detail-section { padding: 12px; }
 .response-card-nested > .detail-section + .detail-section { border-top: 1px solid #eee; }
 .response-card-nested > div:last-child.detail-section { padding-bottom: 14px; }
-
-/* --- Simple static table fallback --- */
-.simple-table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-.simple-table th, .simple-table td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; }
-.simple-table th { background-color: #f8f9fa; font-weight: 600; color: #495057; }
-.simple-table td.num, .simple-table th.num { text-align: right; }
 
 /* --- Lab Leaderboard View --- */
 .leaderboard-hero {

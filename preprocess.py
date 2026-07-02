@@ -843,7 +843,118 @@ def _pct_color_style(pct):
     return f"background-color:{bg};color:{text};"
 
 
-# Removed fallbacks and legacy minimal renderer per request.
+# --- Data table rendering (prerendered, hydrated by script.js) ---
+
+VERDICT_SEGMENTS = (
+    ("complete", "Complete"),
+    ("evasive", "Evasive"),
+    ("denial", "Denial"),
+    ("error", "Error"),
+)
+
+
+def _verdict_bar_html(pcts):
+    """
+    Stacked 100% verdict bar. `pcts` maps verdict key -> percentage.
+    Segment widths use flex-grow so proportions hold despite the 2px gaps.
+    """
+    segs = []
+    tips = []
+    for key, label in VERDICT_SEGMENTS:
+        try:
+            v = max(0.0, float(pcts.get(key) or 0.0))
+        except (TypeError, ValueError):
+            v = 0.0
+        tips.append(f"{label} {v:.1f}%")
+        if v > 0:
+            segs.append(f'<span class="vb-seg vb-{key}" style="flex-grow:{v:.2f}"></span>')
+    tooltip = _html_escape(" · ".join(tips))
+    return f'<span class="verdict-bar" title="{tooltip}">' + "".join(segs) + "</span>"
+
+
+def _verdict_chips_html():
+    """Legend chips inside the breakdown column header; each doubles as a sort control."""
+    chips = []
+    for key, label in VERDICT_SEGMENTS:
+        chips.append(
+            f'<button type="button" class="vb-chip" data-sort-key="{key}" '
+            f'data-sort-type="num" data-first-dir="desc">'
+            f'<i class="dot dot-{key}"></i>{label}</button>'
+        )
+    return '<span class="vb-chips">' + "".join(chips) + "</span>"
+
+
+def _data_table_html(columns, rows_html, filter_placeholder=None, initial_sort=None):
+    """
+    Shared table shell: toolbar (filter + mobile sort controls), sortable
+    headers, prerendered body rows. `columns` is a list of dicts:
+      label, sort_key, sort_type ('num'|'text'), first_dir ('asc'|'desc'),
+      th_class, chips (bool: render verdict legend chips in this header).
+    Rows must carry data-s-<key> attributes for every sortable key and an
+    optional data-f attribute with lowercased filter text.
+    `initial_sort` is (key, dir) matching the prerendered row order.
+    """
+    sort_options = []
+    header_cells = []
+    init_key, init_dir = initial_sort or (None, None)
+    for col in columns:
+        label = col.get("label", "")
+        key = col.get("sort_key")
+        stype = col.get("sort_type", "num")
+        first_dir = col.get("first_dir", "desc")
+        th_class = col.get("th_class", "")
+        if col.get("chips"):
+            header_cells.append(
+                f'<th class="th-bar {th_class}" aria-label="{_html_escape(label)}">'
+                + _verdict_chips_html() + "</th>"
+            )
+            for ckey, clabel in VERDICT_SEGMENTS:
+                sort_options.append((ckey, "num", "desc", f"% {clabel}"))
+            continue
+        if key:
+            sorted_cls = ""
+            if key == init_key:
+                sorted_cls = " sorted-asc" if init_dir == "asc" else " sorted-desc"
+            header_cells.append(
+                f'<th class="sortable{sorted_cls} {th_class}" data-sort-key="{key}" '
+                f'data-sort-type="{stype}" data-first-dir="{first_dir}">{_html_escape(label)}</th>'
+            )
+            sort_options.append((key, stype, first_dir, label))
+        else:
+            header_cells.append(f'<th class="{th_class}">{_html_escape(label)}</th>')
+
+    seen_keys = set()
+    deduped_options = []
+    for opt in sort_options:
+        if opt[0] in seen_keys:
+            continue
+        seen_keys.add(opt[0])
+        deduped_options.append(opt)
+    opts_html = "".join(
+        f'<option value="{k}|{t}|{d}"{" selected" if k == init_key else ""}>{_html_escape(lbl)}</option>'
+        for k, t, d, lbl in deduped_options
+    )
+    filter_html = (
+        f'<input class="table-filter" type="search" placeholder="{_html_escape(filter_placeholder)}" '
+        f'aria-label="Filter rows">'
+        if filter_placeholder else ""
+    )
+    dir_arrow = "↑" if init_dir == "asc" else "↓"
+    toolbar = (
+        '<div class="table-toolbar">'
+        + filter_html
+        + '<label class="sort-control">Sort <select class="table-sort">' + opts_html + "</select></label>"
+        + f'<button type="button" class="table-sort-dir sort-control" data-dir="{init_dir or "desc"}" '
+        + f'aria-label="Toggle sort direction">{dir_arrow}</button>'
+        + "</div>"
+    )
+    return (
+        '<div class="data-table-block">'
+        + toolbar
+        + '<div class="sm-table-wrap"><table class="sm-table">'
+        + "<thead><tr>" + "".join(header_cells) + "</tr></thead>"
+        + "<tbody>\n" + rows_html + "\n</tbody></table></div></div>"
+    )
 
 
 # --- Markdown rendering (single implementation) ---
@@ -930,7 +1041,6 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 <meta property=\"og:url\" content=\"{_html_escape(canonical_url)}\">
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
-<link href=\"https://unpkg.com/tabulator-tables@5.5.4/dist/css/tabulator_simple.min.css\" rel=\"stylesheet\">
 <link href=\"/style.css\" rel=\"stylesheet\">
 {CLOUDFLARE_ANALYTICS_SNIPPET}
 </head><body>
@@ -953,8 +1063,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 
 def _page_foot(depth=0):
     return (
-        f"\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@5.5.4/dist/js/tabulator.min.js\"></script>\n"
-        + f"<script src=\"/script.js?14\"></script>\n"
+        f"\n<script src=\"/script.js?15\"></script>\n"
         + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
         + "</div></body></html>"
     )
@@ -1125,21 +1234,49 @@ def render_models_index(model_summary):
     canon = f"{SITE_BASE_URL}/models/"
     depth = 1
     rows = []
-    for m in model_summary:
+    ordered = sorted(
+        model_summary,
+        key=lambda m: (m.get("release_date") or ""),
+        reverse=True,
+    )
+    for m in ordered:
         model = m.get("model", "")
         safe = generate_safe_id(model)
         link = f"/models/{safe}/"
+        pcts = {
+            "complete": m.get("pct_complete_overall", 0),
+            "evasive": m.get("pct_evasive", 0),
+            "denial": m.get("pct_denial", 0),
+            "error": m.get("pct_error", 0),
+        }
+        data_attrs = " ".join(
+            f'data-s-{k}="{_pct_value(v)}"' for k, v in pcts.items()
+        )
         rows.append(
-            f"<tr>"
-            f"<td><a href=\"{link}\">{_html_escape(model)}</a></td>"
-            f"<td>{_html_escape(m.get('release_date','') or '')}</td>"
-            f"<td class=\"num\">{m.get('num_responses',0)}</td>"
-            f"<td class=\"num\">{_pct(m.get('pct_complete_overall',0))}</td>"
-            f"<td class=\"num\">{_pct(m.get('pct_evasive',0))}</td>"
-            f"<td class=\"num\">{_pct(m.get('pct_denial',0))}</td>"
-            f"<td class=\"num\">{_pct(m.get('pct_error',0))}</td>"
+            f'<tr data-f="{_html_escape(model.lower())}"'
+            f' data-s-model="{_html_escape(model.lower())}"'
+            f' data-s-released="{_html_escape(m.get("release_date","") or "")}"'
+            f' data-s-resp="{m.get("num_responses",0)}" {data_attrs}>'
+            f'<td class="td-name"><a href="{link}">{_html_escape(model)}</a></td>'
+            f'<td class="td-meta">{_html_escape(m.get("release_date","") or "")}</td>'
+            f'<td class="td-num td-hide-m">{m.get("num_responses",0)}</td>'
+            f'<td class="td-num td-complete">{_pct(m.get("pct_complete_overall",0))}</td>'
+            f'<td class="td-bar">{_verdict_bar_html(pcts)}</td>'
             f"</tr>"
         )
+    columns = [
+        {"label": "Model", "sort_key": "model", "sort_type": "text", "first_dir": "asc"},
+        {"label": "Released", "sort_key": "released", "sort_type": "text", "first_dir": "desc"},
+        {"label": "# Resp", "sort_key": "resp", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
+        {"label": "% Complete", "sort_key": "complete", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
+        {"label": "Breakdown", "chips": True},
+    ]
+    table_html = _data_table_html(
+        columns,
+        "\n".join(rows),
+        filter_placeholder="Filter models… (supports /regex/)",
+        initial_sort=("released", "desc"),
+    )
     table = """
 <div class=\"leaderboard-hero\">
   <h1>Model Results</h1>
@@ -1152,12 +1289,7 @@ def render_models_index(model_summary):
       <p class=\"column-legend\"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
     </div>
   </div>
-  <div id=\"overview-table\" class=\"table-container\"></div>
-  <div id=\"static-fallback-overview\">
-    <table class=\"simple-table\">
-      <thead><tr><th>Model</th><th>Released</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
-      <tbody>
-""" + "\n".join(rows) + "\n      </tbody>\n    </table>\n  </div>\n</div>\n"
+""" + table_html + "\n</div>\n"
     return _page_head(title, canon, depth=depth, active_tab='models') + table + _page_foot(depth=depth)
 
 
@@ -1242,25 +1374,44 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
     items.sort(key=lambda x: x[0])  # Sort by theme name ascending
     for key, dom, c, pct_c, s in items:
         theme_link = f"../../themes/{generate_safe_id(key)}/#model-{generate_safe_id(model_id)}"
+        pcts = {
+            "complete": pct_c,
+            "evasive": (s.get('e', 0) / c * 100) if c > 0 else 0,
+            "denial": (s.get('d', 0) / c * 100) if c > 0 else 0,
+            "error": (s.get('r', 0) / c * 100) if c > 0 else 0,
+        }
+        data_attrs = " ".join(
+            f'data-s-{k}="{_pct_value(v)}"' for k, v in pcts.items()
+        )
         rows.append(
-            f"<tr>"
-            f"<td><a href=\"{theme_link}\">{_html_escape(key)}</a></td>"
-            f"<td>{_html_escape(dom)}</td>"
-            f"<td class=\"num\">{c}</td>"
-            f"<td class=\"num\">{_pct(pct_c)}</td>"
-            f"<td class=\"num\">{_pct((s.get('e',0)/c*100) if c>0 else 0)}</td>"
-            f"<td class=\"num\">{_pct((s.get('d',0)/c*100) if c>0 else 0)}</td>"
-            f"<td class=\"num\">{_pct((s.get('r',0)/c*100) if c>0 else 0)}</td>"
+            f'<tr data-f="{_html_escape((key + " " + dom).lower())}"'
+            f' data-s-theme="{_html_escape(key.lower())}"'
+            f' data-s-domain="{_html_escape(dom.lower())}"'
+            f' data-s-resp="{c}" {data_attrs}>'
+            f'<td class="td-name"><a href="{theme_link}">{_html_escape(key)}</a></td>'
+            f'<td class="td-meta">{_html_escape(dom)}</td>'
+            f'<td class="td-num td-hide-m">{c}</td>'
+            f'<td class="td-num td-complete">{_pct(pct_c)}</td>'
+            f'<td class="td-bar">{_verdict_bar_html(pcts)}</td>'
             f"</tr>"
         )
-    table = """
-<h3>Compliance by Question Theme</h3>
-<div id=\"model-detail-table\" class=\"table-container\"></div>
-<div id=\"static-fallback-model-detail\">
-<table class=\"simple-table\">
-  <thead><tr><th>Theme</th><th>Domain</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
-  <tbody>
-""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n</div>\n"
+    columns = [
+        {"label": "Theme", "sort_key": "theme", "sort_type": "text", "first_dir": "asc"},
+        {"label": "Domain", "sort_key": "domain", "sort_type": "text", "first_dir": "asc"},
+        {"label": "# Resp", "sort_key": "resp", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
+        {"label": "% Complete", "sort_key": "complete", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
+        {"label": "Breakdown", "chips": True},
+    ]
+    table = (
+        "\n<h3>Compliance by Question Theme</h3>\n"
+        + _data_table_html(
+            columns,
+            "\n".join(rows),
+            filter_placeholder="Filter themes…",
+            initial_sort=("theme", "asc"),
+        )
+        + "\n</div>\n"
+    )
     return _page_head(title, canon, depth=depth, active_tab='models') + hero_html + info_section + stats_html + table + _page_foot(depth=depth)
 
 
@@ -1269,19 +1420,33 @@ def render_themes_index(theme_summary_all):
     canon = f"{SITE_BASE_URL}/themes/"
     depth = 1
     rows = []
-    for t in theme_summary_all:
+    ordered = sorted(
+        theme_summary_all,
+        key=lambda t: float(t.get("pct_complete_overall") or 0.0),
+    )
+    for t in ordered:
         key = t.get("grouping_key", "")
+        dom = t.get("domain", "") or ""
         link = f"/themes/{generate_safe_id(key)}/"
+        pcts = {
+            "complete": t.get("pct_complete_overall", 0),
+            "evasive": t.get("pct_evasive", 0),
+            "denial": t.get("pct_denial", 0),
+            "error": t.get("pct_error", 0),
+        }
+        data_attrs = " ".join(
+            f'data-s-{k}="{_pct_value(v)}"' for k, v in pcts.items()
+        )
         rows.append(
-            f"<tr>"
-            f"<td><a href=\"{link}\">{_html_escape(key)}</a></td>"
-            f"<td>{_html_escape(t.get('domain','') or '')}</td>"
-            f"<td class=\"num\">{t.get('num_models',0)}</td>"
-            f"<td class=\"num\">{t.get('num_responses',0)}</td>"
-            f"<td class=\"num\">{_pct(t.get('pct_complete_overall',0))}</td>"
-            f"<td class=\"num\">{_pct(t.get('pct_evasive',0))}</td>"
-            f"<td class=\"num\">{_pct(t.get('pct_denial',0))}</td>"
-            f"<td class=\"num\">{_pct(t.get('pct_error',0))}</td>"
+            f'<tr data-f="{_html_escape((key + " " + dom).lower())}"'
+            f' data-s-theme="{_html_escape(key.lower())}"'
+            f' data-s-domain="{_html_escape(dom.lower())}"'
+            f' data-s-models="{t.get("num_models",0)}"'
+            f' data-s-resp="{t.get("num_responses",0)}" {data_attrs}>'
+            f'<td class="td-name"><a href="{link}">{_html_escape(key)}</a></td>'
+            f'<td class="td-meta">{_html_escape(dom)}</td>'
+            f'<td class="td-num td-complete">{_pct(t.get("pct_complete_overall",0))}</td>'
+            f'<td class="td-bar">{_verdict_bar_html(pcts)}</td>'
             f"</tr>"
         )
     header_html = """
@@ -1297,13 +1462,18 @@ def render_themes_index(theme_summary_all):
     </div>
   </div>
 """
-    table = """
-<div id=\"question-themes-table\" class=\"table-container\"></div>
-<div id=\"static-fallback-themes\">
-<table class=\"simple-table\">
-  <thead><tr><th>Theme</th><th>Domain</th><th>Models</th><th># Resp</th><th>% Complete</th><th>% Evasive</th><th>% Denial</th><th>% Error</th></tr></thead>
-  <tbody>
-""" + "\n".join(rows) + "\n  </tbody>\n</table>\n</div>\n</div>\n"
+    columns = [
+        {"label": "Theme", "sort_key": "theme", "sort_type": "text", "first_dir": "asc"},
+        {"label": "Domain", "sort_key": "domain", "sort_type": "text", "first_dir": "asc"},
+        {"label": "% Complete", "sort_key": "complete", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
+        {"label": "Breakdown", "chips": True},
+    ]
+    table = _data_table_html(
+        columns,
+        "\n".join(rows),
+        filter_placeholder="Filter themes… (supports /regex/)",
+        initial_sort=("complete", "asc"),
+    ) + "\n</div>\n"
     return _page_head(title, canon, depth=depth, active_tab='themes') + header_html + table + _page_foot(depth=depth)
 
 
