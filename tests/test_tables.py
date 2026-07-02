@@ -39,6 +39,13 @@ def test_filter_substring_and_regex(page, site_url):
     page.fill("input.table-filter", "/gpt-4(o|\\.1)/")
     rows = visible_values(page, "model", limit=1000)
     assert rows and all(("gpt-4o" in r or "gpt-4.1" in r) for r in rows)
+    # Leading slash is regex mode immediately, closing slash optional.
+    page.fill("input.table-filter", "/poolside")
+    rows = visible_values(page, "model", limit=1000)
+    assert rows and all("poolside" in r for r in rows)
+    # In-progress invalid regex shows all rows rather than bogus matches.
+    page.fill("input.table-filter", "/poolside(")
+    assert len(visible_values(page, "model", limit=10000)) > 100
     page.fill("input.table-filter", "")
     assert len(visible_values(page, "model", limit=10000)) > 100
 

@@ -1063,7 +1063,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None):
 
 def _page_foot(depth=0):
     return (
-        f"\n<script src=\"/script.js?15\"></script>\n"
+        f"\n<script src=\"/script.js?18\"></script>\n"
         + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
         + "</div></body></html>"
     )
@@ -1536,6 +1536,69 @@ def render_lab_standings_page(lab_standings, lab_metadata=None):
     return _page_head(title, canon, depth=depth, active_tab='labs') + table + _page_foot(depth=depth)
 
 
+def render_timeline_page(lab_metadata=None):
+    """Timeline static shell. Legend chips are prerendered from lab colors so
+    the client needs no metadata fetch to know the color tier; Chart.js
+    hydration loads point data from /data/."""
+    head = _page_head("Model Timeline", f"{SITE_BASE_URL}/timeline/", depth=0, active_tab='timeline')
+    colored = sorted(
+        (
+            (lab, meta.get("full_name") or lab, meta.get("color"))
+            for lab, meta in (lab_metadata or {}).items()
+            if isinstance(meta, dict) and meta.get("color")
+        ),
+        key=lambda x: x[1].lower(),
+    )
+    chips = [
+        f'<button type="button" class="tl-chip" data-lab="{_html_escape(lab)}" data-color="{_html_escape(color)}">'
+        f'<i class="dot" style="background:{_html_escape(color)}"></i>{_html_escape(name)}</button>'
+        for lab, name, color in colored
+    ]
+    chips.append(
+        '<span class="tl-chip tl-swatch"><i class="dot" style="background:#b0b7c3"></i>Other labs</span>'
+    )
+    chips.append(
+        '<button type="button" class="tl-chip tl-clear" id="timeline-clear-highlights" hidden>&#10005; Clear</button>'
+    )
+    legend_html = (
+        '<div class="timeline-legend" id="timeline-legend">'
+        '<span class="tl-legend-label">Highlight</span>'
+        '<div class="tl-chips-wrap">' + "".join(chips) + "</div></div>"
+    )
+    body = (
+        "<div class=\"leaderboard-hero\">"
+        "  <h1>Model Timeline</h1>"
+        "  <p class=\"hero-subtitle\">Track how model compliance changes over time</p>"
+        "</div>"
+        "<div class=\"leaderboard-content\">"
+        "<div class=\"timeline-view-container\">"
+        "<div class=\"leaderboard-intro\"><div class=\"intro-main\">"
+        "<p>This scatter plot shows each model's release date against its compliance rate. "
+        "Hover a lab in the legend to spotlight it; click to pin one or more labs and compare "
+        "their trend lines. Use the filters to explore by metric or creator. "
+        "Click any point to view that model's details.</p>"
+        "</div></div>"
+        "<div class=\"timeline-filters filter-controls\">"
+        "  <div class=\"filter-item\"><label for=\"timeline-metric-filter\">Y-Axis Metric:</label>"
+        "    <select id=\"timeline-metric-filter\"></select></div>"
+        "  <div class=\"filter-item\"><label for=\"timeline-creator-filter\">Creator:</label>"
+        "    <select id=\"timeline-creator-filter\"></select></div>"
+        "  <div class=\"filter-item\"><label for=\"timeline-highlight-creator-filter\">Highlight Lab:</label>"
+        "    <select id=\"timeline-highlight-creator-filter\"></select></div>"
+        "</div>"
+        + legend_html +
+        "<div class=\"chart-container\"><canvas id=\"timeline-chart-canvas\"></canvas></div>"
+        "</div></div>"
+    )
+    foot = (
+        "\n<script src=\"https://cdn.jsdelivr.net/npm/chart.js@^4\"></script>\n"
+        "<script src=\"https://cdn.jsdelivr.net/npm/date-fns@^2\"></script>\n"
+        "<script src=\"https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@^3\"></script>\n"
+        + _page_foot(depth=0)
+    )
+    return head + body + foot
+
+
 def _summarize_theme_across_models(theme_key, model_theme_summary):
     # Build per-model summary rows for one theme
     rows = []
@@ -1800,35 +1863,7 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
     _write_file(os.path.join("acknowledgments", "index.html"), ack_html)
 
     # Timeline static shell (Chart hydration allowed to load data/*)
-    timeline_head = _page_head("Model Timeline", f"{SITE_BASE_URL}/timeline/", depth=0, active_tab='timeline')
-    timeline_body = (
-        "<div class=\"leaderboard-hero\">"
-        "  <h1>Model Timeline</h1>"
-        "  <p class=\"hero-subtitle\">Track how model compliance changes over time</p>"
-        "</div>"
-        "<div class=\"leaderboard-content\">"
-        "<div class=\"timeline-view-container\">"
-        "<div class=\"leaderboard-intro\"><div class=\"intro-main\">"
-        "<p>This scatter plot shows each model's release date against its compliance rate. Use the filters to explore by metric or creator. Click any point to view that model's details.</p>"
-        "</div></div>"
-        "<div class=\"timeline-filters filter-controls\">"
-        "  <div class=\"filter-item\"><label for=\"timeline-metric-filter\">Y-Axis Metric:</label>"
-        "    <select id=\"timeline-metric-filter\"></select></div>"
-        "  <div class=\"filter-item\"><label for=\"timeline-creator-filter\">Creator:</label>"
-        "    <select id=\"timeline-creator-filter\"></select></div>"
-        "  <div class=\"filter-item\"><label for=\"timeline-highlight-creator-filter\">Highlight Creator:</label>"
-        "    <select id=\"timeline-highlight-creator-filter\"></select></div>"
-        "</div>"
-        "<div class=\"chart-container\"><canvas id=\"timeline-chart-canvas\"></canvas></div>"
-        "</div></div>"
-    )
-    timeline_foot = (
-        "\n<script src=\"https://cdn.jsdelivr.net/npm/chart.js@^4\"></script>\n"
-        "<script src=\"https://cdn.jsdelivr.net/npm/date-fns@^2\"></script>\n"
-        "<script src=\"https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@^3\"></script>\n"
-        + _page_foot(depth=0)
-    )
-    _write_file(os.path.join("timeline", "index.html"), timeline_head + timeline_body + timeline_foot)
+    _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))
 
 
 def generate_sitemap_and_robots(model_summary, theme_keys):
@@ -2079,36 +2114,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
     _write_file(os.path.join("acknowledgments", "index.html"), ack_html)
 
     # Timeline static shell (Chart hydration allowed to load data/*)
-    timeline_head = _page_head("Model Timeline", f"{SITE_BASE_URL}/timeline/", depth=0, active_tab='timeline')
-    timeline_body = (
-        "<div class=\"leaderboard-hero\">"
-        "  <h1>Model Timeline</h1>"
-        "  <p class=\"hero-subtitle\">Track how model compliance changes over time</p>"
-        "</div>"
-        "<div class=\"leaderboard-content\">"
-        "<div class=\"timeline-view-container\">"
-        "<div class=\"leaderboard-intro\"><div class=\"intro-main\">"
-        "<p>This scatter plot shows each model's release date against its compliance rate. Use the filters to explore by metric or creator. Click any point to view that model's details.</p>"
-        "</div></div>"
-        "<div class=\"timeline-filters filter-controls\">"
-        "  <div class=\"filter-item\"><label for=\"timeline-metric-filter\">Y-Axis Metric:</label>"
-        "    <select id=\"timeline-metric-filter\"></select></div>"
-        "  <div class=\"filter-item\"><label for=\"timeline-creator-filter\">Creator:</label>"
-        "    <select id=\"timeline-creator-filter\"></select></div>"
-        "  <div class=\"filter-item\"><label for=\"timeline-highlight-creator-filter\">Highlight Creator:</label>"
-        "    <select id=\"timeline-highlight-creator-filter\"></select></div>"
-        "</div>"
-        "<div class=\"chart-container\"><canvas id=\"timeline-chart-canvas\"></canvas></div>"
-        "</div></div>"
-    )
-    # Include Chart.js for this page only
-    timeline_foot = (
-        "\n<script src=\"https://cdn.jsdelivr.net/npm/chart.js@^4\"></script>\n"
-        "<script src=\"https://cdn.jsdelivr.net/npm/date-fns@^2\"></script>\n"
-        "<script src=\"https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@^3\"></script>\n"
-        + _page_foot(depth=0)
-    )
-    _write_file(os.path.join("timeline", "index.html"), timeline_head + timeline_body + timeline_foot)
+    _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))
 
 def main():
     print("Starting preprocessing...")

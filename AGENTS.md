@@ -32,7 +32,12 @@ capture only the top of the page.
   Run them after touching `script.js`, nav markup, or the table generator; add
   coverage for any behavior that has regressed before. Reuse `tests/conftest.py`
   fixtures (local site server, theme-slug discovery) instead of one-off setups.
-- When changing `script.js`, bump the `?N` cache-buster in `_page_foot` and regenerate.
+- When changing `script.js`, bump the `?N` cache-buster in `_page_foot` and
+  regenerate — including during local dev-cycle review, not just for deploys.
+  Browsers cache `script.js` across localhost sessions, so after a JS change
+  the user reviewing at the local server can silently get the stale script and
+  report features as broken (this has happened). Bump the buster (or tell them
+  to hard-refresh) before asking for review.
 
 ## Static Site & SEO
 - Served as a static site; pages are prerendered by `preprocess.py`.

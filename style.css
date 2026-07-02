@@ -1129,6 +1129,26 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 }
 
 /* --- Model Timeline View --- */
+.timeline-legend { display: flex; align-items: flex-start; gap: 12px; margin: 14px 0 4px; }
+.tl-legend-label { flex: none; padding-top: 5px; font-size: 0.82em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b; }
+.tl-chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+/* "Other labs" is a legend annotation, not a control: no chip chrome */
+.tl-chip.tl-swatch { cursor: default; border: none; background: none; padding: 5px 2px; color: #64748b; }
+.tl-chip.tl-swatch:hover { background: none; }
+.tl-chip.tl-clear { color: #9b3030; }
+.tl-chip[hidden] { display: none; }
+/* Clear keeps its slot when hidden so pinning never reflows the legend */
+.tl-chip.tl-clear[hidden] { display: inline-flex; visibility: hidden; }
+.tl-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 11px; border: 1px solid #d7dde5; border-radius: 999px;
+    background: #fff; cursor: pointer; font: inherit; font-size: 0.82em; color: #334155;
+}
+.tl-chip:hover { border-color: #94a3b8; background: #f8fafc; }
+/* Ring only — bolding text would change chip width and reflow the wrap */
+.tl-chip.pinned { border-color: #334155; box-shadow: inset 0 0 0 1px #334155; }
+.tl-chip .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
 .timeline-view-container { /* New rule for max-width and centering */
     max-width: 1200px;
     margin-left: auto;

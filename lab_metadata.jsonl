@@ -1,26 +1,26 @@
-{"lab":"alibaba","full_name":"Alibaba"}
-{"lab":"allenai","full_name":"Allen Institute for AI"}
-{"lab":"amazon","full_name":"Amazon"}
-{"lab":"anthropic","full_name":"Anthropic"}
-{"lab":"arcee-ai","full_name":"Arcee AI"}
-{"lab":"baidu","full_name":"Baidu"}
-{"lab":"bytedance","full_name":"ByteDance"}
-{"lab":"deepseek","full_name":"DeepSeek"}
-{"lab":"google","full_name":"Google DeepMind"}
-{"lab":"meituan","full_name":"Meituan"}
-{"lab":"meta-llama","full_name":"Meta (Llama)"}
-{"lab":"microsoft","full_name":"Microsoft"}
-{"lab":"minimax","full_name":"MiniMax"}
-{"lab":"mistralai","full_name":"Mistral AI"}
-{"lab":"moonshotai","full_name":"Moonshot AI"}
-{"lab":"nousresearch","full_name":"Nous Research"}
-{"lab":"nvidia","full_name":"NVIDIA"}
-{"lab":"openai","full_name":"OpenAI"}
-{"lab":"perplexity","full_name":"Perplexity"}
-{"lab":"prime-intellect","full_name":"Prime Intellect"}
-{"lab":"rekaai","full_name":"Reka AI"}
-{"lab":"thudm","full_name":"THUDM"}
-{"lab":"tngtech","full_name":"TNG Technology Consulting"}
-{"lab":"unknown","full_name":"Unknown"}
-{"lab":"x-ai","full_name":"xAI"}
-{"lab":"z-ai","full_name":"Zhipu AI"}
+{"lab": "alibaba", "full_name": "Alibaba", "color": "#a668dd"}
+{"lab": "allenai", "full_name": "Allen Institute for AI"}
+{"lab": "amazon", "full_name": "Amazon"}
+{"lab": "anthropic", "full_name": "Anthropic", "color": "#ad5228"}
+{"lab": "arcee-ai", "full_name": "Arcee AI"}
+{"lab": "baidu", "full_name": "Baidu"}
+{"lab": "bytedance", "full_name": "ByteDance"}
+{"lab": "deepseek", "full_name": "DeepSeek", "color": "#6ba6e8"}
+{"lab": "google", "full_name": "Google DeepMind", "color": "#2547b8"}
+{"lab": "meituan", "full_name": "Meituan"}
+{"lab": "meta-llama", "full_name": "Meta (Llama)"}
+{"lab": "microsoft", "full_name": "Microsoft"}
+{"lab": "minimax", "full_name": "MiniMax"}
+{"lab": "mistralai", "full_name": "Mistral AI", "color": "#ec8b00"}
+{"lab": "moonshotai", "full_name": "Moonshot AI", "color": "#45922f"}
+{"lab": "nousresearch", "full_name": "Nous Research"}
+{"lab": "nvidia", "full_name": "NVIDIA"}
+{"lab": "openai", "full_name": "OpenAI", "color": "#0793a8"}
+{"lab": "perplexity", "full_name": "Perplexity"}
+{"lab": "prime-intellect", "full_name": "Prime Intellect"}
+{"lab": "rekaai", "full_name": "Reka AI"}
+{"lab": "thudm", "full_name": "THUDM"}
+{"lab": "tngtech", "full_name": "TNG Technology Consulting"}
+{"lab": "unknown", "full_name": "Unknown"}
+{"lab": "x-ai", "full_name": "xAI", "color": "#2f3742"}
+{"lab": "z-ai", "full_name": "Zhipu AI", "color": "#d13a8b"}
