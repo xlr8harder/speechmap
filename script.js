@@ -19,6 +19,12 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       const id = decodeURIComponent(location.hash.slice(1));
       const el = document.getElementById(id);
       if (!el) return;
+      // Expand the target (and any collapsed ancestor groups) before
+      // measuring: a collapsed row near the end of the page has no room
+      // below it to scroll to the top.
+      let anc = el.parentElement;
+      while (anc) { if (anc.tagName === 'DETAILS' && !anc.open) anc.open = true; anc = anc.parentElement; }
+      if (el.tagName === 'DETAILS' && !el.open) el.open = true;
       const r = el.getBoundingClientRect();
       // If not near the top of the viewport, re-scroll to align
       const nearTopBand = 80; // px
@@ -163,6 +169,18 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
 
   function initDataTables(){
     document.querySelectorAll('.data-table-block').forEach(setupDataTable);
+  }
+
+  // Theme pages: legacy #model-<id> deep links redirect to the pair page.
+  function initPairRedirect(){
+    const cols = document.querySelector('.verdict-columns[data-pair-base]');
+    if (!cols) return false;
+    if (/^#model-/.test(location.hash)) {
+      const slug = decodeURIComponent(location.hash.slice(1)).replace(/^model-/, '');
+      location.replace(cols.dataset.pairBase + slug + '/');
+      return true;
+    }
+    return false;
   }
 
   const TL_OTHER_COLOR = '#b0b7c3';
@@ -399,6 +417,11 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
   window.speechmapHydrate = function(){
     // Set up anchor fix on all pages; it runs only when a model hash exists
     setupAnchorFix();
+    if (initPairRedirect()) return;
+    if (!window.__pairRedirectWired) {
+      window.__pairRedirectWired = 1;
+      window.addEventListener('hashchange', initPairRedirect);
+    }
     initDataTables();
     if(atPath(/^\/timeline\/$/)) { hydrateTimeline(); return; }
   };

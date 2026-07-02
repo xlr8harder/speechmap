@@ -27,17 +27,21 @@ def test_tab_click_navigates(page, site_url, label, path):
     assert active.inner_text().strip() == label
 
 
-def test_model_anchor_lands_near_top(page, site_url, a_theme_slug):
-    """Deep link with #model-... should end up focused near the viewport top."""
+def test_theme_page_has_outcome_columns(page, site_url, a_theme_slug):
     page.goto(f"{site_url}/themes/{a_theme_slug}/")
-    anchor_id = page.evaluate(
-        "() => { const el = document.querySelector('[id^=model-]'); return el ? el.id : null; }"
+    cols = page.locator(".verdict-columns .vg-col")
+    assert cols.count() >= 2
+    href = page.locator(".verdict-columns a.mchip").first.get_attribute("href")
+    assert f"/themes/{a_theme_slug}/m/" in href
+
+
+def test_legacy_model_anchor_redirects_to_pair_page(page, site_url, a_theme_slug):
+    """Old deep links (/themes/<t>/#model-<id>) must land on the pair URL."""
+    page.goto(f"{site_url}/themes/{a_theme_slug}/")
+    chip_id = page.evaluate(
+        "() => { const e = document.querySelectorAll('a.mchip[id^=model-]');"
+        " return e[e.length - 1].id; }"
     )
-    assert anchor_id, "theme page has no model anchors"
-    page.goto(f"{site_url}/themes/{a_theme_slug}/#{anchor_id}")
-    page.wait_for_load_state("load")
-    page.wait_for_timeout(400)  # script.js re-anchors at 0ms and 250ms after load
-    top = page.evaluate(
-        "id => document.getElementById(id).getBoundingClientRect().top", anchor_id
-    )
-    assert -2 <= top <= 120, f"anchor {anchor_id} at viewport offset {top}"
+    slug = chip_id.removeprefix("model-")
+    page.goto(f"{site_url}/themes/{a_theme_slug}/#{chip_id}")
+    page.wait_for_url(f"**/themes/{a_theme_slug}/m/{slug}/", timeout=5000)

@@ -1,0 +1,11 @@
+{
+  "name": "speechmap-site",
+  "private": true,
+  "description": "Dev tooling for local preview (wrangler emulates Cloudflare Pages incl. the pair-page Function)",
+  "devDependencies": {
+    "wrangler": "^4.107.0"
+  },
+  "scripts": {
+    "dev": "wrangler pages dev . --port 8789"
+  }
+}

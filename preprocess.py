@@ -270,9 +270,11 @@ def preprocess_us_hard_data(analysis_dir):
                         judge_analysis = rec.get("raw_judge_response")
                         judge_model = rec.get("judge_model")
                         timestamp = rec.get("timestamp")
-                        # Extract new fields for potential use later or reporting
-                        #api_model = rec.get("api_model")
-                        #original_api_provider = rec.get("original_api_provider")
+                        # Real upstream identifiers: used to build working
+                        # "try it" links (canonical names like *-reasoning are
+                        # SpeechMap constructs, not valid API slugs).
+                        api_model = rec.get("api_model")
+                        api_provider = rec.get("api_provider") or rec.get("original_api_provider")
 
                         if not model:
                             error_count += 1
@@ -371,6 +373,8 @@ def preprocess_us_hard_data(analysis_dir):
                                 "sub_topic_key": sub_topic_key,
                                 "variation": variation,
                                 "grouping_key": grouping_key,
+                                "api_model": api_model,
+                                "api_provider": api_provider,
                             }
                         )
                         processed_count += 1
@@ -1031,7 +1035,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None, description=None)
 <meta property=\"og:url\" content=\"{_html_escape(canonical_url)}\">
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
-<link href=\"/style.css?23\" rel=\"stylesheet\">
+<link href=\"/style.css?26\" rel=\"stylesheet\">
 {CLOUDFLARE_ANALYTICS_SNIPPET}
 </head><body>
 <div class=\"top-nav-wrapper\">
@@ -1053,7 +1057,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None, description=None)
 
 def _page_foot(depth=0):
     return (
-        f"\n<script src=\"/script.js?20\"></script>\n"
+        f"\n<script src=\"/script.js?22\"></script>\n"
         + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
         + "</div></body></html>"
     )
@@ -1537,16 +1541,17 @@ def render_models_index(model_summary):
     canon = f"{SITE_BASE_URL}/models/"
     depth = 1
     table_html = _model_table_html(model_summary)
-    table = """
+    prompt_count = max((int(m.get("num_responses") or 0) for m in model_summary), default=0)
+    table = f"""
 <div class=\"leaderboard-hero\">
   <h1>Model Results</h1>
-  <p class=\"hero-subtitle\">Compare how AI models handle controversial and sensitive requests</p>
+  <p class=\"hero-subtitle\">Refusal rates for every model release from every major provider</p>
 </div>
 <div class=\"leaderboard-content\">
   <div class=\"leaderboard-intro\">
     <div class=\"intro-main\">
-      <p>Each model is tested against hundreds of sensitive prompts. Higher <b>Complete</b> scores mean the model engages more directly. Click any model to explore its per-theme breakdown and example responses.</p>
-      <p class=\"column-legend\"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
+      <p>Every model below faced the same {prompt_count:,} sensitive and controversial prompts. <b>% Complete</b> is the share it answered in full \u2014 the bar shows the full outcome mix. Click a model for its per-theme breakdown, or use the filter to compare labs and model families.</p>
+      <p class=\"column-legend\"><b>Complete:</b> fully answered · <b>Evasive:</b> hedged or redirected · <b>Denial:</b> refused · <b>Error:</b> blocked by the provider</p>
     </div>
   </div>
 """ + table_html + "\n</div>\n"
@@ -1634,7 +1639,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
         items.append((key, s.get("domain") or "N/A", c, pct_c, s))
     items.sort(key=lambda x: x[0])  # Sort by theme name ascending
     for key, dom, c, pct_c, s in items:
-        theme_link = f"../../themes/{generate_safe_id(key)}/#model-{generate_safe_id(model_id)}"
+        theme_link = f"/themes/{generate_safe_id(key)}/m/{generate_safe_id(model_id)}/"
         pcts = {
             "complete": pct_c,
             "evasive": (s.get('e', 0) / c * 100) if c > 0 else 0,
@@ -1716,16 +1721,18 @@ def render_themes_index(theme_summary_all):
             f'<td class="td-bar">{_verdict_bar_html(pcts)}</td>'
             f"</tr>"
         )
-    header_html = """
+    n_themes = len(theme_summary_all or [])
+    n_domains = len({t.get("domain") for t in (theme_summary_all or []) if t.get("domain")})
+    header_html = f"""
 <div class=\"leaderboard-hero\">
   <h1>Question Themes</h1>
-  <p class=\"hero-subtitle\">Explore how models respond to different categories of sensitive prompts</p>
+  <p class=\"hero-subtitle\">What models will answer, topic by topic</p>
 </div>
 <div class=\"leaderboard-content\">
   <div class=\"leaderboard-intro\">
     <div class=\"intro-main\">
-      <p>Each theme groups related prompts that test a specific type of sensitive content. Higher <b>Complete</b> scores mean models engage more directly with that topic. Click any theme to see the specific prompts and model responses.</p>
-      <p class=\"column-legend\"><b>Complete:</b> fully answered · <b>Evasive:</b> partial or redirected · <b>Denial:</b> refused · <b>Error:</b> API block</p>
+      <p>SpeechMap\u2019s question set is organized into {n_themes} themes across {n_domains} domains \u2014 each theme is one underlying request, asked several ways. The table starts with the most-refused themes; click any theme for its exact prompts and every model\u2019s responses.</p>
+      <p class=\"column-legend\"><b>Complete:</b> fully answered · <b>Evasive:</b> hedged or redirected · <b>Denial:</b> refused · <b>Error:</b> blocked by the provider</p>
     </div>
   </div>
 """
@@ -2163,13 +2170,195 @@ def _theme_sample_from_records(records, limit=THEME_SAMPLE_LIMIT):
     return sample
 
 
-def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
-    title = f"Theme: {theme_key}"
-    canon = f"{SITE_BASE_URL}/themes/{generate_safe_id(theme_key)}/"
-    depth = 2
-    head = _page_head(title, canon, depth=depth, active_tab='themes')
+THEME_SHARD_COUNT = 8
+THEME_SHARDS_DIR = os.path.join("data", "theme-shards")
+PAIR_TEMPLATE_FILE = os.path.join("data", "pair-template.html")
 
-    # Hero header
+
+def _fnv1a(s):
+    """FNV-1a 32-bit — trivially portable to the Pages Function in JS."""
+    h = 0x811C9DC5
+    for b in s.encode("utf-8"):
+        h ^= b
+        h = (h * 0x01000193) & 0xFFFFFFFF
+    return h
+
+
+def _theme_shard_of(model_safe_id):
+    return _fnv1a(model_safe_id) % THEME_SHARD_COUNT
+
+
+def _render_response_cards(theme_safe, model, records):
+    """HTML fragment for one model's responses on one theme. Stored in the
+    theme shards; injected client-side on the theme page and server-side by
+    the pair-page Pages Function."""
+    safe = generate_safe_id(model)
+    arr = sorted(records, key=lambda r: int(r.get("variation") or 0))
+    out = [
+        '<div class="model-expanded-actions">'
+        f'<a href="/themes/{theme_safe}/m/{safe}/">Permalink →</a>'
+        f'<span class="mea-sep">·</span>'
+        f'<a href="/models/{safe}/">All results for {_html_escape(model)} →</a>'
+        "</div>"
+    ]
+    for r in arr:
+        comp = r.get("compliance") or ""
+        q = r.get("question_text") or ""
+        response_text = r.get("response_text") or ""
+        ans = md_to_html(response_text)
+        jtxt = _html_escape(r.get("judge_analysis") or "")
+        var = r.get("variation") or ""
+        moderation_reason = r.get("original_moderation_reason")
+        moderation_note_html = ""
+        if moderation_reason:
+            reason = _html_escape(str(moderation_reason))
+            if response_text:
+                note = (
+                    "Provider moderation stopped this response "
+                    f"({reason}). Any model response shown below may be partial."
+                )
+            else:
+                note = (
+                    "Provider moderation stopped this response "
+                    f"({reason}). No model response text was returned."
+                )
+            moderation_note_html = f'<div class="moderation-note">{note}</div>'
+        api_provider = (r.get("api_provider") or "").strip().lower()
+        has_api_fields = "api_provider" in r
+        or_slug = r.get("api_model") if has_api_fields else r.get("model")
+        show_openrouter = bool(or_slug) and (not has_api_fields or "openrouter" in api_provider)
+        openrouter_html = ""
+        if show_openrouter:
+            openrouter = f"https://openrouter.ai/chat?models={quote_plus(or_slug or '')}&message={quote_plus(q)}"
+            openrouter_html = (
+                '<div class="detail-section action-section">'
+                f'<a class="openrouter-link" href="{_html_escape(openrouter)}" target="_blank" rel="noopener noreferrer">'
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+                '<path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>'
+                '<polyline points="15 3 21 3 21 9"/>'
+                '<line x1="10" y1="14" x2="21" y2="3"/>'
+                "</svg>"
+                "<span>Try on OpenRouter →</span>"
+                "</a></div>"
+            )
+        out.append(
+            '<div class="response-card-nested">'
+            f'<div class="response-header nested-header"><strong>Variation {_html_escape(var)}</strong> · '
+            f'<span class="compliance-label compliance-{_html_escape(comp)}">{_html_escape(comp)}</span></div>'
+            '<div class="response-content-area nested-content">'
+            f"{moderation_note_html}"
+            f'<div class="detail-section"><strong>Prompt:</strong><pre class="text-display prompt-inline">{_html_escape(q)}</pre></div>'
+            f'<div class="detail-section"><strong>Model Response:</strong><div class="text-display markdown-content">{ans}</div></div>'
+            f'<div class="detail-section"><strong>Judge Analysis:</strong><pre class="text-display">{jtxt}</pre></div>'
+            f"{openrouter_html}"
+            "</div></div>"
+        )
+    return "".join(out)
+
+
+def _verdict_bucket(records):
+    comps = [r.get("compliance") for r in records]
+    if comps and all(c == "COMPLETE" for c in comps):
+        return 0
+    if comps and all(c == "DENIAL" for c in comps):
+        return 2
+    if comps and all(c == "ERROR" for c in comps):
+        return 3
+    return 1
+
+
+WHY_WE_TEST_HTML = (
+    '<div class="context-note">'
+    "<b><a href=\"/\">SpeechMap.AI</a></b> is a public research project that maps the "
+    "boundaries of AI speech. Every major model is asked the same sensitive and "
+    "controversial questions \u2014 some deliberately provocative \u2014 and we publish "
+    "what each answers, hedges, or refuses, so models can be compared and changes "
+    "tracked over time."
+    "</div>"
+)
+
+
+VERDICT_SYMBOLS = {
+    "COMPLETE": "\u2713",  # check
+    "EVASIVE": "~",
+    "DENIAL": "\u2715",   # cross
+    "ERROR": "!",
+}
+
+
+VERDICT_BUCKETS = (
+    ("Answered everything", "All prompt variations answered completely."),
+    ("Mixed responses", "Some variations answered, others hedged or refused."),
+    ("Refused everything", "All prompt variations denied."),
+    ("Errors only", "No scoreable responses (API blocks or failures)."),
+)
+
+
+def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
+    """Static theme page: prompts, stats, and models grouped by outcome in
+    collapsible sections. Response bodies live in shard files (written here
+    too) and are lazy-loaded on expand / served by the pair-page Function."""
+    theme_safe = generate_safe_id(theme_key)
+    title = f"Theme: {theme_key}"
+    canon = f"{SITE_BASE_URL}/themes/{theme_safe}/"
+    depth = 2
+
+    groups = {}
+    for r in sample_records or []:
+        m = r.get("model") or "Unknown"
+        groups.setdefault(m, []).append(r)
+
+    # --- Shards + per-theme meta (assets for lazy-load and the Function) ---
+    os.makedirs(THEME_SHARDS_DIR, exist_ok=True)
+    shards = [dict() for _ in range(THEME_SHARD_COUNT)]
+    for m, arr in groups.items():
+        safe = generate_safe_id(m)
+        shards[_theme_shard_of(safe)][safe] = {
+            "m": m,
+            "html": _render_response_cards(theme_safe, m, arr),
+        }
+    for k, shard in enumerate(shards):
+        with open(os.path.join(THEME_SHARDS_DIR, f"{theme_safe}.{k}.json"), "w", encoding="utf-8") as f:
+            json.dump(shard, f, ensure_ascii=False)
+    with open(os.path.join(THEME_SHARDS_DIR, f"{theme_safe}.meta.json"), "w", encoding="utf-8") as f:
+        json.dump(
+            {"theme": theme_key, "domain": domain or "N/A", "shards": THEME_SHARD_COUNT},
+            f,
+            ensure_ascii=False,
+        )
+
+    # --- Prompts + stats ---
+    prompts_seen = {}
+    for r in sample_records or []:
+        var = r.get("variation") or "1"
+        if r.get("question_text") and var not in prompts_seen:
+            prompts_seen[var] = r["question_text"]
+    prompts_html = '<div class="theme-prompts"><h3>Prompts Used</h3>'
+    if prompts_seen:
+        for var in sorted(prompts_seen.keys(), key=lambda x: int(x) if x.isdigit() else 0):
+            prompts_html += (
+                f'<div class="prompt-item"><span class="prompt-label">Variation {_html_escape(var)}:</span>'
+                f'<pre class="prompt-text">{_html_escape(prompts_seen[var])}</pre></div>'
+            )
+    else:
+        prompts_html += "<p>No prompts available.</p>"
+    prompts_html += "</div>"
+
+    total_responses = len(sample_records or [])
+    total_models = len(groups)
+    counts = {c: sum(1 for r in (sample_records or []) if r.get("compliance") == c) for c in ("COMPLETE", "EVASIVE", "DENIAL", "ERROR")}
+    pct_complete = (counts["COMPLETE"] / total_responses * 100) if total_responses else 0
+    pct_evasive = (counts["EVASIVE"] / total_responses * 100) if total_responses else 0
+    pct_denial = (counts["DENIAL"] / total_responses * 100) if total_responses else 0
+    pct_error = (counts["ERROR"] / total_responses * 100) if total_responses else 0
+
+    n_vars = len(prompts_seen) or 4
+    lede = (
+        f"This is one of SpeechMap\u2019s {_html_escape(domain or '')} themes: {n_vars} variations "
+        f"of one underlying request, put to {total_models} AI models. Below are the exact "
+        f"prompts, the overall outcome, and every model grouped by how it responded \u2014 "
+        f"click any model for its full responses and judge analysis."
+    )
     hero_html = f"""
 <div class="leaderboard-hero">
   <h1>{_html_escape(theme_key)}</h1>
@@ -2177,42 +2366,9 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
 </div>
 <div class="leaderboard-content">
 <p class="back-link"><a href="../">← Back to Themes</a></p>
+<p class="lab-lede">{lede}</p>
+{WHY_WE_TEST_HTML}
 """
-
-    # Build per-model groups from provided sample_records
-    groups = {}
-    for r in sample_records or []:
-        m = r.get("model") or "Unknown"
-        groups.setdefault(m, []).append(r)
-
-    # Extract unique prompts used for this theme
-    prompts_seen = {}
-    for r in sample_records or []:
-        q = r.get("question_text") or ""
-        var = r.get("variation") or "1"
-        if q and var not in prompts_seen:
-            prompts_seen[var] = q
-
-    prompts_html = "<div class=\"theme-prompts\"><h3>Prompts Used</h3>"
-    if prompts_seen:
-        for var in sorted(prompts_seen.keys(), key=lambda x: int(x) if x.isdigit() else 0):
-            prompts_html += f"<div class=\"prompt-item\"><span class=\"prompt-label\">Variation {_html_escape(var)}:</span><pre class=\"prompt-text\">{_html_escape(prompts_seen[var])}</pre></div>"
-    else:
-        prompts_html += "<p>No prompts available.</p>"
-    prompts_html += "</div>"
-
-    # Overall compliance stats
-    total_responses = len(sample_records or [])
-    total_models = len(groups)
-    complete_count = sum(1 for r in (sample_records or []) if r.get("compliance") == "COMPLETE")
-    evasive_count = sum(1 for r in (sample_records or []) if r.get("compliance") == "EVASIVE")
-    denial_count = sum(1 for r in (sample_records or []) if r.get("compliance") == "DENIAL")
-    error_count = sum(1 for r in (sample_records or []) if r.get("compliance") == "ERROR")
-
-    pct_complete = (complete_count / total_responses * 100) if total_responses > 0 else 0
-    pct_evasive = (evasive_count / total_responses * 100) if total_responses > 0 else 0
-    pct_denial = (denial_count / total_responses * 100) if total_responses > 0 else 0
-    pct_error = (error_count / total_responses * 100) if total_responses > 0 else 0
 
     stats_html = f"""
 <div class="theme-stats">
@@ -2229,94 +2385,69 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
 </div>
 """
 
-    # Expand/Collapse all button
+    # --- Models in outcome columns; chips link to per-model pair pages ---
+    bucketed = [[] for _ in VERDICT_BUCKETS]
+    for m in sorted(groups):
+        bucketed[_verdict_bucket(groups[m])].append(m)
+
+    columns = []
+    for bi, (btitle, bdesc) in enumerate(VERDICT_BUCKETS):
+        models = bucketed[bi]
+        if not models:
+            continue
+        chips = []
+        for m in models:
+            safe = generate_safe_id(m)
+            arr = sorted(groups[m], key=lambda r: int(r.get("variation") or 0))
+            badges = "".join(
+                f'<span class="compliance-badge badge-{(r.get("compliance") or "unknown").lower()}" '
+                f'title="Variation {_html_escape(r.get("variation") or "")}: {_html_escape((r.get("compliance") or "UNKNOWN").title())}">'
+                f'{VERDICT_SYMBOLS.get(r.get("compliance"), "?")}</span>'
+                for r in arr
+            )
+            chips.append(
+                f'<a class="mchip" id="model-{safe}" href="/themes/{theme_safe}/m/{safe}/">'
+                f'<span class="mchip-name">{_html_escape(m)}</span>'
+                f'<span class="model-badges">{badges}</span></a>'
+            )
+        columns.append(
+            f'<section class="vg-col vg-col-{bi}"><h3 class="vg-title">{btitle} <span class="vg-count">{len(models)}</span></h3>'
+            f'<p class="vg-desc">{bdesc}</p><div class="vg-chips">' + "".join(chips) + "</div></section>"
+        )
+
     controls_html = """
 <div class="model-responses-header">
   <h3>Model Responses</h3>
-  <div class="expand-controls">
-    <button onclick="document.querySelectorAll('.model-details').forEach(d=>d.open=true)" class="expand-btn">Expand All</button>
-    <button onclick="document.querySelectorAll('.model-details').forEach(d=>d.open=false)" class="expand-btn">Collapse All</button>
-  </div>
+  <p class="module-blurb">Click any model for its full responses and judge analysis on this theme.</p>
 </div>
 """
 
-    # Grouped responses by model - now using collapsible details
-    sections = []
-    for m in sorted(groups.keys()):
-        safe = generate_safe_id(m)
-        arr = sorted(groups[m], key=lambda r: int(r.get("variation") or 0))
-
-        # Build compliance badges for each variation
-        badges_html = ""
-        for r in arr:
-            comp = r.get("compliance") or "UNKNOWN"
-            badges_html += f'<span class="compliance-badge badge-{comp.lower()}">{comp[0]}</span>'
-
-        cards = []
-        for r in arr:
-            comp = r.get("compliance") or ""
-            q = r.get("question_text") or ""
-            response_text = r.get("response_text") or ""
-            ans = md_to_html(response_text)
-            jtxt = _html_escape(r.get("judge_analysis") or "")
-            var = r.get("variation") or ""
-            moderation_reason = r.get("original_moderation_reason")
-            moderation_note_html = ""
-            if moderation_reason:
-                reason = _html_escape(str(moderation_reason))
-                if response_text:
-                    note = (
-                        "Provider moderation stopped this response "
-                        f"({reason}). Any model response shown below may be partial."
-                    )
-                else:
-                    note = (
-                        "Provider moderation stopped this response "
-                        f"({reason}). No model response text was returned."
-                    )
-                moderation_note_html = f'<div class="moderation-note">{note}</div>'
-            openrouter = f"https://openrouter.ai/chat?models={quote_plus(r.get('model') or '')}&message={quote_plus(q)}"
-            cards.append(
-                f"""
-<div class="response-card-nested">
-  <div class="response-header nested-header"><strong>Variation {_html_escape(var)}</strong> · <span class="compliance-label compliance-{_html_escape(comp)}">{_html_escape(comp)}</span></div>
-  <div class="response-content-area nested-content">
-    {moderation_note_html}
-    <div class="detail-section"><strong>Model Response:</strong><div class="text-display markdown-content">{ans}</div></div>
-    <div class="detail-section"><strong>Judge Analysis:</strong><pre class="text-display">{jtxt}</pre></div>
-    <div class="detail-section action-section">
-      <a class="openrouter-link" href="{_html_escape(openrouter)}" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-          <polyline points="15 3 21 3 21 9"/>
-          <line x1="10" y1="14" x2="21" y2="3"/>
-        </svg>
-        <span>Try on OpenRouter →</span>
-      </a>
-    </div>
-  </div>
-</div>
-"""
-            )
-
-        model_link = f"/models/{safe}/"
-        cards_html = "".join(cards)
-        sections.append(
-            f"""<details class="model-details" id="model-{safe}">
-  <summary class="model-summary">
-    <span class="model-name"><a href="{model_link}">{_html_escape(m)}</a></span>
-    <span class="model-badges">{badges_html}</span>
-  </summary>
-  <div class="model-responses">
-{cards_html}
-  </div>
-</details>"""
-        )
-
-    body_html = hero_html + prompts_html + stats_html + controls_html + "<div class=\"response-list\">" + "\n".join(sections) + "</div></div>"
+    body_html = (
+        hero_html
+        + prompts_html
+        + stats_html
+        + controls_html
+        + f'<div class="verdict-columns" data-pair-base="/themes/{theme_safe}/m/">'
+        + "".join(columns)
+        + "</div></div>"
+    )
+    head = _page_head(title, canon, depth=depth, active_tab='themes')
     return head + body_html + _page_foot(depth=depth)
 
 
+def write_pair_template():
+    """Chrome template the pair-page Pages Function fills in. Generated with
+    the real page head/foot so the Function never duplicates site chrome."""
+    head = _page_head("__TITLE__", "__CANONICAL__", depth=2, active_tab='themes', description="__DESC__")
+    body = (
+        '<div class="leaderboard-hero"><h1>__MODEL__</h1><p class="hero-subtitle">__THEME__ · __DOMAIN__</p></div>'
+        '<div class="leaderboard-content">'
+        '<p class="back-link"><a href="/themes/__THEME_SAFE__/">← All models on this theme</a></p>'
+        + WHY_WE_TEST_HTML +
+        '<div class="response-list pair-page">__CARDS__</div>'
+        "</div>"
+    )
+    _write_file(PAIR_TEMPLATE_FILE, head + body + _page_foot(depth=2))
 def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, lab_metadata=None, include_theme_pages=True):
     # Models index
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
@@ -2366,6 +2497,7 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
 
     # Timeline static shell (Chart hydration allowed to load data/*)
     _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))
+    write_pair_template()
 
 
 def generate_sitemap_and_robots(model_summary, theme_keys, lab_keys=None):
@@ -2616,6 +2748,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
 
     # Timeline static shell (Chart hydration allowed to load data/*)
     _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))
+    write_pair_template()
 
 def main():
     print("Starting preprocessing...")
