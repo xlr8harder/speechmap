@@ -45,6 +45,25 @@ COMPLIANCE_ORDER = ["COMPLETE", "EVASIVE", "DENIAL", "ERROR", "UNKNOWN"]
 ID_REGEX = re.compile(r"^(.*?)(\d)$")
 ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
 JUDGE_ANALYSIS_FOR_ERROR = "N/A (Response was an ERROR)"
+JUDGE_ANALYSIS_FOR_ORIGINAL_MODERATION = "N/A (Original response was stopped by provider moderation/classifier)"
+MODERATION_ERROR_TEXT_RE = re.compile(
+    r"("
+    r"usage policy|"
+    r"requires moderation|"
+    r"input was flagged|"
+    r"prompt was flagged|"
+    r"output data may contain inappropriate content|"
+    r"input data may contain inappropriate content|"
+    r"data_inspection_failed|"
+    r"prohibited_content|"
+    r"content[_ -]?filter|"
+    r"safety policy|"
+    r"policy violation|"
+    r"blocked by (?:safety|moderation)|"
+    r"\bmoderation\b"
+    r")",
+    re.IGNORECASE,
+)
 LAB_STANDINGS_WINDOW_MONTHS = 6
 LAB_STANDINGS_HALFLIFE_MONTHS = 3
 # Derived EMA alpha so weight halves every LAB_STANDINGS_HALFLIFE_MONTHS buckets
@@ -121,6 +140,59 @@ def split_model_metadata(metadata_dict):
         else:
             included[model_id] = meta
     return included, skipped
+
+
+def collect_strings(value):
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, dict):
+        strings = []
+        for nested in value.values():
+            strings.extend(collect_strings(nested))
+        return strings
+    if isinstance(value, list):
+        strings = []
+        for nested in value:
+            strings.extend(collect_strings(nested))
+        return strings
+    return []
+
+
+def original_moderation_reason(response_obj):
+    """Return provider moderation/classifier stop reason from a stored response."""
+    if not isinstance(response_obj, dict):
+        return None
+
+    stop_reason = response_obj.get("stop_reason")
+    if stop_reason in {"content_filter", "refusal"}:
+        return stop_reason
+
+    top_error = response_obj.get("error")
+    if isinstance(top_error, dict) and top_error.get("type") == "content_filter":
+        return "content_filter"
+    if any(MODERATION_ERROR_TEXT_RE.search(text) for text in collect_strings(top_error)):
+        return "moderation_error_text"
+
+    choices = response_obj.get("choices")
+    if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
+        return None
+
+    choice = choices[0]
+    finish_reason = choice.get("finish_reason")
+    if finish_reason in {"content_filter", "refusal"}:
+        return finish_reason
+
+    native_finish_reason = choice.get("native_finish_reason")
+    if native_finish_reason in {"content_filter", "refusal"}:
+        return native_finish_reason
+
+    choice_error = choice.get("error")
+    if isinstance(choice_error, dict) and choice_error.get("type") == "content_filter":
+        return "content_filter"
+    if any(MODERATION_ERROR_TEXT_RE.search(text) for text in collect_strings(choice_error)):
+        return "moderation_error_text"
+
+    return None
 
 
 def load_lab_metadata(filepath):
@@ -229,6 +301,13 @@ def preprocess_us_hard_data(analysis_dir):
                         error_message = None
                         is_partial_response = False
                         response_obj = rec.get("response")
+                        moderation_reason = original_moderation_reason(response_obj)
+                        if moderation_reason:
+                            compliance = "ERROR_ORIGINAL_MODERATION"
+                            judge_analysis = (
+                                f"{JUDGE_ANALYSIS_FOR_ORIGINAL_MODERATION} "
+                                f"({moderation_reason})"
+                            )
 
                         if compliance.startswith("ERROR"):
                             compliance = "ERROR"
@@ -283,6 +362,7 @@ def preprocess_us_hard_data(analysis_dir):
                                 "judge_model": judge_model,
                                 "error_message": error_message,
                                 "is_partial_response": is_partial_response,
+                                "original_moderation_reason": moderation_reason,
                                 "original_question_id": original_question_id,
                                 "question_text": question_text,
                                 "domain": domain,
@@ -1414,15 +1494,32 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
         for r in arr:
             comp = r.get("compliance") or ""
             q = r.get("question_text") or ""
-            ans = md_to_html(r.get("response_text") or "")
+            response_text = r.get("response_text") or ""
+            ans = md_to_html(response_text)
             jtxt = _html_escape(r.get("judge_analysis") or "")
             var = r.get("variation") or ""
+            moderation_reason = r.get("original_moderation_reason")
+            moderation_note_html = ""
+            if moderation_reason:
+                reason = _html_escape(str(moderation_reason))
+                if response_text:
+                    note = (
+                        "Provider moderation stopped this response "
+                        f"({reason}). Any model response shown below may be partial."
+                    )
+                else:
+                    note = (
+                        "Provider moderation stopped this response "
+                        f"({reason}). No model response text was returned."
+                    )
+                moderation_note_html = f'<div class="moderation-note">{note}</div>'
             openrouter = f"https://openrouter.ai/chat?models={quote_plus(r.get('model') or '')}&message={quote_plus(q)}"
             cards.append(
                 f"""
 <div class="response-card-nested">
   <div class="response-header nested-header"><strong>Variation {_html_escape(var)}</strong> · <span class="compliance-label compliance-{_html_escape(comp)}">{_html_escape(comp)}</span></div>
   <div class="response-content-area nested-content">
+    {moderation_note_html}
     <div class="detail-section"><strong>Model Response:</strong><div class="text-display markdown-content">{ans}</div></div>
     <div class="detail-section"><strong>Judge Analysis:</strong><pre class="text-display">{jtxt}</pre></div>
     <div class="detail-section action-section">
