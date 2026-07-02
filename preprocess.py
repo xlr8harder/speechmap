@@ -2500,31 +2500,7 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
     write_pair_template()
 
 
-def generate_sitemap_and_robots(model_summary, theme_keys, lab_keys=None):
-    # Build sitemap.xml
-    today_iso = date.today().isoformat()
-    urls = []
-    # Base sections
-    urls.append((f"{SITE_BASE_URL}/", today_iso))
-    urls.append((f"{SITE_BASE_URL}/models/", today_iso))
-    urls.append((f"{SITE_BASE_URL}/themes/", today_iso))
-    urls.append((f"{SITE_BASE_URL}/labs/", today_iso))
-    urls.append((f"{SITE_BASE_URL}/timeline/", today_iso))
-    urls.append((f"{SITE_BASE_URL}/acknowledgments/", today_iso))
-    urls.append((f"{SITE_BASE_URL}/resources/", today_iso))
-    for lk in sorted(lab_keys or []):
-        urls.append((f"{SITE_BASE_URL}/labs/{generate_safe_id(lk)}/", today_iso))
-    # Model pages with release dates if available
-    for m in model_summary:
-        mid = m.get("model")
-        safe = generate_safe_id(mid)
-        lastmod = (m.get("release_date") or today_iso)
-        urls.append((f"{SITE_BASE_URL}/models/{safe}/", lastmod))
-    # Theme pages
-    for key in theme_keys:
-        safe = generate_safe_id(key)
-        urls.append((f"{SITE_BASE_URL}/themes/{safe}/", today_iso))
-    # Render XML
+def _write_urlset(filename, urls):
     body = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
             "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"]
     for loc, lm in urls:
@@ -2533,7 +2509,60 @@ def generate_sitemap_and_robots(model_summary, theme_keys, lab_keys=None):
         body.append(f"    <lastmod>{_html_escape(lm)}</lastmod>")
         body.append("  </url>")
     body.append("</urlset>\n")
-    _write_file("sitemap.xml", "\n".join(body))
+    _write_file(filename, "\n".join(body))
+
+
+SITEMAP_URLS_PER_FILE = 45000
+
+
+def generate_sitemap_and_robots(model_summary, theme_keys, lab_keys=None):
+    """sitemap.xml is an index: one core urlset (site + models + themes +
+    labs) plus chunked urlsets for the ~175k model×theme pair pages."""
+    today_iso = date.today().isoformat()
+
+    core = []
+    core.append((f"{SITE_BASE_URL}/", today_iso))
+    core.append((f"{SITE_BASE_URL}/models/", today_iso))
+    core.append((f"{SITE_BASE_URL}/themes/", today_iso))
+    core.append((f"{SITE_BASE_URL}/labs/", today_iso))
+    core.append((f"{SITE_BASE_URL}/timeline/", today_iso))
+    core.append((f"{SITE_BASE_URL}/acknowledgments/", today_iso))
+    core.append((f"{SITE_BASE_URL}/resources/", today_iso))
+    for lk in sorted(lab_keys or []):
+        core.append((f"{SITE_BASE_URL}/labs/{generate_safe_id(lk)}/", today_iso))
+    for m in model_summary:
+        safe = generate_safe_id(m.get("model"))
+        core.append((f"{SITE_BASE_URL}/models/{safe}/", m.get("release_date") or today_iso))
+    theme_safes = [generate_safe_id(key) for key in theme_keys]
+    for safe in theme_safes:
+        core.append((f"{SITE_BASE_URL}/themes/{safe}/", today_iso))
+    _write_urlset("sitemap-core.xml", core)
+
+    # Pair pages, chunked under the 50k-URL sitemap limit.
+    model_entries = [
+        (generate_safe_id(m.get("model")), m.get("release_date") or today_iso)
+        for m in model_summary
+    ]
+    pair_urls = [
+        (f"{SITE_BASE_URL}/themes/{t}/m/{msafe}/", lastmod)
+        for t in sorted(theme_safes)
+        for msafe, lastmod in model_entries
+    ]
+    pair_files = []
+    for i in range(0, len(pair_urls), SITEMAP_URLS_PER_FILE):
+        fname = f"sitemap-pairs-{i // SITEMAP_URLS_PER_FILE + 1}.xml"
+        _write_urlset(fname, pair_urls[i:i + SITEMAP_URLS_PER_FILE])
+        pair_files.append(fname)
+
+    index = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+             "<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"]
+    for fname in ["sitemap-core.xml"] + pair_files:
+        index.append("  <sitemap>")
+        index.append(f"    <loc>{SITE_BASE_URL}/{fname}</loc>")
+        index.append(f"    <lastmod>{today_iso}</lastmod>")
+        index.append("  </sitemap>")
+    index.append("</sitemapindex>\n")
+    _write_file("sitemap.xml", "\n".join(index))
 
     # robots.txt
     robots = f"User-agent: *\nAllow: /\nSitemap: {SITE_BASE_URL}/sitemap.xml\n"
