@@ -1037,7 +1037,6 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
     font-size: 0.9em;
 }
 .lab-leaderboard-table-wrap {
-    max-width: 1100px;
     margin-top: 12px;
     overflow-x: auto;
 }
@@ -1107,6 +1106,14 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 
 /* --- Lab leaderboard strip plots (models in window) --- */
 .spark-cell { width: 34%; min-width: 210px; }
+
+/* Off-the-leaderboard overflow table */
+.off-board { margin-top: 34px; }
+.off-board h3 { margin: 0 0 6px; }
+.off-board .module-blurb { margin: 0 0 14px; }
+.mix-cell { width: 30%; min-width: 180px; }
+.off-board-table .verdict-bar { height: 14px; }
+.off-board-table td.count { white-space: nowrap; }
 .stripplot { position: relative; display: block; height: 22px; }
 .stripplot::before {
     content: ''; position: absolute; left: 0; right: 0; top: 50%;
@@ -1190,6 +1197,15 @@ pre.text-display { white-space: pre-wrap; font-family: sans-serif; }
 /* Model page: performance-by-domain rows (verdict mix + delta vs median) */
 .domain-devs { margin-top: 4px; }
 .dev-row { cursor: pointer; }
+.dev-row-static { cursor: default; }
+.dev-row-static .dm-pct { flex: none; width: 56px; text-align: right; font-weight: 600; font-size: 0.88em; color: #0f172a; }
+.dev-row-static .dm-bar { flex: 1; min-width: 160px; }
+.dev-row-static .verdict-bar { height: 12px; }
+@media (max-width: 760px) {
+    .dev-row-static { flex-wrap: wrap; row-gap: 4px; }
+    .dev-row-static .dm-name { flex: 1 1 100%; }
+    .dev-row-static .dm-bar { min-width: 120px; }
+}
 .dev-row.active { background: #e8f1fb; }
 .dev-row .dm-pct, .dev-head .dm-pct { flex: none; width: 56px; text-align: right; font-weight: 600; font-size: 0.88em; color: #0f172a; }
 .dev-row .dm-bar, .dev-head .dm-bar { flex: 1; min-width: 160px; }
