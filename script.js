@@ -171,6 +171,75 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
     document.querySelectorAll('.data-table-block').forEach(setupDataTable);
   }
 
+  // Generic hover tooltips for [data-tip]: rendered position:fixed on body,
+  // so they escape scroll-container clipping (CSS ::after tooltips cannot).
+  function initTips(){
+    if (window.__tipsWired) return;
+    window.__tipsWired = 1;
+    let tip = null;
+    let anchor = null;
+    function hide(){ if (tip) { tip.remove(); tip = null; anchor = null; } }
+    document.addEventListener('mouseover', (e) => {
+      const t = e.target.closest('[data-tip]');
+      if (t === anchor) return;
+      hide();
+      if (!t) return;
+      anchor = t;
+      tip = document.createElement('div');
+      tip.className = 'tip-pop';
+      tip.textContent = t.dataset.tip;
+      document.body.appendChild(tip);
+      const r = t.getBoundingClientRect();
+      const left = Math.max(8, Math.min(r.left, window.innerWidth - tip.offsetWidth - 12));
+      let top = r.bottom + 8;
+      if (top + tip.offsetHeight > window.innerHeight - 8) top = r.top - tip.offsetHeight - 8;
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+    });
+    document.addEventListener('scroll', hide, true);
+  }
+
+  // Domain pages: light tab switcher (both panels stay in the DOM).
+  function initTabs(){
+    const bar = document.getElementById('domain-tabs');
+    if (!bar || bar.dataset.wired === '1') return;
+    bar.dataset.wired = '1';
+    function activate(name){
+      bar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+    }
+    bar.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activate(btn.dataset.tab);
+        history.replaceState(null, '', btn.dataset.tab === 'themes' ? location.pathname : '#' + btn.dataset.tab);
+      });
+    });
+    const want = location.hash.replace('#', '');
+    if (want && document.getElementById('tab-' + want)) activate(want);
+  }
+
+  // Model pages: clicking a domain deviation row filters the theme table.
+  function initDomainDevs(){
+    const devs = document.getElementById('domain-devs');
+    if (!devs || devs.dataset.wired === '1') return;
+    devs.dataset.wired = '1';
+    const filt = document.querySelector('.data-table-block input.table-filter');
+    if (!filt) return;
+    devs.querySelectorAll('.dev-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.dev-open')) return; // the ↗ link navigates
+        const active = row.classList.contains('active');
+        devs.querySelectorAll('.dev-row').forEach(r => r.classList.remove('active'));
+        filt.value = active ? '' : row.dataset.domain;
+        filt.dispatchEvent(new Event('input'));
+        if (!active) {
+          row.classList.add('active');
+          document.querySelector('.data-table-block').scrollIntoView({ block: 'start', behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
   // Theme pages: legacy #model-<id> deep links redirect to the pair page.
   function initPairRedirect(){
     const cols = document.querySelector('.verdict-columns[data-pair-base]');
@@ -422,7 +491,10 @@ async function fetchJSON(path){ const r = await fetch(path,{cache:'no-store'}); 
       window.__pairRedirectWired = 1;
       window.addEventListener('hashchange', initPairRedirect);
     }
+    initTips();
     initDataTables();
+    initDomainDevs();
+    initTabs();
     if(atPath(/^\/timeline\/$/)) { hydrateTimeline(); return; }
   };
 })();

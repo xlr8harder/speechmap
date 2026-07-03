@@ -45,3 +45,19 @@ def test_legacy_model_anchor_redirects_to_pair_page(page, site_url, a_theme_slug
     slug = chip_id.removeprefix("model-")
     page.goto(f"{site_url}/themes/{a_theme_slug}/#{chip_id}")
     page.wait_for_url(f"**/themes/{a_theme_slug}/m/{slug}/", timeout=5000)
+
+
+def test_domain_page_drilldown(page, site_url):
+    """Themes overview rows link to domain pages carrying both tables."""
+    page.goto(site_url + "/themes/")
+    first = page.locator("a.domain-row").first
+    href = first.get_attribute("href")
+    assert href.startswith("/domains/")
+    first.click()
+    page.wait_for_url(f"**{href}")
+    assert page.locator(".trend-figure svg").count() == 1  # domain score trajectory
+    # Themes tab active by default; models tab one click (or #models) away.
+    assert page.locator("#tab-themes.active .data-table-block").count() == 1
+    page.click('.tab-btn[data-tab="models"]')
+    assert page.locator("#tab-models.active .data-table-block").count() == 1
+    assert "#models" in page.url

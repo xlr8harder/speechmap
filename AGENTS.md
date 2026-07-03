@@ -52,6 +52,40 @@ capture only the top of the page.
   report features as broken (this has happened). Bump the buster (or tell them
   to hard-refresh) before asking for review.
 
+## Design Language (settled 2026-07; keep new work consistent)
+- **One blue.** `--link: #2d5a87` is the only accent: hyperlinks, data marks,
+  the wordmark's "Map". Meaning is carried by form, not hue — colored TEXT is
+  navigation, colored MARKS are data. Ink `#0f172a` for content, slate grays
+  for secondary. No second blue, ever.
+- **Verdict colors are reserved.** `--v-complete/-evasive/-denial/-error`
+  (validated for contrast + colorblind separation) mean outcomes and nothing
+  else. Compact badges use soft tints (light bg, dark colored text) with the
+  symbols ✓ ~ ✕ ! (never bare letters — E collided). Run new palettes through
+  a CVD/contrast validator before adding any color.
+- **Dot = one model.** In every strip plot, trajectory, and the timeline, a
+  dot is a model. Median = 3px tick with a 2px white halo (so it survives
+  dense stacks). Quantized stacks fan vertically beeswarm-style (symmetric
+  0,+3,-3,…), never index-cycled jitter (repeating lattice artifacts).
+- **Stacked verdict bar = outcome mix**, at every level (model rows, domains,
+  themes, overall). Segments use flex-grow with 2px gaps.
+- **Trajectory chart = change over time**: model dots + monthly-average EMA
+  (gap-aware, 3-month half-life — the Free Speech Index weighting) rendered
+  as build-time SVG. Used on front page, lab pages, domain pages.
+- **Tables are the shared `sm-table` component**: prerendered in default sort,
+  header-click sort + mobile toolbar, `/regex/` filter, `?filter=` deep links.
+  Columns must earn their space — near-constant columns become footnote
+  markers instead (e.g. † for the 4 models with missing responses).
+- **Page anatomy**: hero → back-link → lede (page-specific, real numbers) +
+  standing context note side-by-side (`.page-intro`) → signature visualization
+  → tabs/tables. Curiosity answered first, machinery below. Two big peer
+  tables on one page → tabs (both panels stay in the DOM).
+- **Copy voice**: factual and confident, never defensive or overtly political
+  (that's for the Substack). Chart captions always name what dot and tick
+  mean. Prefer computed figures over static claims.
+- **Timeline lab colors**: 9-lab tier via `color` in `lab_metadata.jsonl`,
+  everyone else gray; ad-hoc highlights draw from a validated 3-color
+  fallback. Prefer interaction (hover/pin) over adding hues.
+
 ## Static Site & SEO
 - Served as a static site; pages are prerendered by `preprocess.py`.
 - Prefer prerender + light hydration; avoid fully client-rendered views for SEO.

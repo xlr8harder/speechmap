@@ -1035,7 +1035,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None, description=None)
 <meta property=\"og:url\" content=\"{_html_escape(canonical_url)}\">
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
-<link href=\"/style.css?26\" rel=\"stylesheet\">
+<link href=\"/style.css?48\" rel=\"stylesheet\">
 {CLOUDFLARE_ANALYTICS_SNIPPET}
 </head><body>
 <div class=\"top-nav-wrapper\">
@@ -1057,7 +1057,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None, description=None)
 
 def _page_foot(depth=0):
     return (
-        f"\n<script src=\"/script.js?22\"></script>\n"
+        f"\n<script src=\"/script.js?27\"></script>\n"
         + "<script>try{ window.speechmapHydrate && window.speechmapHydrate(); }catch(e){}</script>\n"
         + "</div></body></html>"
     )
@@ -1321,12 +1321,12 @@ def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata
             name = lab_display_name(lab, lab_metadata)
             score = float(s.get("consistency") or 0.0)
             standings_rows.append(
-                f'<div class="mini-standing">'
+                f'<a class="mini-standing" href="/labs/{generate_safe_id(lab)}/">'
                 f'<span class="ms-rank">#{i + 1}</span>'
                 f'<span class="ms-name">{_html_escape(name)}</span>'
                 f'<span class="ms-bar"><i style="width:{min(100.0, max(0.0, score)):.1f}%"></i></span>'
                 f'<span class="ms-score">{score:.1f}</span>'
-                f"</div>"
+                f"</a>"
             )
     except Exception:
         standings_rows = []
@@ -1487,15 +1487,24 @@ def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata
     return head + body + _page_foot(depth=0)
 
 
-def _model_table_html(model_summary, filter_placeholder="Filter models… (supports /regex/)"):
-    """Sortable/filterable model table (shared by the models index and the
-    per-lab pages). Rows are prerendered sorted by release date desc."""
+def _model_table_html(model_summary, filter_placeholder="Filter models… (supports /regex/)", sort="released"):
+    """Sortable/filterable model table (shared by the models index, per-lab
+    and per-domain pages). `sort` picks the prerendered order: "released"
+    (date desc) or "complete" (% complete desc)."""
     rows = []
-    ordered = sorted(
-        model_summary,
-        key=lambda m: (m.get("release_date") or ""),
-        reverse=True,
-    )
+    if sort == "complete":
+        ordered = sorted(
+            model_summary,
+            key=lambda m: float(m.get("pct_complete_overall") or 0.0),
+            reverse=True,
+        )
+    else:
+        ordered = sorted(
+            model_summary,
+            key=lambda m: (m.get("release_date") or ""),
+            reverse=True,
+        )
+    expected = max((int(m.get("num_responses") or 0) for m in ordered), default=0)
     for m in ordered:
         model = m.get("model", "")
         safe = generate_safe_id(model)
@@ -1509,14 +1518,22 @@ def _model_table_html(model_summary, filter_placeholder="Filter models… (suppo
         data_attrs = " ".join(
             f'data-s-{k}="{_pct_value(v)}"' for k, v in pcts.items()
         )
+        # Most models have every response; flag the rare shortfalls as a
+        # footnote instead of dedicating a column to a non-event.
+        n_resp = int(m.get("num_responses") or 0)
+        note = ""
+        if expected and n_resp < expected:
+            note = (
+                f'<span class="resp-note" data-tip="Incomplete data: only {n_resp:,} of '
+                f'{expected:,} responses were collected for this model here">†</span>'
+            )
         rows.append(
             f'<tr data-f="{_html_escape(model.lower())}"'
             f' data-s-model="{_html_escape(model.lower())}"'
             f' data-s-released="{_html_escape(m.get("release_date","") or "")}"'
-            f' data-s-resp="{m.get("num_responses",0)}" {data_attrs}>'
-            f'<td class="td-name"><a href="{link}">{_html_escape(model)}</a></td>'
+            f" {data_attrs}>"
+            f'<td class="td-name"><a href="{link}">{_html_escape(model)}</a>{note}</td>'
             f'<td class="td-meta">{_html_escape(m.get("release_date","") or "")}</td>'
-            f'<td class="td-num td-hide-m">{m.get("num_responses",0)}</td>'
             f'<td class="td-num td-complete">{_pct(m.get("pct_complete_overall",0))}</td>'
             f'<td class="td-bar">{_verdict_bar_html(pcts)}</td>'
             f"</tr>"
@@ -1524,7 +1541,6 @@ def _model_table_html(model_summary, filter_placeholder="Filter models… (suppo
     columns = [
         {"label": "Model", "sort_key": "model", "sort_type": "text", "first_dir": "asc"},
         {"label": "Released", "sort_key": "released", "sort_type": "text", "first_dir": "desc"},
-        {"label": "# Resp", "sort_key": "resp", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
         {"label": "% Complete", "sort_key": "complete", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
         {"label": "Breakdown", "chips": True},
     ]
@@ -1532,7 +1548,7 @@ def _model_table_html(model_summary, filter_placeholder="Filter models… (suppo
         columns,
         "\n".join(rows),
         filter_placeholder=filter_placeholder,
-        initial_sort=("released", "desc"),
+        initial_sort=("complete", "desc") if sort == "complete" else ("released", "desc"),
     )
 
 
@@ -1558,7 +1574,7 @@ def render_models_index(model_summary):
     return _page_head(title, canon, depth=depth, active_tab='models') + table + _page_foot(depth=depth)
 
 
-def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None):
+def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None, domain_medians=None):
     title = f"Model: {model_id}"
     canon = f"{SITE_BASE_URL}/models/{generate_safe_id(model_id)}/"
     depth = 2
@@ -1638,6 +1654,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
         pct_c = (s.get("k", 0) / c * 100) if c > 0 else 0
         items.append((key, s.get("domain") or "N/A", c, pct_c, s))
     items.sort(key=lambda x: x[0])  # Sort by theme name ascending
+    expected_per_theme = max((it[2] for it in items), default=0)
     for key, dom, c, pct_c, s in items:
         theme_link = f"/themes/{generate_safe_id(key)}/m/{generate_safe_id(model_id)}/"
         pcts = {
@@ -1649,14 +1666,19 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
         data_attrs = " ".join(
             f'data-s-{k}="{_pct_value(v)}"' for k, v in pcts.items()
         )
+        note = ""
+        if expected_per_theme and c < expected_per_theme:
+            note = (
+                f'<span class="resp-note" data-tip="Incomplete data: only {c} of '
+                f'{expected_per_theme} responses were collected for this theme">†</span>'
+            )
         rows.append(
             f'<tr data-f="{_html_escape((key + " " + dom).lower())}"'
             f' data-s-theme="{_html_escape(key.lower())}"'
             f' data-s-domain="{_html_escape(dom.lower())}"'
-            f' data-s-resp="{c}" {data_attrs}>'
-            f'<td class="td-name"><a href="{theme_link}">{_html_escape(key)}</a></td>'
+            f" {data_attrs}>"
+            f'<td class="td-name"><a href="{theme_link}">{_html_escape(key)}</a>{note}</td>'
             f'<td class="td-meta">{_html_escape(dom)}</td>'
-            f'<td class="td-num td-hide-m">{c}</td>'
             f'<td class="td-num td-complete">{_pct(pct_c)}</td>'
             f'<td class="td-bar">{_verdict_bar_html(pcts)}</td>'
             f"</tr>"
@@ -1664,12 +1686,69 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
     columns = [
         {"label": "Theme", "sort_key": "theme", "sort_type": "text", "first_dir": "asc"},
         {"label": "Domain", "sort_key": "domain", "sort_type": "text", "first_dir": "asc"},
-        {"label": "# Resp", "sort_key": "resp", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
         {"label": "% Complete", "sort_key": "complete", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
         {"label": "Breakdown", "chips": True},
     ]
+    # Performance by domain: the model's outcome mix per domain, most
+    # refused first, with the gap vs the median model as a signed number.
+    dom_agg = defaultdict(lambda: {"c": 0, "k": 0, "e": 0, "d": 0, "r": 0})
+    for key, st in (theme_stats_for_model or {}).items():
+        dom = st.get("domain") or "Other"
+        for f in ("c", "k", "e", "d", "r"):
+            dom_agg[dom][f] += int(st.get(f, 0) or 0)
+    dev_rows = []
+    for dom, agg in dom_agg.items():
+        if not agg["c"]:
+            continue
+        pcts = {
+            "complete": agg["k"] / agg["c"] * 100,
+            "evasive": agg["e"] / agg["c"] * 100,
+            "denial": agg["d"] / agg["c"] * 100,
+            "error": agg["r"] / agg["c"] * 100,
+        }
+        medv = (domain_medians or {}).get(dom)
+        delta = pcts["complete"] - medv if medv is not None else None
+        dev_rows.append((pcts["complete"], dom, pcts, delta))
+    dev_rows.sort()
+    devs_html = ""
+    if dev_rows:
+        rows_html = []
+        for mine, dom, pcts, delta in dev_rows:
+            slug = generate_safe_id(dom)
+            if delta is None:
+                delta_html = ""
+            else:
+                cls = "neg" if delta < -1 else ("pos" if delta > 1 else "")
+                delta_html = (
+                    f'<span class="dm-med dev-val {cls}" '
+                    f'title="{delta:+.1f} points vs the median model">{delta:+.0f}</span>'
+                )
+            rows_html.append(
+                f'<div class="domain-row dev-row" data-domain="{_html_escape(dom)}" '
+                f'title="Filter the theme table to {_html_escape(dom)}">'
+                f'<span class="dm-name">{_html_escape(dom)}</span>'
+                f'<span class="dm-pct">{mine:.1f}%</span>'
+                f'<span class="dm-bar">{_verdict_bar_html(pcts)}</span>'
+                f"{delta_html}"
+                f'<a class="dev-open" href="/domains/{slug}/" title="Open the {_html_escape(dom)} domain page">↗</a>'
+                "</div>"
+            )
+        devs_html = (
+            '<div class="theme-stats"><h3>Performance by Domain</h3>'
+            '<p class="module-blurb">This model\u2019s outcome mix on each question domain, '
+            'most refused first. The signed number is its gap in points vs the median model. '
+            'Click a row to filter the theme table below; ↗ opens the domain page.</p>'
+            '<div class="domain-devs" id="domain-devs">'
+            '<div class="domain-row dev-head" aria-hidden="true">'
+            '<span class="dm-name"></span><span class="dm-pct">% comp</span>'
+            '<span class="dm-bar"></span><span class="dm-med">Δ vs median</span>'
+            '<span class="dev-open"></span></div>'
+            + "".join(rows_html) + "</div></div>"
+        )
+
     table = (
-        "\n<h3>Compliance by Question Theme</h3>\n"
+        devs_html
+        + "\n<h3>Compliance by Question Theme</h3>\n"
         + _data_table_html(
             columns,
             "\n".join(rows),
@@ -1687,7 +1766,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
     return _page_head(seo_title, canon, depth=depth, active_tab='models', description=seo_desc) + hero_html + info_section + stats_html + table + _page_foot(depth=depth)
 
 
-def render_themes_index(theme_summary_all):
+def render_themes_index(theme_summary_all, model_theme_summary=None):
     title = "Question Themes"
     canon = f"{SITE_BASE_URL}/themes/"
     depth = 1
@@ -1736,13 +1815,72 @@ def render_themes_index(theme_summary_all):
     </div>
   </div>
 """
+    # Domain overview: one row per domain; dots are MODELS (each model's
+    # % complete on that domain) so dots mean the same thing site-wide.
+    theme_counts = defaultdict(int)
+    for t in theme_summary_all or []:
+        theme_counts[t.get("domain") or "Other"] += 1
+    dom_model = _domain_model_rollups(model_theme_summary)
+    dom_rows = []
+    for dom, models in dom_model.items():
+        vals = sorted(a["k"] / a["c"] * 100 for a in models.values() if a["c"])
+        if not vals:
+            continue
+        n = len(vals)
+        med = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
+        dom_rows.append((med, dom, vals))
+    dom_rows.sort()
+    overview_rows = []
+    def _beeswarm_offsets(count):
+        # 0, +3, -3, +6, -6, ... capped so dots stay inside the row
+        offs = [0]
+        step = 3
+        while len(offs) < count:
+            offs.append(min(step, 9))
+            offs.append(-min(step, 9))
+            step += 3
+        return offs[:count]
+
+    for med, dom, vals in dom_rows:
+        # Small-theme domains quantize scores (16 prompts -> 6.25% steps);
+        # fanning same-score stacks vertically turns banding into tidy
+        # histogram-like columns.
+        stacks = defaultdict(list)
+        for v in vals:
+            stacks[round(v, 1)].append(v)
+        dot_parts = []
+        for sval in sorted(stacks):
+            group = stacks[sval]
+            for v, off in zip(group, _beeswarm_offsets(len(group))):
+                dot_parts.append(
+                    f'<i class="sp-dot" style="left:{max(0.0, min(100.0, v)):.1f}%;'
+                    f'top:calc(50% + {off}px)"></i>'
+                )
+        dots = "".join(dot_parts)
+        overview_rows.append(
+            f'<a class="domain-row" href="/domains/{generate_safe_id(dom)}/">'
+            f'<span class="dm-name">{_html_escape(dom)} <i class="dm-count">{theme_counts.get(dom, 0)} themes</i></span>'
+            f'<span class="dm-strip"><span class="stripplot">{dots}'
+            f'<i class="sp-index" style="left:{med:.1f}%"></i></span></span>'
+            f'<span class="dm-med">{med:.1f}</span>'
+            "</a>"
+        )
+    overview_html = (
+        '<div class="domain-overview" id="domain-overview">'
+        '<div class="home-module-head"><h3>By Domain</h3>'
+        '<span class="module-note">dot = one model \u00b7 tick = median model % complete</span></div>'
+        '<p class="module-blurb">Click a domain for its trend, themes, and per-model rankings. All themes are searchable in the table below.</p>'
+        + "".join(overview_rows)
+        + "</div>"
+    )
+
     columns = [
         {"label": "Theme", "sort_key": "theme", "sort_type": "text", "first_dir": "asc"},
         {"label": "Domain", "sort_key": "domain", "sort_type": "text", "first_dir": "asc"},
         {"label": "% Complete", "sort_key": "complete", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
         {"label": "Breakdown", "chips": True},
     ]
-    table = _data_table_html(
+    table = overview_html + _data_table_html(
         columns,
         "\n".join(rows),
         filter_placeholder="Filter themes… (supports /regex/)",
@@ -1849,7 +1987,7 @@ def render_lab_standings_page(lab_standings, lab_metadata=None, model_summary=No
   </div>
   <div class=\"sp-legend\"><span class=\"sp-legend-item\"><i class=\"sp-index sp-demo\"></i> Index</span><span class=\"sp-legend-item\"><i class=\"sp-dot sp-demo\"></i> one model release</span></div>\n  <div class=\"lab-leaderboard-table-wrap\">
     <table class=\"leaderboard-table\">
-      <thead><tr><th>Rank</th><th>Lab</th><th>Index</th><th>Peak</th><th class=\"spark-cell\">Model Scores (0\u2013100)</th><th>Models</th></tr></thead>
+      <thead><tr><th>Rank</th><th>Lab</th><th>Index</th><th>Peak</th><th class=\"spark-cell\">Recent Model Scores (0\u2013100)</th><th>Models</th></tr></thead>
       <tbody>
 {''.join(cards)}
       </tbody>
@@ -1978,6 +2116,194 @@ def generate_lab_pages(model_summary, model_metadata, lab_standings, lab_metadat
             render_lab_page(lab_key, models, entries.get(lab_key), ranks.get(lab_key), lab_metadata=lab_metadata),
         )
     return sorted(by_lab.keys())
+
+
+STATIC_DOMAINS_DIR = "domains"
+
+
+def render_domain_page(domain, theme_rows, model_rows, n_domains, global_median=None):
+    """Domain hub: how every model performs on this territory (strip +
+    rankings), then the domain's themes. The middle layer between /themes/
+    and theme pages."""
+    slug = generate_safe_id(domain)
+    canon = f"{SITE_BASE_URL}/domains/{slug}/"
+    n_themes = len(theme_rows)
+    n_models = len(model_rows)
+
+    mvals = sorted(float(m.get("pct_complete_overall") or 0.0) for m in model_rows)
+    med = (
+        mvals[n_models // 2] if n_models % 2 else (mvals[n_models // 2 - 1] + mvals[n_models // 2]) / 2
+    ) if n_models else 0.0
+
+    title = f"{domain} \u2014 AI Refusal Rates by Topic | SpeechMap.AI"
+    desc = (
+        f"How AI models handle {domain} questions: {n_models} models tested on "
+        f"{n_themes} themes; the median model answers {med:.0f}% completely. "
+        f"Per-model rankings and per-theme prompts on SpeechMap.AI."
+    )
+    head = _page_head(title, canon, depth=1, active_tab='themes', description=desc)
+
+    gap_sentence = ""
+    if global_median is not None:
+        gap = med - global_median
+        if abs(gap) >= 1:
+            direction = "less" if gap < 0 else "more"
+            gap_sentence = (
+                f" \u2014 {abs(gap):.0f} points {direction} than the {global_median:.0f}% they "
+                f"answer across all domains"
+            )
+    lede = (
+        f"{domain} is one of SpeechMap\u2019s {n_domains} question domains: {n_themes} themes, "
+        f"each asking a different underlying request from this territory. The median model "
+        f"answers {med:.0f}% of this domain\u2019s prompts completely{gap_sentence}. "
+        f"Below: the trend over time, how every model ranks here, and each theme with its "
+        f"prompts and responses."
+    )
+
+    # Score trajectory: model releases scored on this domain, with the
+    # time-weighted trend — the same chart lab pages use, scoped here.
+    traj_svg = _overall_trend_svg(model_rows, width=1000, height=240, scatter=True)
+    if traj_svg:
+        strip_html = (
+            "<h3>Score Trajectory</h3>"
+            f'<div class="trend-figure lab-traj">{traj_svg}</div>'
+            '<p class="findings-note">Model scores on this domain by release date, with the time-weighted trend</p>'
+        )
+    else:
+        strip_html = ""
+
+    model_table = _model_table_html(model_rows, sort="complete")
+
+    # Theme table (lives in a tab, so height no longer buries anything).
+    trows = []
+    for t in sorted(theme_rows, key=lambda t: float(t.get("pct_complete_overall") or 0.0)):
+        key = t.get("grouping_key", "")
+        tp = {
+            "complete": t.get("pct_complete_overall", 0),
+            "evasive": t.get("pct_evasive", 0),
+            "denial": t.get("pct_denial", 0),
+            "error": t.get("pct_error", 0),
+        }
+        data_attrs = " ".join(f'data-s-{k}="{_pct_value(v)}"' for k, v in tp.items())
+        trows.append(
+            f'<tr data-f="{_html_escape((key or "").lower())}" data-s-theme="{_html_escape((key or "").lower())}" {data_attrs}>'
+            f'<td class="td-name"><a href="/themes/{generate_safe_id(key)}/">{_html_escape(key)}</a></td>'
+            f'<td class="td-num td-complete">{_pct(t.get("pct_complete_overall", 0))}</td>'
+            f'<td class="td-bar">{_verdict_bar_html(tp)}</td>'
+            "</tr>"
+        )
+    theme_columns = [
+        {"label": "Theme", "sort_key": "theme", "sort_type": "text", "first_dir": "asc"},
+        {"label": "% Complete", "sort_key": "complete", "sort_type": "num", "first_dir": "desc", "th_class": "num"},
+        {"label": "Breakdown", "chips": True},
+    ]
+    theme_table = _data_table_html(
+        theme_columns,
+        "\n".join(trows),
+        filter_placeholder="Filter themes…",
+        initial_sort=("complete", "asc"),
+    )
+
+    tabs_html = (
+        '<div class="tab-bar" id="domain-tabs">'
+        f'<button type="button" class="tab-btn active" data-tab="themes">Themes ({n_themes})</button>'
+        f'<button type="button" class="tab-btn" data-tab="models">Model Rankings ({n_models})</button>'
+        "</div>"
+        f'<section class="tab-panel active" id="tab-themes">'
+        '<p class="module-blurb">Most refused first \u00b7 click a theme for its exact prompts and every model\u2019s answers.</p>'
+        f"{theme_table}</section>"
+        f'<section class="tab-panel" id="tab-models">'
+        '<p class="module-blurb">Each model\u2019s results across every theme in this domain, most willing first.</p>'
+        f"{model_table}</section>"
+    )
+
+    body = (
+        '<div class="leaderboard-hero">'
+        f"  <h1>{_html_escape(domain)}</h1>"
+        '  <p class="hero-subtitle">SpeechMap question domain</p>'
+        "</div>"
+        '<div class="leaderboard-content">'
+        '<p class="back-link"><a href="/themes/">← All domains and themes</a></p>'
+        f'<div class="page-intro"><p class="lab-lede">{lede}</p>{WHY_WE_TEST_HTML}</div>'
+        + strip_html
+        + tabs_html
+        + "</div>"
+    )
+    return head + body + _page_foot(depth=1)
+
+
+def _domain_model_rollups(model_theme_summary):
+    """dom -> model -> summed {c,k,e,d,r} across the domain's themes."""
+    dom_model = defaultdict(lambda: defaultdict(lambda: {"c": 0, "k": 0, "e": 0, "d": 0, "r": 0}))
+    for mid, themes in (model_theme_summary or {}).items():
+        for tkey, st in themes.items():
+            dom = st.get("domain") or "Other"
+            agg = dom_model[dom][mid]
+            for f in ("c", "k", "e", "d", "r"):
+                agg[f] += int(st.get(f, 0) or 0)
+    return dom_model
+
+
+def _domain_medians(dom_model):
+    """dom -> median model %-complete on that domain."""
+    med = {}
+    for dom, models in dom_model.items():
+        vals = sorted(
+            agg["k"] / agg["c"] * 100 for agg in models.values() if agg["c"]
+        )
+        if vals:
+            n = len(vals)
+            med[dom] = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
+    return med
+
+
+def generate_domain_pages(qts_all, model_theme_summary, model_metadata):
+    """Write /domains/<slug>/ pages. Returns domain slugs for the sitemap."""
+    by_domain = defaultdict(list)
+    for t in qts_all or []:
+        by_domain[t.get("domain") or "Other"].append(t)
+
+    dom_model = _domain_model_rollups(model_theme_summary)
+
+    # Site-wide median model score (each model's overall % complete),
+    # used as the reference tick on every domain strip.
+    overall = defaultdict(lambda: {"c": 0, "k": 0})
+    for models in dom_model.values():
+        for mid, agg in models.items():
+            overall[mid]["c"] += agg["c"]
+            overall[mid]["k"] += agg["k"]
+    ovals = sorted(a["k"] / a["c"] * 100 for a in overall.values() if a["c"])
+    global_median = (
+        ovals[len(ovals) // 2] if len(ovals) % 2 else (ovals[len(ovals) // 2 - 1] + ovals[len(ovals) // 2]) / 2
+    ) if ovals else 0.0
+
+    n_domains = len(by_domain)
+    slugs = []
+    for domain, theme_rows in by_domain.items():
+        model_rows = []
+        for mid, agg in dom_model.get(domain, {}).items():
+            c = agg["c"]
+            if not c:
+                continue
+            meta = (model_metadata or {}).get(mid, {})
+            model_rows.append({
+                "model": mid,
+                "release_date": meta.get("release_date", "") or "",
+                "num_responses": c,
+                "pct_complete_overall": agg["k"] / c * 100,
+                "pct_evasive": agg["e"] / c * 100,
+                "pct_denial": agg["d"] / c * 100,
+                "pct_error": agg["r"] / c * 100,
+            })
+        slug = generate_safe_id(domain)
+        out_dir = os.path.join(STATIC_DOMAINS_DIR, slug)
+        os.makedirs(out_dir, exist_ok=True)
+        _write_file(
+            os.path.join(out_dir, "index.html"),
+            render_domain_page(domain, theme_rows, model_rows, n_domains, global_median),
+        )
+        slugs.append(slug)
+    return sorted(slugs)
 
 
 def render_timeline_page(lab_metadata=None):
@@ -2366,8 +2692,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
 </div>
 <div class="leaderboard-content">
 <p class="back-link"><a href="../">← Back to Themes</a></p>
-<p class="lab-lede">{lede}</p>
-{WHY_WE_TEST_HTML}
+<div class="page-intro"><p class="lab-lede">{lede}</p>{WHY_WE_TEST_HTML}</div>
 """
 
     stats_html = f"""
@@ -2456,18 +2781,22 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
     _write_file(models_index_path, render_models_index(summaries["model_summary"]))
 
     # Per-model pages
+    domain_medians = _domain_medians(_domain_model_rollups(summaries["model_theme_summary"]))
     for model in summaries["model_summary"]:
         mid = model.get("model")
         safe = generate_safe_id(mid)
         path = os.path.join(STATIC_MODELS_DIR, safe, "index.html")
         meta = model_meta_dict.get(mid, {})
         theme_stats_for_model = summaries["model_theme_summary"].get(mid, {})
-        _write_file(path, render_model_detail(mid, meta, theme_stats_for_model, lab_metadata=lab_metadata))
+        _write_file(path, render_model_detail(mid, meta, theme_stats_for_model, lab_metadata=lab_metadata, domain_medians=domain_medians))
 
     # Themes index (use all-time summary already computed)
     os.makedirs(STATIC_THEMES_DIR, exist_ok=True)
     themes_index_path = os.path.join(STATIC_THEMES_DIR, "index.html")
-    _write_file(themes_index_path, render_themes_index(summaries["question_theme_summary"]))
+    _write_file(themes_index_path, render_themes_index(summaries["question_theme_summary"], summaries["model_theme_summary"]))
+
+    # Domain hub pages
+    domain_slugs = generate_domain_pages(summaries["question_theme_summary"], summaries["model_theme_summary"], model_meta_dict)
 
     # Per-theme pages (use per-model stats + sample records from data_by_theme)
     if include_theme_pages:
@@ -2515,7 +2844,7 @@ def _write_urlset(filename, urls):
 SITEMAP_URLS_PER_FILE = 45000
 
 
-def generate_sitemap_and_robots(model_summary, theme_keys, lab_keys=None):
+def generate_sitemap_and_robots(model_summary, theme_keys, lab_keys=None, domain_slugs=None):
     """sitemap.xml is an index: one core urlset (site + models + themes +
     labs) plus chunked urlsets for the ~175k model×theme pair pages."""
     today_iso = date.today().isoformat()
@@ -2530,6 +2859,8 @@ def generate_sitemap_and_robots(model_summary, theme_keys, lab_keys=None):
     core.append((f"{SITE_BASE_URL}/resources/", today_iso))
     for lk in sorted(lab_keys or []):
         core.append((f"{SITE_BASE_URL}/labs/{generate_safe_id(lk)}/", today_iso))
+    for ds in sorted(domain_slugs or []):
+        core.append((f"{SITE_BASE_URL}/domains/{ds}/", today_iso))
     for m in model_summary:
         safe = generate_safe_id(m.get("model"))
         core.append((f"{SITE_BASE_URL}/models/{safe}/", m.get("release_date") or today_iso))
@@ -2713,17 +3044,21 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)
     _prune_stale_model_dirs(model_summary)
     _write_file(os.path.join(STATIC_MODELS_DIR, "index.html"), render_models_index(model_summary))
+    domain_medians = _domain_medians(_domain_model_rollups(model_theme_summary))
     for m in model_summary:
         mid = m.get("model")
         safe = generate_safe_id(mid)
         path = os.path.join(STATIC_MODELS_DIR, safe, "index.html")
         meta = model_meta_dict.get(mid, {})
         mt = model_theme_summary.get(mid, {})
-        _write_file(path, render_model_detail(mid, meta, mt, lab_metadata=lab_metadata))
+        _write_file(path, render_model_detail(mid, meta, mt, lab_metadata=lab_metadata, domain_medians=domain_medians))
 
     # Themes index
     os.makedirs(STATIC_THEMES_DIR, exist_ok=True)
-    _write_file(os.path.join(STATIC_THEMES_DIR, "index.html"), render_themes_index(qts_all))
+    _write_file(os.path.join(STATIC_THEMES_DIR, "index.html"), render_themes_index(qts_all, model_theme_summary))
+
+    # Domain hub pages
+    domain_slugs = generate_domain_pages(qts_all, model_theme_summary, model_meta_dict)
 
     # Lab standings page
     os.makedirs(STATIC_LABS_DIR, exist_ok=True)
@@ -2741,7 +3076,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
         for m in model_summary
         if (model_meta_dict.get(m.get("model"), {}) or {}).get("creator", "").strip().lower() not in ("", "unknown")
     })
-    generate_sitemap_and_robots(model_summary, theme_keys_for_sitemap, lab_keys=lab_keys_for_sitemap)
+    generate_sitemap_and_robots(model_summary, theme_keys_for_sitemap, lab_keys=lab_keys_for_sitemap, domain_slugs=domain_slugs)
 
     # Per-theme pages (load gz on demand)
     if not skip_theme_pages:
@@ -2926,7 +3261,7 @@ def main():
         for m in summaries["model_summary"]
         if (model_meta_dict.get(m.get("model"), {}) or {}).get("creator", "").strip().lower() not in ("", "unknown")
     })
-    generate_sitemap_and_robots(summaries["model_summary"], theme_keys_for_sitemap, lab_keys=lab_keys_for_sitemap)
+    generate_sitemap_and_robots(summaries["model_summary"], theme_keys_for_sitemap, lab_keys=lab_keys_for_sitemap, domain_slugs=domain_slugs)
     # Overwrite root About page with static content using real stats
     _write_file("index.html", render_home_page(stats_summary, summaries["question_theme_summary"], lab_standings, lab_metadata=lab_meta_dict, model_summary=summaries["model_summary"]))
 
