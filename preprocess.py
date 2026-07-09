@@ -3000,6 +3000,7 @@ def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standin
     # Timeline static shell (Chart hydration allowed to load data/*)
     _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))
     write_pair_template()
+    return domain_slugs
 
 
 def _write_urlset(filename, urls):
@@ -3298,6 +3299,7 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
     # Timeline static shell (Chart hydration allowed to load data/*)
     _write_file(os.path.join("timeline", "index.html"), render_timeline_page(lab_metadata))
     write_pair_template()
+    return domain_slugs
 
 def main():
     print("Starting preprocessing...")
@@ -3431,7 +3433,7 @@ def main():
 
     # Phase 2: Generate static pages for SEO
     print("\nGenerating static pages (Phase 2)...")
-    generate_static_pages(
+    domain_slugs = generate_static_pages(
         model_meta_included,
         summaries,
         data_by_theme,
