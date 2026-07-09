@@ -8,6 +8,7 @@
 {"model_identifier": "x-ai/grok-4-fast-reasoning", "creator": "x-ai", "model_name": "grok-4-fast-reasoning", "model_family": "grok-4-fast", "release_date": "2025-09-15", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-4.1-fast", "creator": "x-ai", "model_name": "grok-4.1-fast", "model_family": "grok-4.1-fast", "release_date": "2025-11-19", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-4.1-fast-thinking", "creator": "x-ai", "model_name": "grok-4.1-fast-thinking", "model_family": "grok-4.1-fast", "release_date": "2025-11-19", "reasoning_model": true, "notes": ""}
+{"model_identifier": "x-ai/grok-4.5", "creator": "x-ai", "model_name": "grok-4.5", "model_family": "grok-4.5", "release_date": "2026-07-08", "reasoning_model": true, "notes": "reasoning is mandatory"}
 {"model_identifier": "x-ai/grok-3-mini-beta", "creator": "x-ai", "model_name": "grok-3-mini-beta", "model_family": "grok-3", "release_date": "2025-02-17", "reasoning_model": true, "notes": ""}
 {"model_identifier": "x-ai/grok-4-fast-non-reasoning-20251029", "creator": "x-ai", "model_name": "grok-4-fast-non-reasoning-20251029", "model_family": "grok-4-fast", "release_date": "2025-10-29", "reasoning_model": false, "notes": ""}
 {"model_identifier": "x-ai/grok-4-fast-reasoning-20251029", "creator": "x-ai", "model_name": "grok-4-fast-reasoning-20251029", "model_family": "grok-4-fast", "release_date": "2025-10-29", "reasoning_model": true, "notes": ""}
@@ -35,6 +36,7 @@
 {"model_identifier": "anthropic/claude-sonnet-4.5-thinking", "creator": "anthropic", "model_name": "claude-sonnet-4.5", "model_family": "claude-sonnet-4.5", "release_date": "2025-09-29", "reasoning_model": true, "notes": ""}
 {"model_identifier": "anthropic/claude-sonnet-4.6", "creator": "anthropic", "model_name": "claude-sonnet-4.6", "model_family": "claude-sonnet-4.6", "release_date": "2026-02-18", "reasoning_model": true, "notes": "hybrid reasoning model"}
 {"model_identifier": "anthropic/claude-sonnet-4.6-thinking", "creator": "anthropic", "model_name": "claude-sonnet-4.6", "model_family": "claude-sonnet-4.6", "release_date": "2026-02-18", "reasoning_model": true, "notes": "hybrid reasoning model"}
+{"model_identifier": "anthropic/claude-sonnet-5", "creator": "anthropic", "model_name": "claude-sonnet-5", "model_family": "claude-sonnet-5", "release_date": "2026-06-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-haiku-4.5", "creator": "anthropic", "model_name": "claude-haiku-4.5", "model_family": "claude-haiku-4.5", "release_date": "2025-10-15", "reasoning_model": false, "notes": ""}
 {"model_identifier": "anthropic/claude-haiku-4.5-thinking", "creator": "anthropic", "model_name": "claude-haiku-4.5-thinking", "model_family": "claude-haiku-4.5", "release_date": "2025-10-15", "reasoning_model": true, "notes": ""}
 {"model_identifier": "deepseek/deepseek-chat-v3-0324", "creator": "deepseek", "model_name": "deepseek-chat-v3-0324", "model_family": "deepseek-v3", "release_date": "2025-03-24", "reasoning_model": false, "notes": ""}
@@ -320,6 +322,7 @@
 {"model_identifier": "poolside/laguna-m.1-reasoning", "creator": "poolside", "model_name": "laguna-m.1", "model_family": "laguna", "release_date": "2026-04-28", "reasoning_model": true, "notes": ""}
 {"model_identifier": "poolside/laguna-xs.2", "creator": "poolside", "model_name": "laguna-xs.2", "model_family": "laguna", "release_date": "2026-04-28", "reasoning_model": false, "notes": ""}
 {"model_identifier": "poolside/laguna-xs.2-reasoning", "creator": "poolside", "model_name": "laguna-xs.2", "model_family": "laguna", "release_date": "2026-04-28", "reasoning_model": true, "notes": ""}
+{"model_identifier": "poolside/laguna-xs-2.1", "creator": "poolside", "model_name": "laguna-xs-2.1", "model_family": "laguna", "release_date": "2026-06-25", "reasoning_model": false, "skip": true, "notes": "free-route run was dominated by provider quota errors; excluded until rerun on a reliable paid route"}
 {"model_identifier": "openai/gpt-5.5", "creator": "openai", "model_name": "gpt-5.5", "model_family": "gpt-5.5", "release_date": "2026-04-23", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.5-reasoning", "creator": "openai", "model_name": "gpt-5.5", "model_family": "gpt-5.5", "release_date": "2026-04-23", "reasoning_model": true, "notes": ""}
 {"model_identifier": "inclusionai/ring-2.6-1t", "creator": "inclusionai", "model_name": "ring-2.6-1t", "model_family": "ring-2.6", "release_date": "2026-05-08", "reasoning_model": true, "notes": "Reasoning traces observed in most successful responses."}
