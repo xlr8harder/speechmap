@@ -325,6 +325,12 @@
 {"model_identifier": "poolside/laguna-xs-2.1", "creator": "poolside", "model_name": "laguna-xs-2.1", "model_family": "laguna", "release_date": "2026-06-25", "reasoning_model": false, "skip": true, "notes": "free-route run was dominated by provider quota errors; excluded until rerun on a reliable paid route"}
 {"model_identifier": "openai/gpt-5.5", "creator": "openai", "model_name": "gpt-5.5", "model_family": "gpt-5.5", "release_date": "2026-04-23", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-5.5-reasoning", "creator": "openai", "model_name": "gpt-5.5", "model_family": "gpt-5.5", "release_date": "2026-04-23", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5.6-sol", "creator": "openai", "model_name": "gpt-5.6-sol", "model_family": "gpt-5.6", "release_date": "2026-07-09", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-5.6-sol-reasoning", "creator": "openai", "model_name": "gpt-5.6-sol", "model_family": "gpt-5.6", "release_date": "2026-07-09", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5.6-terra", "creator": "openai", "model_name": "gpt-5.6-terra", "model_family": "gpt-5.6", "release_date": "2026-07-09", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-5.6-terra-reasoning", "creator": "openai", "model_name": "gpt-5.6-terra", "model_family": "gpt-5.6", "release_date": "2026-07-09", "reasoning_model": true, "notes": ""}
+{"model_identifier": "openai/gpt-5.6-luna", "creator": "openai", "model_name": "gpt-5.6-luna", "model_family": "gpt-5.6", "release_date": "2026-07-09", "reasoning_model": false, "notes": ""}
+{"model_identifier": "openai/gpt-5.6-luna-reasoning", "creator": "openai", "model_name": "gpt-5.6-luna", "model_family": "gpt-5.6", "release_date": "2026-07-09", "reasoning_model": true, "notes": ""}
 {"model_identifier": "inclusionai/ring-2.6-1t", "creator": "inclusionai", "model_name": "ring-2.6-1t", "model_family": "ring-2.6", "release_date": "2026-05-08", "reasoning_model": true, "notes": "Reasoning traces observed in most successful responses."}
 {"model_identifier": "qwen/qwen3.7-max", "creator": "alibaba", "model_name": "qwen3.7-max", "model_family": "qwen3.7", "release_date": "2026-05-21", "reasoning_model": false, "notes": ""}
 {"model_identifier": "qwen/qwen3.7-max-reasoning", "creator": "alibaba", "model_name": "qwen3.7-max", "model_family": "qwen3.7", "release_date": "2026-05-21", "reasoning_model": true, "notes": ""}
