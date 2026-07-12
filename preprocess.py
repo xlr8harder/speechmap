@@ -46,8 +46,14 @@ THEME_SAMPLE_LIMIT = 16
 COMPLIANCE_ORDER = ["COMPLETE", "EVASIVE", "DENIAL", "ERROR", "UNKNOWN"]
 ID_REGEX = re.compile(r"^(.*?)(\d)$")
 ERROR_MSG_CENSORSHIP = "ERROR: This typically indicates moderation or censorship systems have prevented the model from replying, or cancelled a response."
+ERROR_MSG_ORIGINAL_TRUNCATION = "ERROR: The original model response hit an output-length limit and is treated as incomplete."
+ERROR_MSG_ORIGINAL_RESPONSE = "ERROR: The original model request failed before a valid response was captured."
+ERROR_MSG_JUDGE = "ERROR: The judge request failed before a valid judgment was captured."
 JUDGE_ANALYSIS_FOR_ERROR = "N/A (Response was an ERROR)"
 JUDGE_ANALYSIS_FOR_ORIGINAL_MODERATION = "N/A (Original response was stopped by provider moderation/classifier)"
+JUDGE_ANALYSIS_FOR_ORIGINAL_TRUNCATION = "N/A (Original response was stopped by provider/model output limit)"
+JUDGE_ANALYSIS_FOR_ORIGINAL_RESPONSE = "N/A (Original model request failed before a valid response was captured)"
+JUDGE_ANALYSIS_FOR_JUDGE_ERROR = "N/A (Judge request failed before a valid judgment was captured)"
 MODERATION_ERROR_TEXT_RE = re.compile(
     r"("
     r"usage policy|"
@@ -66,6 +72,25 @@ MODERATION_ERROR_TEXT_RE = re.compile(
     r")",
     re.IGNORECASE,
 )
+
+ERROR_DISPLAY_DEFAULTS = {
+    "ERROR_ORIGINAL_MODERATION": (
+        JUDGE_ANALYSIS_FOR_ORIGINAL_MODERATION,
+        ERROR_MSG_CENSORSHIP,
+    ),
+    "ERROR_ORIGINAL_TRUNCATION": (
+        JUDGE_ANALYSIS_FOR_ORIGINAL_TRUNCATION,
+        ERROR_MSG_ORIGINAL_TRUNCATION,
+    ),
+    "ERROR_ORIGINAL_RESPONSE": (
+        JUDGE_ANALYSIS_FOR_ORIGINAL_RESPONSE,
+        ERROR_MSG_ORIGINAL_RESPONSE,
+    ),
+    "ERROR_JUDGE_CONTENT_FILTER": (
+        JUDGE_ANALYSIS_FOR_JUDGE_ERROR,
+        ERROR_MSG_JUDGE,
+    ),
+}
 LAB_STANDINGS_WINDOW_MONTHS = 6
 LAB_STANDINGS_HALFLIFE_MONTHS = 3
 # Derived EMA alpha so weight halves every LAB_STANDINGS_HALFLIFE_MONTHS buckets
@@ -267,7 +292,9 @@ def preprocess_us_hard_data(analysis_dir):
                         compliance = rec.get("compliance")
                         domain = rec.get("domain")
                         question_text = rec.get("question")
-                        judge_analysis = rec.get("raw_judge_response")
+                        stored_judge_analysis = rec.get("judge_analysis")
+                        raw_judge_response = rec.get("raw_judge_response")
+                        judge_analysis = raw_judge_response
                         judge_model = rec.get("judge_model")
                         timestamp = rec.get("timestamp")
                         # Real upstream identifiers: used to build working
@@ -306,18 +333,27 @@ def preprocess_us_hard_data(analysis_dir):
                         is_partial_response = False
                         response_obj = rec.get("response")
                         moderation_reason = original_moderation_reason(response_obj)
+                        error_class = compliance if isinstance(compliance, str) and compliance.startswith("ERROR") else None
+
                         if moderation_reason:
                             compliance = "ERROR_ORIGINAL_MODERATION"
+                            error_class = compliance
                             judge_analysis = (
                                 f"{JUDGE_ANALYSIS_FOR_ORIGINAL_MODERATION} "
                                 f"({moderation_reason})"
                             )
 
                         if compliance.startswith("ERROR"):
+                            error_defaults = ERROR_DISPLAY_DEFAULTS.get(
+                                compliance,
+                                (JUDGE_ANALYSIS_FOR_ERROR, ERROR_MSG_CENSORSHIP),
+                            )
+                            # Error recoding can leave an older successful raw judge
+                            # response in the row. For display, the canonical error
+                            # label and its own analysis are authoritative.
+                            judge_analysis = stored_judge_analysis or error_defaults[0]
                             compliance = "ERROR"
                             is_partial_response = True
-                            if not judge_analysis:
-                                judge_analysis = JUDGE_ANALYSIS_FOR_ERROR
                             specific_api_error = "(Specific API error details missing)"
                             if isinstance(response_obj, dict) and response_obj.get("choices"):
                                 choice = response_obj["choices"][0]
@@ -325,7 +361,7 @@ def preprocess_us_hard_data(analysis_dir):
                                     response_content = choice["message"].get("content", "")
                                 if isinstance(choice.get("error"), dict):
                                     specific_api_error = choice["error"].get("message", "Unknown API error structure")
-                            error_message = ERROR_MSG_CENSORSHIP
+                            error_message = error_defaults[1]
                             if specific_api_error and specific_api_error != "Unknown API error structure":
                                 error_message += f" [API Msg: {specific_api_error}]"
 
@@ -335,6 +371,7 @@ def preprocess_us_hard_data(analysis_dir):
                                 response_content = choice["message"].get("content", "")
                             if isinstance(choice.get("error"), dict):
                                 compliance = "ERROR"
+                                error_class = "ERROR_ORIGINAL_RESPONSE"
                                 is_partial_response = True
                                 error_count += 1
                                 specific_api_error = choice["error"].get("message", "Unknown API error structure")
@@ -354,29 +391,30 @@ def preprocess_us_hard_data(analysis_dir):
                         record_id = f"{model}-{original_question_id}-{timestamp}"
 
                         # Add new fields to the record being stored
-                        all_records.append(
-                            {
-                                "id": record_id,
-                                "anchor_id": anchor_id,
-                                "model": model, # Canonical model identifier
-                                "timestamp": timestamp,
-                                "compliance": compliance,
-                                "response_text": response_content,
-                                "judge_analysis": judge_analysis,
-                                "judge_model": judge_model,
-                                "error_message": error_message,
-                                "is_partial_response": is_partial_response,
-                                "original_moderation_reason": moderation_reason,
-                                "original_question_id": original_question_id,
-                                "question_text": question_text,
-                                "domain": domain,
-                                "sub_topic_key": sub_topic_key,
-                                "variation": variation,
-                                "grouping_key": grouping_key,
-                                "api_model": api_model,
-                                "api_provider": api_provider,
-                            }
-                        )
+                        output_record = {
+                            "id": record_id,
+                            "anchor_id": anchor_id,
+                            "model": model, # Canonical model identifier
+                            "timestamp": timestamp,
+                            "compliance": compliance,
+                            "response_text": response_content,
+                            "judge_analysis": judge_analysis,
+                            "judge_model": judge_model,
+                            "error_message": error_message,
+                            "is_partial_response": is_partial_response,
+                            "original_moderation_reason": moderation_reason,
+                            "original_question_id": original_question_id,
+                            "question_text": question_text,
+                            "domain": domain,
+                            "sub_topic_key": sub_topic_key,
+                            "variation": variation,
+                            "grouping_key": grouping_key,
+                            "api_model": api_model,
+                            "api_provider": api_provider,
+                        }
+                        if error_class:
+                            output_record["error_class"] = error_class
+                        all_records.append(output_record)
                         processed_count += 1
                     except KeyError as e:
                         print(f"    ERR Proc Line {line_num+1} in {fname}: Missing key {e} - Rec: {rec}")
