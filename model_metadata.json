@@ -349,3 +349,5 @@
 {"model_identifier": "xiaomi/mimo-v2.5-reasoning", "creator": "xiaomi", "model_name": "mimo-v2.5", "model_family": "mimo-v2.5", "release_date": "2026-04-22", "reasoning_model": true, "notes": ""}
 {"model_identifier": "xiaomi/mimo-v2.5-pro", "creator": "xiaomi", "model_name": "mimo-v2.5-pro", "model_family": "mimo-v2.5-pro", "release_date": "2026-04-22", "reasoning_model": false, "notes": ""}
 {"model_identifier": "xiaomi/mimo-v2.5-pro-reasoning", "creator": "xiaomi", "model_name": "mimo-v2.5-pro", "model_family": "mimo-v2.5-pro", "release_date": "2026-04-22", "reasoning_model": true, "notes": ""}
+{"model_identifier": "thinkingmachines/inkling-64k", "creator": "thinkingmachines", "model_name": "inkling-64k", "model_family": "inkling", "release_date": "2026-07-15", "reasoning_model": false, "notes": "Tinker 64K context; renderer effort 0.0"}
+{"model_identifier": "thinkingmachines/inkling-64k-reasoning", "creator": "thinkingmachines", "model_name": "inkling-64k-reasoning", "model_family": "inkling", "release_date": "2026-07-15", "reasoning_model": true, "notes": "Tinker 64K context; renderer effort 0.9"}
