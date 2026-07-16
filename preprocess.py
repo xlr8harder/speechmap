@@ -169,6 +169,17 @@ def split_model_metadata(metadata_dict):
     return included, skipped
 
 
+def model_display_name(model_id, meta):
+    model_name = (meta or {}).get("model_name") or model_id
+    if not (meta or {}).get("reasoning_model"):
+        return model_name
+    short_id = str(model_id).split("/")[-1]
+    for suffix in ("-reasoning", "-thinking"):
+        if short_id == f"{model_name}{suffix}":
+            return short_id
+    return model_name
+
+
 def collect_strings(value):
     if isinstance(value, str):
         return [value]
@@ -1620,7 +1631,7 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
     # Extract key metadata
     creator = (meta or {}).get("creator", "Unknown")
     creator_display = lab_display_name(creator, lab_metadata)
-    model_name = (meta or {}).get("model_name", model_id)
+    model_name = model_display_name(model_id, meta)
     release_date = (meta or {}).get("release_date", "")
     model_family = (meta or {}).get("model_family", "")
     is_reasoning = (meta or {}).get("reasoning_model", False)
