@@ -1,5 +1,9 @@
 """Timeline: legend chips, multi-pin highlighting, URL param sync."""
 
+import json
+
+from conftest import REPO_ROOT
+
 
 def wait_for_chart(page):
     page.wait_for_function("() => !!window.__timelineChart", timeout=10000)
@@ -9,11 +13,20 @@ def dataset_count(page):
     return page.evaluate("() => window.__timelineChart.data.datasets.length")
 
 
+def colored_lab_count():
+    count = 0
+    with (REPO_ROOT / "lab_metadata.jsonl").open(encoding="utf-8") as f:
+        for line in f:
+            if line.strip() and json.loads(line).get("color"):
+                count += 1
+    return count
+
+
 def test_legend_chips_render(page, site_url):
     page.goto(site_url + "/timeline/")
     wait_for_chart(page)
     chips = page.locator("#timeline-legend button.tl-chip[data-lab]")
-    assert chips.count() == 9  # colored tier; Other is a static swatch
+    assert chips.count() == colored_lab_count()  # colored tier; Other is a static swatch
     assert page.locator("#timeline-legend .tl-swatch").is_visible()
     assert page.locator("#timeline-clear-highlights").is_hidden()
 

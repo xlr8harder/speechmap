@@ -150,6 +150,7 @@
 {"model_identifier": "meta-llama/llama-3.1-405b-instruct", "creator": "meta-llama", "model_name": "llama-3.1-405b-instruct", "model_family": "llama-3.1", "release_date": "2024-07-23", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meta-llama/llama-3-70b-instruct", "creator": "meta-llama", "model_name": "llama-3-70b-instruct", "model_family": "llama-3", "release_date": "2024-04-18", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meta-llama/llama-3-8b-instruct", "creator": "meta-llama", "model_name": "llama-3-8b-instruct", "model_family": "llama-3", "release_date": "2024-04-18", "reasoning_model": false, "notes": ""}
+{"model_identifier": "meta/muse-spark-1.1", "creator": "meta", "model_name": "muse-spark-1.1", "model_family": "muse-spark", "release_date": "2026-07-16", "reasoning_model": true, "notes": "Reasoning enabled via OpenRouter."}
 {"model_identifier": "meta-llama/llama-2-70b-chat", "creator": "meta-llama", "model_name": "llama-2-70b-chat", "model_family": "llama-2", "release_date": "2023-07-18", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meta-llama/llama-2-13b-chat", "creator": "meta-llama", "model_name": "llama-2-13b-chat", "model_family": "llama-2", "release_date": "2023-07-18", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-3.5-turbo-0613", "creator": "openai", "model_name": "gpt-3.5-turbo-0613", "model_family": "gpt-3.5-turbo", "release_date": "2023-06-13", "reasoning_model": false, "notes": "accessed via Azure, errors likely due to additional Azure moderation layer"}
@@ -227,6 +228,7 @@
 {"model_identifier": "moonshotai/kimi-k2.5-thinking", "creator": "moonshotai", "model_name": "kimi-k2.5-thinking", "model_family": "kimi-k2", "release_date": "2026-01-26", "reasoning_model": true, "notes": ""}
 {"model_identifier": "moonshotai/kimi-k2.6", "creator": "moonshotai", "model_name": "kimi-k2.6", "model_family": "kimi-k2", "release_date": "2026-04-20", "reasoning_model": false, "notes": ""}
 {"model_identifier": "moonshotai/kimi-k2.6-thinking", "creator": "moonshotai", "model_name": "kimi-k2.6-thinking", "model_family": "kimi-k2", "release_date": "2026-04-20", "reasoning_model": true, "notes": ""}
+{"model_identifier": "moonshotai/kimi-k3", "creator": "moonshotai", "model_name": "kimi-k3", "model_family": "kimi-k3", "release_date": "2026-07-16", "reasoning_model": true, "notes": "Reasoning enabled via OpenRouter."}
 {"model_identifier": "baidu/ernie-4.5-300b-a47b", "creator": "baidu", "model_name": "ernie-4.5-300b-a47b", "model_family": "ernie-4.5-300b-a47b", "release_date": "2025-06-30", "reasoning_model": false, "notes": ""}
 {"model_identifier": "openai/gpt-oss-120b", "creator": "openai", "model_name": "gpt-oss-120b", "model_family": "gpt-oss-120b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}
 {"model_identifier": "openai/gpt-oss-20b", "creator": "openai", "model_name": "gpt-oss-20b", "model_family": "gpt-oss-20b", "release_date": "2025-08-05", "reasoning_model": true, "notes": ""}

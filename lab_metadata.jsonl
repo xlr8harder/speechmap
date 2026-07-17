@@ -12,6 +12,7 @@
 {"lab": "inclusionai", "full_name": "InclusionAI"}
 {"lab": "liquid", "full_name": "Liquid AI"}
 {"lab": "meituan", "full_name": "Meituan"}
+{"lab": "meta", "full_name": "Meta", "color": "#1877f2"}
 {"lab": "meta-llama", "full_name": "Meta (Llama)"}
 {"lab": "microsoft", "full_name": "Microsoft"}
 {"lab": "minimax", "full_name": "MiniMax"}
