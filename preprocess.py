@@ -38,6 +38,12 @@ SUBSTACK_CACHE_FILE = os.path.join(CACHE_DIR, "substack-posts.json")
 
 # Phase 2 static site generation
 SITE_BASE_URL = "https://speechmap.ai"
+SITE_ASSET_VERSION = 51
+DEFAULT_PAGE_DESCRIPTION = (
+    "SpeechMap.AI measures AI censorship and refusal rates: how ChatGPT, Claude, "
+    "Gemini, Grok, and 300+ language models handle controversial speech, with a "
+    "free-speech leaderboard tracking changes over time."
+)
 STATIC_MODELS_DIR = "models"
 STATIC_THEMES_DIR = "themes"
 STATIC_LABS_DIR = "labs"
@@ -1050,11 +1056,7 @@ def _prune_stale_model_dirs(model_summary):
 
 
 def _page_head(title, canonical_url, depth=0, active_tab=None, description=None):
-    desc = description or (
-        "SpeechMap.AI measures AI censorship and refusal rates: how ChatGPT, Claude, "
-        "Gemini, Grok, and 300+ language models handle controversial speech, with a "
-        "free-speech leaderboard tracking changes over time."
-    )
+    desc = description or DEFAULT_PAGE_DESCRIPTION
     ogimg = f"{SITE_BASE_URL}/og-image.png"
     prefix = "../" * depth
     # Build active class strings
@@ -1076,7 +1078,7 @@ def _page_head(title, canonical_url, depth=0, active_tab=None, description=None)
 <meta property=\"og:url\" content=\"{_html_escape(canonical_url)}\">
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
-<link href=\"/style.css?51\" rel=\"stylesheet\">
+<link href=\"/style.css?{SITE_ASSET_VERSION}\" rel=\"stylesheet\">
 </head><body>
 <div class=\"top-nav-wrapper\">
   <div class=\"top-nav-inner\">
@@ -1268,7 +1270,7 @@ def _hero_trend_svg(model_summary):
 
 
 def render_home_page(stats, theme_summary=None, lab_standings=None, lab_metadata=None, model_summary=None):
-    title = "SpeechMap.AI Explorer"
+    title = "SpeechMap.AI - AI Refusal Rates & Free Speech Leaderboard"
     canon = f"{SITE_BASE_URL}/"
     head = _page_head(title, canon, depth=0, active_tab='about')
     # Stats
@@ -1593,11 +1595,18 @@ def _model_table_html(model_summary, filter_placeholder="Filter models… (suppo
 
 
 def render_models_index(model_summary):
-    title = "Model Results"
+    title = "AI Model Refusal Rates | SpeechMap.AI"
     canon = f"{SITE_BASE_URL}/models/"
     depth = 1
     table_html = _model_table_html(model_summary)
     prompt_count = max((int(m.get("num_responses") or 0) for m in model_summary), default=0)
+    model_count = len(model_summary or [])
+    release_plural = "" if model_count == 1 else "s"
+    prompt_plural = "" if prompt_count == 1 else "s"
+    description = (
+        f"Compare refusal rates and free-speech scores for {model_count:,} AI "
+        f"model release{release_plural} tested on the same {prompt_count:,} sensitive prompt{prompt_plural}."
+    )
     table = f"""
 <div class=\"leaderboard-hero\">
   <h1>Model Results</h1>
@@ -1611,11 +1620,10 @@ def render_models_index(model_summary):
     </div>
   </div>
 """ + table_html + "\n</div>\n"
-    return _page_head(title, canon, depth=depth, active_tab='models') + table + _page_foot(depth=depth)
+    return _page_head(title, canon, depth=depth, active_tab='models', description=description) + table + _page_foot(depth=depth)
 
 
 def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None, domain_ranks=None):
-    title = f"Model: {model_id}"
     canon = f"{SITE_BASE_URL}/models/{generate_safe_id(model_id)}/"
     depth = 2
 
@@ -1656,6 +1664,15 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
     pct_denial = (total_denial / total_responses * 100) if total_responses > 0 else 0
     pct_error = (total_error / total_responses * 100) if total_responses > 0 else 0
     num_themes = len(theme_stats_for_model or {})
+    prompt_plural = "" if total_responses == 1 else "s"
+    theme_plural = "" if num_themes == 1 else "s"
+
+    intro_html = f"""
+<div class="page-intro">
+  <p class="lab-lede">This is a SpeechMap result page for <b>{_html_escape(model_id)}</b>. We asked this model {total_responses:,} sensitive and controversial prompt{prompt_plural} across {num_themes:,} question theme{theme_plural}, then judged whether each response was complete, evasive, a denial, or a provider error. For methodology and broader context, start with the <a href="/">project overview</a>.</p>
+  {WHY_WE_TEST_HTML}
+</div>
+"""
 
     # Model info card - include all key fields
     info_items = []
@@ -1809,11 +1826,11 @@ def render_model_detail(model_id, meta, theme_stats_for_model, lab_metadata=None
         f"{total_responses} sensitive prompts completely, refused {pct_denial:.1f}%. "
         f"Per-theme refusal breakdown on SpeechMap.AI."
     )
-    return _page_head(seo_title, canon, depth=depth, active_tab='models', description=seo_desc) + hero_html + info_section + stats_html + table + _page_foot(depth=depth)
+    return _page_head(seo_title, canon, depth=depth, active_tab='models', description=seo_desc) + hero_html + intro_html + info_section + stats_html + table + _page_foot(depth=depth)
 
 
 def render_themes_index(theme_summary_all, model_theme_summary=None):
-    title = "Question Themes"
+    title = "AI Refusal Rates by Question Theme | SpeechMap.AI"
     canon = f"{SITE_BASE_URL}/themes/"
     depth = 1
     rows = []
@@ -1848,6 +1865,10 @@ def render_themes_index(theme_summary_all, model_theme_summary=None):
         )
     n_themes = len(theme_summary_all or [])
     n_domains = len({t.get("domain") for t in (theme_summary_all or []) if t.get("domain")})
+    description = (
+        f"Explore {n_themes:,} SpeechMap question themes across {n_domains:,} domains, "
+        "with model-by-model refusal rates, prompts, responses, and judge analysis."
+    )
     header_html = f"""
 <div class=\"leaderboard-hero\">
   <h1>Question Themes</h1>
@@ -1932,11 +1953,11 @@ def render_themes_index(theme_summary_all, model_theme_summary=None):
         filter_placeholder="Filter themes… (supports /regex/)",
         initial_sort=("complete", "asc"),
     ) + "\n</div>\n"
-    return _page_head(title, canon, depth=depth, active_tab='themes') + header_html + table + _page_foot(depth=depth)
+    return _page_head(title, canon, depth=depth, active_tab='themes', description=description) + header_html + table + _page_foot(depth=depth)
 
 
 def render_lab_standings_page(lab_standings, lab_metadata=None, model_summary=None, model_metadata=None):
-    title = "Lab Leaderboard"
+    title = "AI Lab Free Speech Leaderboard | SpeechMap.AI"
     canon = f"{SITE_BASE_URL}/labs/"
     depth = 0
     data = lab_standings or {}
@@ -2523,7 +2544,7 @@ def render_timeline_page(lab_metadata=None):
     """Timeline static shell. Legend chips are prerendered from lab colors so
     the client needs no metadata fetch to know the color tier; Chart.js
     hydration loads point data from /data/."""
-    head = _page_head("Model Timeline", f"{SITE_BASE_URL}/timeline/", depth=0, active_tab='timeline')
+    head = _page_head("AI Model Refusal Timeline | SpeechMap.AI", f"{SITE_BASE_URL}/timeline/", depth=0, active_tab='timeline')
     colored = sorted(
         (
             (lab, meta.get("full_name") or lab, meta.get("color"))
@@ -2593,7 +2614,7 @@ def _resource_card(href, title, desc, external=True):
 
 
 def render_resources_page():
-    head = _page_head("Resources & Data", f"{SITE_BASE_URL}/resources/", depth=0, active_tab='resources')
+    head = _page_head("Resources & Data | SpeechMap.AI", f"{SITE_BASE_URL}/resources/", depth=0, active_tab='resources')
     body = (
         "<div class=\"leaderboard-hero\">"
         "  <h1>Resources &amp; Data</h1>"
@@ -2641,7 +2662,7 @@ def render_resources_page():
 
 
 def render_acknowledgments_page():
-    return _page_head("Acknowledgments", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
+    return _page_head("Acknowledgments | SpeechMap.AI", f"{SITE_BASE_URL}/acknowledgments/", depth=0, active_tab='ack') + (
         "<div class=\"leaderboard-hero\">"
         "  <h1>Acknowledgments</h1>"
         "  <p class=\"hero-subtitle\">Thank you to our supporters</p>"
@@ -2838,7 +2859,7 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
     collapsible sections. Response bodies live in shard files (written here
     too) and are lazy-loaded on expand / served by the pair-page Function."""
     theme_safe = generate_safe_id(theme_key)
-    title = f"Theme: {theme_key}"
+    title = f"{theme_key} - AI Refusal Rates by Model | SpeechMap.AI"
     canon = f"{SITE_BASE_URL}/themes/{theme_safe}/"
     depth = 2
 
@@ -2969,11 +2990,16 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
         + "".join(columns)
         + "</div></div>"
     )
-    head = _page_head(title, canon, depth=depth, active_tab='themes')
+    seo_desc = (
+        f"SpeechMap theme results for {theme_key}: {total_models} models tested on "
+        f"{n_vars} prompt variations in {domain or 'N/A'}, with {pct_complete:.1f}% "
+        "answered completely. Includes prompts, model responses, and judge analysis."
+    )
+    head = _page_head(title, canon, depth=depth, active_tab='themes', description=seo_desc)
     return head + body_html + _page_foot(depth=depth)
 
 
-def write_pair_template():
+def render_pair_template():
     """Chrome template the pair-page Pages Function fills in. Generated with
     the real page head/foot so the Function never duplicates site chrome."""
     head = _page_head("__TITLE__", "__CANONICAL__", depth=2, active_tab='themes', description="__DESC__")
@@ -2981,11 +3007,20 @@ def write_pair_template():
         '<div class="leaderboard-hero"><h1>__MODEL__</h1><p class="hero-subtitle">__THEME__ · __DOMAIN__</p></div>'
         '<div class="leaderboard-content">'
         '<p class="back-link"><a href="/themes/__THEME_SAFE__/">← All models on this theme</a></p>'
+        '<div class="page-intro">'
+        '<p class="lab-lede">This page shows <b>__MODEL__</b> on one SpeechMap theme, <b>__THEME__</b> (__DOMAIN__). Each card below is one prompt variation, the model response, and the judge analysis. Compare <a href="/themes/__THEME_SAFE__/">all models on this theme</a>, see <a href="/models/__MODEL_SAFE__/">all results for this model</a>, or start with the <a href="/">project overview</a>.</p>'
         + WHY_WE_TEST_HTML +
+        "</div>"
         '<div class="response-list pair-page">__CARDS__</div>'
         "</div>"
     )
-    _write_file(PAIR_TEMPLATE_FILE, head + body + _page_foot(depth=2))
+    return head + body + _page_foot(depth=2)
+
+
+def write_pair_template():
+    _write_file(PAIR_TEMPLATE_FILE, render_pair_template())
+
+
 def generate_static_pages(model_meta_dict, summaries, data_by_theme, lab_standings, lab_metadata=None, include_theme_pages=True):
     # Models index
     os.makedirs(STATIC_MODELS_DIR, exist_ok=True)

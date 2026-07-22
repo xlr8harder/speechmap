@@ -57,6 +57,7 @@ export async function onRequestGet(context) {
     .replaceAll("__DESC__", esc(desc))
     .replaceAll("__CANONICAL__", esc(canonical))
     .replaceAll("__MODEL__", esc(entry.m))
+    .replaceAll("__MODEL_SAFE__", esc(model))
     .replaceAll("__THEME__", esc(themeName))
     .replaceAll("__DOMAIN__", esc(meta.domain || "N/A"))
     .replaceAll("__THEME_SAFE__", esc(theme))
