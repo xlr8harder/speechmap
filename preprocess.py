@@ -95,14 +95,6 @@ LAB_STANDINGS_WINDOW_MONTHS = 6
 LAB_STANDINGS_HALFLIFE_MONTHS = 3
 # Derived EMA alpha so weight halves every LAB_STANDINGS_HALFLIFE_MONTHS buckets
 LAB_STANDINGS_EMA_ALPHA = 1 - (0.5 ** (1 / LAB_STANDINGS_HALFLIFE_MONTHS))
-CLOUDFLARE_ANALYTICS_SNIPPET = (
-    "<!-- Cloudflare Web Analytics -->"
-    "<script defer src='https://static.cloudflareinsights.com/beacon.min.js' "
-    "data-cf-beacon='{\"token\": \"d1b43eda5db840b380aeaed5d798d3a2\"}'></script>"
-    "<!-- End Cloudflare Web Analytics -->"
-)
-
-
 def generate_safe_id(text):
     # Re-purposed slightly for filesystem-safe filenames from grouping keys
     text_str = str(text) if text is not None else ""
@@ -1085,7 +1077,6 @@ def _page_head(title, canonical_url, depth=0, active_tab=None, description=None)
 <meta property=\"og:type\" content=\"website\">
 <meta name=\"twitter:card\" content=\"summary_large_image\">
 <link href=\"/style.css?51\" rel=\"stylesheet\">
-{CLOUDFLARE_ANALYTICS_SNIPPET}
 </head><body>
 <div class=\"top-nav-wrapper\">
   <div class=\"top-nav-inner\">
