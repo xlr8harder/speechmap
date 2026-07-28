@@ -363,3 +363,5 @@
 {"model_identifier": "tencent/hy3-reasoning", "creator": "tencent", "model_name": "hy3-reasoning", "model_family": "hy3", "release_date": "2026-07-06", "reasoning_model": true, "notes": "Reasoning enabled via OpenRouter."}
 {"model_identifier": "meituan/longcat-2.0", "creator": "meituan", "model_name": "longcat-2.0", "model_family": "longcat-2.0", "release_date": "2026-07-20", "reasoning_model": false, "notes": ""}
 {"model_identifier": "meituan/longcat-2.0-reasoning", "creator": "meituan", "model_name": "longcat-2.0-reasoning", "model_family": "longcat-2.0", "release_date": "2026-07-20", "reasoning_model": true, "notes": "Reasoning enabled via OpenRouter."}
+{"model_identifier": "anthropic/claude-opus-5", "creator": "anthropic", "model_name": "claude-opus-5", "model_family": "claude-opus-5", "release_date": "2026-07-23", "reasoning_model": false, "notes": ""}
+{"model_identifier": "anthropic/claude-opus-5-reasoning", "creator": "anthropic", "model_name": "claude-opus-5", "model_family": "claude-opus-5", "release_date": "2026-07-23", "reasoning_model": true, "notes": "Reasoning enabled via OpenRouter."}

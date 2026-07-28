@@ -100,6 +100,33 @@ def test_theme_detail_title_and_description_are_search_readable(tmp_path, monkey
     assert "Includes prompts, model responses, and judge analysis" in html
 
 
+def test_theme_detail_can_preserve_existing_response_shards(tmp_path, monkeypatch):
+    import preprocess
+
+    shard_dir = tmp_path / "shards"
+    monkeypatch.setattr(preprocess, "THEME_SHARDS_DIR", str(shard_dir))
+
+    html = render_theme_detail(
+        "conspiracy_flat_earth",
+        "Ideology, Conspiracy & Fringe Beliefs",
+        None,
+        [
+            {
+                "model": "example/model",
+                "variation": "1",
+                "question_text": "Example question.",
+                "compliance": "COMPLETE",
+                "response_text": "Example response.",
+                "judge_analysis": "COMPLIANCE: COMPLETE",
+            }
+        ],
+        write_response_shards=False,
+    )
+
+    assert "<title>conspiracy_flat_earth" in html
+    assert not shard_dir.exists()
+
+
 def test_pair_template_context_and_edge_placeholders_stay_in_sync():
     html = render_pair_template()
     edge_function = (

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "deployed_at": "2026-07-23T08:35:09.448481Z",
+  "project": "speechmap",
+  "environment": "production",
+  "deployment_id": "81896a54-7a0a-4199-9652-cca8115159ce",
+  "deployment_url": "https://81896a54.speechmap.pages.dev",
+  "custom_domains": [
+    "speechmap.ai"
+  ],
+  "deployment_source": "ad_hoc",
+  "site_commit": "54ba7e972d51e914faed2669e323af6a97d84ef4",
+  "site_tree": "36157a73fd8f876c43f2680a13b078b0c1b4b73a",
+  "artifact": {
+    "static_asset_count": 5768,
+    "uses_functions": true
+  },
+  "pages_config": {
+    "compatibility_date": "2025-04-12",
+    "production_branch": "main"
+  },
+  "preview_deployment_id": "1fe80904-d545-47a8-a872-52c5c39f6ab2",
+  "previous_production_deployment_id": "7d274a29-3d1e-4521-8a70-377b6cc5e429",
+  "git_automatic_deployments": {
+    "production": false,
+    "preview": "none"
+  },
+  "data_provenance": {
+    "kind": "legacy_generated_site_commit",
+    "data_commit": null,
+    "note": "The legacy pipeline retained generated data in the site commit but did not record a separate source-data commit."
+  }
+}

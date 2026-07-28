@@ -119,9 +119,19 @@ capture only the top of the page.
 
 ## Agent Workflow & Commit Policy
 - Before any `git add`/`git commit`, post a brief summary of intended changes and findings (benchmarks, impacts) and ask for approval.
-- Before asking for commit approval on UI changes, stand up a local server
-  (`python3 -m http.server -d . 8000`) and tell the user the URL so they can
-  review the rendered result themselves.
+- Before asking for commit approval on UI changes, present one of two review
+  options:
+  1. **Local Pages preview (default):** run `npm run dev` (or
+     `uv run python tools/deploy_pages.py`) and give the user
+     `http://localhost:8789/`.
+  2. **Remote Pages preview:** run
+     `uv run python tools/deploy_pages.py deploy --artifact-dir <clean-worktree> --preview-only`
+     only when the change affects behavior that should be established on real
+     Pages infrastructure (for example Wrangler/compatibility configuration,
+     Functions, routing, redirects, headers, or deployment/asset handling), or
+     when the user explicitly requests a remote preview.
+  Do not create a remote preview for ordinary content, styling, or client-side
+  changes when the local Pages preview exercises the relevant behavior.
 - For multi-step design/refactor efforts, keep a temporary `WORKLIST.md` in the
   repo root (never committed) with decisions and open items; delete it when done.
 - Keep exploratory/performance-testing changes local until approved; revert prototypes after profiling if not proceeding.

@@ -24,6 +24,13 @@ MODEL_METADATA_SKIP_FLAG = "skip"
 CACHE_DIR = ".cache"
 
 
+def get_analysis_dir():
+    data_root = os.environ.get("SPEECHMAP_DATA_ROOT")
+    if data_root:
+        return os.path.join(data_root, "analysis")
+    return ANALYSIS_DIR
+
+
 # Phase 1 split-output locations
 DATA_DIR = "data"
 # Runtime JSON used by the client at runtime (keep under /data)
@@ -2854,10 +2861,21 @@ VERDICT_BUCKETS = (
 )
 
 
-def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
+def render_theme_detail(
+    theme_key,
+    domain,
+    per_model_rows,
+    sample_records,
+    *,
+    write_response_shards=True,
+):
     """Static theme page: prompts, stats, and models grouped by outcome in
-    collapsible sections. Response bodies live in shard files (written here
-    too) and are lazy-loaded on expand / served by the pair-page Function."""
+    collapsible sections. Response bodies live in shard files and are
+    lazy-loaded on expand / served by the pair-page Function.
+
+    Cached static rebuilds may preserve existing shards when only page chrome
+    changed. Full data builds keep the default and rewrite them.
+    """
     theme_safe = generate_safe_id(theme_key)
     title = f"{theme_key} - AI Refusal Rates by Model | SpeechMap.AI"
     canon = f"{SITE_BASE_URL}/themes/{theme_safe}/"
@@ -2869,23 +2887,24 @@ def render_theme_detail(theme_key, domain, per_model_rows, sample_records):
         groups.setdefault(m, []).append(r)
 
     # --- Shards + per-theme meta (assets for lazy-load and the Function) ---
-    os.makedirs(THEME_SHARDS_DIR, exist_ok=True)
-    shards = [dict() for _ in range(THEME_SHARD_COUNT)]
-    for m, arr in groups.items():
-        safe = generate_safe_id(m)
-        shards[_theme_shard_of(safe)][safe] = {
-            "m": m,
-            "html": _render_response_cards(theme_safe, m, arr),
-        }
-    for k, shard in enumerate(shards):
-        with open(os.path.join(THEME_SHARDS_DIR, f"{theme_safe}.{k}.json"), "w", encoding="utf-8") as f:
-            json.dump(shard, f, ensure_ascii=False)
-    with open(os.path.join(THEME_SHARDS_DIR, f"{theme_safe}.meta.json"), "w", encoding="utf-8") as f:
-        json.dump(
-            {"theme": theme_key, "domain": domain or "N/A", "shards": THEME_SHARD_COUNT},
-            f,
-            ensure_ascii=False,
-        )
+    if write_response_shards:
+        os.makedirs(THEME_SHARDS_DIR, exist_ok=True)
+        shards = [dict() for _ in range(THEME_SHARD_COUNT)]
+        for m, arr in groups.items():
+            safe = generate_safe_id(m)
+            shards[_theme_shard_of(safe)][safe] = {
+                "m": m,
+                "html": _render_response_cards(theme_safe, m, arr),
+            }
+        for k, shard in enumerate(shards):
+            with open(os.path.join(THEME_SHARDS_DIR, f"{theme_safe}.{k}.json"), "w", encoding="utf-8") as f:
+                json.dump(shard, f, ensure_ascii=False)
+        with open(os.path.join(THEME_SHARDS_DIR, f"{theme_safe}.meta.json"), "w", encoding="utf-8") as f:
+            json.dump(
+                {"theme": theme_key, "domain": domain or "N/A", "shards": THEME_SHARD_COUNT},
+                f,
+                ensure_ascii=False,
+            )
 
     # --- Prompts + stats ---
     prompts_seen = {}
@@ -3275,7 +3294,10 @@ def regenerate_home_page_from_artifacts():
     _write_file("index.html", render_home_page(core_stats, qts_all, lab_standings, lab_metadata=lab_metadata, model_summary=model_summary))
 
 
-def generate_static_pages_from_artifacts(skip_theme_pages=False):
+def generate_static_pages_from_artifacts(
+    skip_theme_pages=False,
+    preserve_theme_shards=False,
+):
     print("Regenerating static pages from existing artifacts...")
     model_meta_dict, model_summary, qts_all, model_theme_summary, core_stats, compliance_order = load_core_artifacts()
     _, skipped_model_meta = split_model_metadata(load_model_metadata(MODEL_METADATA_FILE))
@@ -3364,7 +3386,16 @@ def generate_static_pages_from_artifacts(skip_theme_pages=False):
                     break
             out_path = os.path.join(STATIC_THEMES_DIR, safe, "index.html")
             # Render ALL records for full static detail
-            _write_file(out_path, render_theme_detail(key, domain_guess, None, records))
+            _write_file(
+                out_path,
+                render_theme_detail(
+                    key,
+                    domain_guess,
+                    None,
+                    records,
+                    write_response_shards=not preserve_theme_shards,
+                ),
+            )
 
     # Acknowledgments + Resources static pages
     _write_file(os.path.join("acknowledgments", "index.html"), render_acknowledgments_page())
@@ -3382,6 +3413,7 @@ def main():
     parser.add_argument('--labs-only', action='store_true')
     parser.add_argument('--static-only', action='store_true')
     parser.add_argument('--no-themes', action='store_true')
+    parser.add_argument('--no-shards', action='store_true')
     parser.add_argument('--substack-refresh', action='store_true')
     args, _ = parser.parse_known_args()
 
@@ -3405,7 +3437,10 @@ def main():
 
     if args.static_only:
         try:
-            generate_static_pages_from_artifacts(skip_theme_pages=args.no_themes)
+            generate_static_pages_from_artifacts(
+                skip_theme_pages=args.no_themes,
+                preserve_theme_shards=args.no_shards,
+            )
             print("Static regeneration complete.")
         except Exception as e:
             print(f"Static regeneration failed: {e}")
@@ -3415,7 +3450,7 @@ def main():
     model_meta_dict = load_model_metadata(MODEL_METADATA_FILE)
     model_meta_included, skipped_model_meta = split_model_metadata(model_meta_dict)
     lab_meta_dict = load_lab_metadata(LAB_METADATA_FILE)
-    all_data = preprocess_us_hard_data(ANALYSIS_DIR)
+    all_data = preprocess_us_hard_data(get_analysis_dir())
 
     if not all_data:
         print("No data processed. Exiting.")
