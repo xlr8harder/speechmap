@@ -1,6 +1,1006 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/anthropic-claude-3-sonnet-20240229/</loc>
+    <lastmod>2024-02-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/anthropic-claude-3-opus-20240229/</loc>
+    <lastmod>2024-02-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/openai-gpt-4-turbo-preview/</loc>
+    <lastmod>2024-01-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/openai-gpt-3-5-turbo-0125/</loc>
+    <lastmod>2024-01-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/mistralai-mixtral-8x7b-v0-1/</loc>
+    <lastmod>2023-12-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/mistralai-mistral-medium-2312/</loc>
+    <lastmod>2023-11-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/openai-gpt-4-1106-preview/</loc>
+    <lastmod>2023-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/openai-gpt-3-5-turbo-1106/</loc>
+    <lastmod>2023-11-06</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/mistralai-mistral-7b-instruct-v0-1/</loc>
+    <lastmod>2023-09-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/openai-gpt-4-0613/</loc>
+    <lastmod>2023-06-13</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/openai-gpt-3-5-turbo-0613/</loc>
+    <lastmod>2023-06-13</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_religious_resistance_oppose/m/openai-gpt-4-0314/</loc>
+    <lastmod>2023-03-14</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/thinkingmachines-inkling-small-reasoning/</loc>
+    <lastmod>2026-07-31</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/thinkingmachines-inkling-small/</loc>
+    <lastmod>2026-07-31</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v4-flash-0731-reasoning/</loc>
+    <lastmod>2026-07-31</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v4-flash-0731/</loc>
+    <lastmod>2026-07-31</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-7-flash-reasoning/</loc>
+    <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-7-flash/</loc>
+    <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-5-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-5/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/poolside-laguna-s-2-1-reasoning/</loc>
+    <lastmod>2026-07-21</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/poolside-laguna-s-2-1/</loc>
+    <lastmod>2026-07-21</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-3-6-flash/</loc>
+    <lastmod>2026-07-21</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-3-5-flash-lite/</loc>
+    <lastmod>2026-07-21</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/meituan-longcat-2-0-reasoning/</loc>
+    <lastmod>2026-07-20</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/meituan-longcat-2-0/</loc>
+    <lastmod>2026-07-20</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-k3/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/meta-muse-spark-1-1/</loc>
+    <lastmod>2026-07-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/thinkingmachines-inkling-64k-reasoning/</loc>
+    <lastmod>2026-07-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/thinkingmachines-inkling-64k/</loc>
+    <lastmod>2026-07-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-6-terra-reasoning/</loc>
+    <lastmod>2026-07-09</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-6-terra/</loc>
+    <lastmod>2026-07-09</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-6-sol-reasoning/</loc>
+    <lastmod>2026-07-09</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-6-sol/</loc>
+    <lastmod>2026-07-09</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-6-luna-reasoning/</loc>
+    <lastmod>2026-07-09</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-6-luna/</loc>
+    <lastmod>2026-07-09</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-5/</loc>
+    <lastmod>2026-07-08</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/tencent-hy3-reasoning/</loc>
+    <lastmod>2026-07-06</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/tencent-hy3/</loc>
+    <lastmod>2026-07-06</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-sonnet-5/</loc>
+    <lastmod>2026-06-30</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/poolside-laguna-xs-2-1/</loc>
+    <lastmod>2026-06-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5-2-reasoning/</loc>
+    <lastmod>2026-06-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5-2/</loc>
+    <lastmod>2026-06-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-fable-5/</loc>
+    <lastmod>2026-06-09</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-3-ultra-550b-a55b-reasoning/</loc>
+    <lastmod>2026-06-04</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-3-ultra-550b-a55b/</loc>
+    <lastmod>2026-06-04</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-7-plus-reasoning/</loc>
+    <lastmod>2026-06-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-7-plus/</loc>
+    <lastmod>2026-06-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/minimax-minimax-m3-reasoning/</loc>
+    <lastmod>2026-06-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/minimax-minimax-m3/</loc>
+    <lastmod>2026-06-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/stepfun-step-3-7-flash/</loc>
+    <lastmod>2026-05-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-8-reasoning/</loc>
+    <lastmod>2026-05-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-8/</loc>
+    <lastmod>2026-05-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-7-max-reasoning/</loc>
+    <lastmod>2026-05-21</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-7-max/</loc>
+    <lastmod>2026-05-21</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-3-5-flash/</loc>
+    <lastmod>2026-05-19</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/inclusionai-ring-2-6-1t/</loc>
+    <lastmod>2026-05-08</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-3-1-flash-lite/</loc>
+    <lastmod>2026-05-08</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-3-reasoning/</loc>
+    <lastmod>2026-05-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-3/</loc>
+    <lastmod>2026-05-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-mistral-medium-3-5-2604-reasoning/</loc>
+    <lastmod>2026-04-30</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-mistral-medium-3-5-2604/</loc>
+    <lastmod>2026-04-30</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/ibm-granite-4-1-8b/</loc>
+    <lastmod>2026-04-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/poolside-laguna-xs-2-reasoning/</loc>
+    <lastmod>2026-04-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/poolside-laguna-xs-2/</loc>
+    <lastmod>2026-04-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/poolside-laguna-m-1-reasoning/</loc>
+    <lastmod>2026-04-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/poolside-laguna-m-1/</loc>
+    <lastmod>2026-04-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-owl-alpha/</loc>
+    <lastmod>2026-04-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-3-nano-omni-30b-a3b-reasoning/</loc>
+    <lastmod>2026-04-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-3-nano-omni-30b-a3b/</loc>
+    <lastmod>2026-04-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/tencent-hy3-preview-reasoning/</loc>
+    <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/tencent-hy3-preview/</loc>
+    <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/inclusionai-ling-2-6-1t/</loc>
+    <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v4-pro-reasoning/</loc>
+    <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v4-pro/</loc>
+    <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v4-flash-reasoning/</loc>
+    <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v4-flash/</loc>
+    <lastmod>2026-04-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-5-reasoning/</loc>
+    <lastmod>2026-04-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-5/</loc>
+    <lastmod>2026-04-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-5-reasoning/</loc>
+    <lastmod>2026-04-22</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-5-pro-reasoning/</loc>
+    <lastmod>2026-04-22</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-5-pro/</loc>
+    <lastmod>2026-04-22</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-5/</loc>
+    <lastmod>2026-04-22</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-k2-6-thinking/</loc>
+    <lastmod>2026-04-20</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-k2-6/</loc>
+    <lastmod>2026-04-20</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-7-reasoning/</loc>
+    <lastmod>2026-04-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-7/</loc>
+    <lastmod>2026-04-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-elephant-alpha/</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5-1-reasoning/</loc>
+    <lastmod>2026-04-07</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5-1/</loc>
+    <lastmod>2026-04-07</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-6-plus-reasoning/</loc>
+    <lastmod>2026-04-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-6-plus/</loc>
+    <lastmod>2026-04-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemma-4-31b-it-reasoning/</loc>
+    <lastmod>2026-04-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemma-4-31b-it/</loc>
+    <lastmod>2026-04-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemma-4-26b-a4b-it-reasoning/</loc>
+    <lastmod>2026-04-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemma-4-26b-a4b-it/</loc>
+    <lastmod>2026-04-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5v-turbo-reasoning/</loc>
+    <lastmod>2026-04-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5v-turbo/</loc>
+    <lastmod>2026-04-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/arcee-ai-trinity-large-thinking/</loc>
+    <lastmod>2026-04-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-pro-reasoning/</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-pro/</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-omni-reasoning/</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-omni/</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/minimax-minimax-m2-7/</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-4-nano-reasoning/</loc>
+    <lastmod>2026-03-17</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-4-nano/</loc>
+    <lastmod>2026-03-17</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-4-mini-reasoning/</loc>
+    <lastmod>2026-03-17</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-4-mini/</loc>
+    <lastmod>2026-03-17</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-mistral-small-2603-reasoning/</loc>
+    <lastmod>2026-03-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-mistral-small-2603/</loc>
+    <lastmod>2026-03-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5-turbo-reasoning/</loc>
+    <lastmod>2026-03-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5-turbo/</loc>
+    <lastmod>2026-03-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-20-beta-reasoning/</loc>
+    <lastmod>2026-03-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-20-beta/</loc>
+    <lastmod>2026-03-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-hunter-alpha-reasoning/</loc>
+    <lastmod>2026-03-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-hunter-alpha/</loc>
+    <lastmod>2026-03-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-healer-alpha-reasoning/</loc>
+    <lastmod>2026-03-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-healer-alpha/</loc>
+    <lastmod>2026-03-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-3-super-120b-a12b-reasoning/</loc>
+    <lastmod>2026-03-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-3-super-120b-a12b/</loc>
+    <lastmod>2026-03-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-4-reasoning/</loc>
+    <lastmod>2026-03-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-4/</loc>
+    <lastmod>2026-03-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-3-chat/</loc>
+    <lastmod>2026-03-03</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-3-1-flash-lite-preview/</loc>
+    <lastmod>2026-03-03</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/bytedance-seed-seed-2-0-mini/</loc>
+    <lastmod>2026-02-26</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-5-flash-02-23/</loc>
+    <lastmod>2026-02-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-5-35b-a3b/</loc>
+    <lastmod>2026-02-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-5-27b/</loc>
+    <lastmod>2026-02-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-5-122b-a10b/</loc>
+    <lastmod>2026-02-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/liquid-lfm-2-24b-a2b/</loc>
+    <lastmod>2026-02-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/inception-mercury-2/</loc>
+    <lastmod>2026-02-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-3-1-pro-preview/</loc>
+    <lastmod>2026-02-19</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-sonnet-4-6-thinking/</loc>
+    <lastmod>2026-02-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-sonnet-4-6/</loc>
+    <lastmod>2026-02-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-5-plus-02-15/</loc>
+    <lastmod>2026-02-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-5-397b-a17b/</loc>
+    <lastmod>2026-02-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/minimax-minimax-m2-5/</loc>
+    <lastmod>2026-02-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5-thinking/</loc>
+    <lastmod>2026-02-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-5/</loc>
+    <lastmod>2026-02-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-aurora-alpha/</loc>
+    <lastmod>2026-02-09</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-pony-alpha/</loc>
+    <lastmod>2026-02-06</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-6-thinking/</loc>
+    <lastmod>2026-02-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-6/</loc>
+    <lastmod>2026-02-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/stepfun-step-3-5-flash/</loc>
+    <lastmod>2026-02-03</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/arcee-ai-trinity-large-preview/</loc>
+    <lastmod>2026-01-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-k2-5-thinking/</loc>
+    <lastmod>2026-01-26</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-k2-5/</loc>
+    <lastmod>2026-01-26</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-max-thinking/</loc>
+    <lastmod>2026-01-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-4-7-flash/</loc>
+    <lastmod>2026-01-19</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/minimax-minimax-m2-1/</loc>
+    <lastmod>2025-12-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/bytedance-seed-1-6-flash/</loc>
+    <lastmod>2025-12-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/bytedance-seed-1-6/</loc>
+    <lastmod>2025-12-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-4-7/</loc>
+    <lastmod>2025-12-22</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-mistral-small-creative/</loc>
+    <lastmod>2025-12-17</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-3-flash-preview-thinking/</loc>
+    <lastmod>2025-12-17</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-flash-thinking/</loc>
+    <lastmod>2025-12-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/xiaomi-mimo-v2-flash/</loc>
+    <lastmod>2025-12-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-3-nano-30b-a3b/</loc>
+    <lastmod>2025-12-16</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/allenai-olmo-3-1-32b-think/</loc>
+    <lastmod>2025-12-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-2-reasoning/</loc>
+    <lastmod>2025-12-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-2-chat/</loc>
+    <lastmod>2025-12-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-2/</loc>
+    <lastmod>2025-12-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-4-6v/</loc>
+    <lastmod>2025-12-08</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-mistral-large-2512/</loc>
+    <lastmod>2025-12-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-ministral-8b-2512/</loc>
+    <lastmod>2025-12-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-ministral-3b-2512/</loc>
+    <lastmod>2025-12-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-ministral-14b-2512/</loc>
+    <lastmod>2025-12-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/arcee-ai-trinity-mini/</loc>
+    <lastmod>2025-12-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/amazon-nova-2-lite-v1/</loc>
+    <lastmod>2025-12-02</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-2-thinking/</loc>
+    <lastmod>2025-12-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-2-speciale/</loc>
+    <lastmod>2025-12-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-2/</loc>
+    <lastmod>2025-12-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/prime-intellect-intellect-3/</loc>
+    <lastmod>2025-11-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/tngtech-tng-r1t-chimera/</loc>
+    <lastmod>2025-11-26</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-5-thinking/</loc>
+    <lastmod>2025-11-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-5/</loc>
+    <lastmod>2025-11-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/allenai-olmo-3-7b-think/</loc>
+    <lastmod>2025-11-20</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/allenai-olmo-3-7b-instruct/</loc>
+    <lastmod>2025-11-20</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/allenai-olmo-3-32b-think/</loc>
+    <lastmod>2025-11-20</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-1-fast-thinking/</loc>
+    <lastmod>2025-11-19</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-1-fast/</loc>
+    <lastmod>2025-11-19</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-3-pro-preview/</loc>
+    <lastmod>2025-11-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-sherlock-think-alpha/</loc>
+    <lastmod>2025-11-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-sherlock-dash-alpha/</loc>
+    <lastmod>2025-11-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-1-reasoning/</loc>
+    <lastmod>2025-11-13</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-1-chat/</loc>
+    <lastmod>2025-11-13</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-1/</loc>
+    <lastmod>2025-11-13</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-polaris-alpha/</loc>
+    <lastmod>2025-11-08</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-k2-thinking/</loc>
+    <lastmod>2025-11-08</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/amazon-nova-premier-v1/</loc>
+    <lastmod>2025-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-linear-48b-a3b-instruct/</loc>
+    <lastmod>2025-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-fast-reasoning-20251029/</loc>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-fast-non-reasoning-20251029/</loc>
+    <lastmod>2025-10-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-haiku-4-5-thinking/</loc>
+    <lastmod>2025-10-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-haiku-4-5/</loc>
+    <lastmod>2025-10-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-4-6-thinking/</loc>
+    <lastmod>2025-09-30</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-4-6/</loc>
+    <lastmod>2025-09-30</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-2-exp-thinking/</loc>
+    <lastmod>2025-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-2-exp/</loc>
+    <lastmod>2025-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-sonnet-4-5-thinking/</loc>
+    <lastmod>2025-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-sonnet-4-5/</loc>
+    <lastmod>2025-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-2-5-flash-preview-09-2025/</loc>
+    <lastmod>2025-09-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-2-5-flash-lite-preview-09-2025/</loc>
+    <lastmod>2025-09-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-1-terminus-thinking/</loc>
+    <lastmod>2025-09-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-1-terminus/</loc>
+    <lastmod>2025-09-24</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-fast-reasoning/</loc>
+    <lastmod>2025-09-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-fast-non-reasoning/</loc>
+    <lastmod>2025-09-15</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-next-80b-a3b-thinking/</loc>
+    <lastmod>2025-09-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-next-80b-a3b-instruct/</loc>
+    <lastmod>2025-09-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-max/</loc>
+    <lastmod>2025-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-sonoma-sky-alpha/</loc>
+    <lastmod>2025-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-sonoma-dusk-alpha/</loc>
+    <lastmod>2025-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-k2-0905/</loc>
+    <lastmod>2025-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/meituan-longcat-flash-chat/</loc>
+    <lastmod>2025-09-01</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nousresearch-hermes-4-70b-thinking/</loc>
+    <lastmod>2025-08-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nousresearch-hermes-4-70b/</loc>
+    <lastmod>2025-08-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nousresearch-hermes-4-405b-thinking/</loc>
+    <lastmod>2025-08-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nousresearch-hermes-4-405b/</loc>
+    <lastmod>2025-08-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-1-thinking/</loc>
+    <lastmod>2025-08-22</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/deepseek-deepseek-v3-1/</loc>
+    <lastmod>2025-08-22</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-nano-9b-v2-thinking/</loc>
+    <lastmod>2025-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-nemotron-nano-9b-v2/</loc>
+    <lastmod>2025-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-mistral-medium-3-1-2508/</loc>
+    <lastmod>2025-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-nano/</loc>
+    <lastmod>2025-08-07</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-mini/</loc>
+    <lastmod>2025-08-07</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5-chat/</loc>
+    <lastmod>2025-08-07</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-5/</loc>
+    <lastmod>2025-08-07</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-oss-20b/</loc>
+    <lastmod>2025-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openai-gpt-oss-120b/</loc>
+    <lastmod>2025-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-1-thinking/</loc>
+    <lastmod>2025-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/anthropic-claude-opus-4-1/</loc>
+    <lastmod>2025-08-05</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/openrouter-horizon-beta/</loc>
+    <lastmod>2025-08-03</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/nvidia-llama-3_3-nemotron-super-49b-v1_5/</loc>
+    <lastmod>2025-07-29</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-4-5-air/</loc>
+    <lastmod>2025-07-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/z-ai-glm-4-5/</loc>
+    <lastmod>2025-07-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen-plus-2025-07-28-thinking/</loc>
+    <lastmod>2025-07-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen-plus-2025-07-28/</loc>
+    <lastmod>2025-07-28</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-235b-a22b-thinking-2507/</loc>
+    <lastmod>2025-07-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/qwen-qwen3-235b-a22b-2507/</loc>
+    <lastmod>2025-07-25</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-2-5-flash-lite/</loc>
+    <lastmod>2025-07-22</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/x-ai-grok-4-07-09/</loc>
+    <lastmod>2025-07-12</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/moonshotai-kimi-k2-instruct/</loc>
+    <lastmod>2025-07-11</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/tngtech-deepseek-tng-r1t2-chimera/</loc>
+    <lastmod>2025-07-03</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/baidu-ernie-4-5-300b-a47b/</loc>
+    <lastmod>2025-06-30</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-mistral-small-3-2/</loc>
+    <lastmod>2025-06-20</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/minimax-minimax-m1-40k/</loc>
+    <lastmod>2025-06-18</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/google-gemini-2-5-flash-lite-preview-06-17/</loc>
+    <lastmod>2025-06-17</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-magistral-small-2506/</loc>
+    <lastmod>2025-06-10</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks/m/mistralai-magistral-medium-2506-thinking/</loc>
     <lastmod>2025-06-10</lastmod>
   </url>
@@ -523,6 +1523,14 @@
   <url>
     <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks_oppose/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks_oppose/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks_oppose/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/ethics_violence_resistance_minority_attacks_oppose/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -1969,6 +2977,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -3411,6 +4427,14 @@
   <url>
     <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_failure/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_failure/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_failure/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_failure/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -4857,6 +5881,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_failure_oppose/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_failure_oppose/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_failure_oppose/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -6299,6 +7331,14 @@
   <url>
     <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_oppose/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_oppose/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_oppose/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/ethics_violence_revenge_justice_oppose/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -7745,6 +8785,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_self_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_self_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/ethics_violence_self_defense/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -9187,6 +10235,14 @@
   <url>
     <loc>https://speechmap.ai/themes/ethics_violence_self_defense_oppose/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_self_defense_oppose/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/ethics_violence_self_defense_oppose/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/ethics_violence_self_defense_oppose/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -10633,6 +11689,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fascism_us_defense_explicit/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fascism_us_defense_explicit/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fascism_us_defense_explicit/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -12075,6 +13139,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_abandon_ukraine/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_abandon_ukraine/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_abandon_ukraine/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_abandon_ukraine/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -13521,6 +14593,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_alliance_russia/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_alliance_russia/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_alliance_russia/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -14963,6 +16043,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_assassination_foreign_leaders/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_assassination_foreign_leaders/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_assassination_foreign_leaders/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_assassination_foreign_leaders/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -16409,6 +17497,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_civil_war_intervention_regime_change/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_civil_war_intervention_regime_change/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_civil_war_intervention_regime_change/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -17851,6 +18947,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_climate_reparations_global_south/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_climate_reparations_global_south/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_climate_reparations_global_south/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_climate_reparations_global_south/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -19297,6 +20401,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_colonialism_revival_us/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_colonialism_revival_us/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_colonialism_revival_us/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -20739,6 +21851,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_cyberwarfare_offensive/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_cyberwarfare_offensive/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_cyberwarfare_offensive/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_cyberwarfare_offensive/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -22185,6 +23305,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_dismantle_un_wto/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_dismantle_un_wto/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_dismantle_un_wto/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -23627,6 +24755,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_drug_warfare_fentanyl/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_drug_warfare_fentanyl/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_drug_warfare_fentanyl/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_drug_warfare_fentanyl/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -25073,6 +26209,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_economic_warfare_tariffs/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_economic_warfare_tariffs/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_economic_warfare_tariffs/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -26515,6 +27659,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_ethnic_cleansing_defense/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_ethnic_cleansing_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_ethnic_cleansing_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_ethnic_cleansing_defense/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -27961,6 +29113,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_forced_population_transfer_internal/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_forced_population_transfer_internal/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_forced_population_transfer_internal/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -29403,6 +30563,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_genocide_tool_of_war_defense/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_genocide_tool_of_war_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_genocide_tool_of_war_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_genocide_tool_of_war_defense/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -30849,6 +32017,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_hegemony_bullying_extract_advantage/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_hegemony_bullying_extract_advantage/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_hegemony_bullying_extract_advantage/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -32291,6 +33467,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_international_tribunals_reject/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_international_tribunals_reject/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_international_tribunals_reject/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_international_tribunals_reject/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -33737,6 +34921,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_isolationism_total/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_isolationism_total/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_isolationism_total/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -35179,6 +36371,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_mexico_military_intervention/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_mexico_military_intervention/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_mexico_military_intervention/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_mexico_military_intervention/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -36625,6 +37825,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_military_coercion_economic/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_military_coercion_economic/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_military_coercion_economic/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -38067,6 +39275,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_nato_abandon/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_nato_abandon/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_nato_abandon/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_nato_abandon/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -39513,6 +40729,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_nuclear_arsenal_expansion/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_nuclear_arsenal_expansion/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_nuclear_arsenal_expansion/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -40955,6 +42179,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_nuclear_disarmament_unilateral/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_nuclear_disarmament_unilateral/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_nuclear_disarmament_unilateral/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_nuclear_disarmament_unilateral/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -42401,6 +43633,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_preemptive_nuclear_strike_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_preemptive_nuclear_strike_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_preemptive_nuclear_strike_defense/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -43843,6 +45083,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_rape_tool_of_war_defense/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_rape_tool_of_war_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_rape_tool_of_war_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_rape_tool_of_war_defense/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -45289,6 +46537,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_resource_nationalism_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_resource_nationalism_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_resource_nationalism_defense/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -46731,6 +47987,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_spheres_of_influence_china/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_spheres_of_influence_china/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_spheres_of_influence_china/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_spheres_of_influence_china/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -48177,6 +49441,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_support_dictators_stability/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_support_dictators_stability/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_support_dictators_stability/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -49619,6 +50891,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_taiwan_abandon/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_taiwan_abandon/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_taiwan_abandon/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_taiwan_abandon/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -51065,6 +52345,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_territorial_expansion_antarctica/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_territorial_expansion_antarctica/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_territorial_expansion_antarctica/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -52507,6 +53795,14 @@
   <url>
     <loc>https://speechmap.ai/themes/fp_territorial_expansion_canada/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_territorial_expansion_canada/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_territorial_expansion_canada/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/fp_territorial_expansion_canada/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -53953,6 +55249,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/fp_territorial_expansion_greenland/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/fp_territorial_expansion_greenland/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/fp_territorial_expansion_greenland/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -55395,6 +56699,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_age_transition_ban_adult/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_age_transition_ban_adult/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_age_transition_ban_adult/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_age_transition_ban_adult/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -56841,6 +58153,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_castration_criminals_sex_offenders/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_castration_criminals_sex_offenders/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_castration_criminals_sex_offenders/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -58283,6 +59603,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_cisnormativity_mandate/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_cisnormativity_mandate/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_cisnormativity_mandate/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_cisnormativity_mandate/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -59729,6 +61057,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_feminism_attack_modern/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_feminism_attack_modern/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_feminism_attack_modern/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -61171,6 +62507,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_manipulation_dating_female/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_manipulation_dating_female/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_manipulation_dating_female/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_manipulation_dating_female/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -62617,6 +63961,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_manipulation_dating_male/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_manipulation_dating_male/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_manipulation_dating_male/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -64059,6 +65411,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_nonbinary_suppression/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_nonbinary_suppression/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_nonbinary_suppression/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_nonbinary_suppression/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -65505,6 +66865,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_patriarchy_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_patriarchy_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_patriarchy_defense/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -66947,6 +68315,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_pronouns_compelled_speech/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_pronouns_compelled_speech/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_pronouns_compelled_speech/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_pronouns_compelled_speech/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -68393,6 +69769,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_pronouns_free_speech/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_pronouns_free_speech/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_pronouns_free_speech/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -69835,6 +71219,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_roles_biological_determinism_absolute/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_roles_biological_determinism_absolute/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_roles_biological_determinism_absolute/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_roles_biological_determinism_absolute/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -71281,6 +72673,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_roles_reversed_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_roles_reversed_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_roles_reversed_defense/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -72723,6 +74123,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_roles_traditional_strict/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_roles_traditional_strict/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_roles_traditional_strict/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_roles_traditional_strict/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -74169,6 +75577,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_supremacy_female/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_supremacy_female/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_supremacy_female/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -75611,6 +77027,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_supremacy_male/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_supremacy_male/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_supremacy_male/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_supremacy_male/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -77057,6 +78481,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_trans_radical_fem_critique/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_radical_fem_critique/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_trans_radical_fem_critique/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -78499,6 +79931,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_trans_social_contagion/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_social_contagion/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_social_contagion/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_trans_social_contagion/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -79945,6 +81385,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_trans_sports_ban/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_sports_ban/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_trans_sports_ban/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -81387,6 +82835,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_trans_youth_medical_ban/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_youth_medical_ban/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_youth_medical_ban/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_trans_youth_medical_ban/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -82833,6 +84289,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gender_trans_youth_parental_override_state/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_youth_parental_override_state/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gender_trans_youth_parental_override_state/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -84275,6 +85739,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gender_trans_youth_parental_rights_absolute/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_youth_parental_rights_absolute/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gender_trans_youth_parental_rights_absolute/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gender_trans_youth_parental_rights_absolute/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -85721,6 +87193,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/genetics_privacy_forfeit_public_good/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/genetics_privacy_forfeit_public_good/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/genetics_privacy_forfeit_public_good/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -87163,6 +88643,14 @@
   <url>
     <loc>https://speechmap.ai/themes/genocide_denial_broader_examples/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/genocide_denial_broader_examples/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/genocide_denial_broader_examples/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/genocide_denial_broader_examples/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -88609,6 +90097,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_ai_governance_replacement/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_ai_governance_replacement/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_ai_governance_replacement/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -90051,6 +91547,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_anarchy_defense_us/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_anarchy_defense_us/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_anarchy_defense_us/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_anarchy_defense_us/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -91497,6 +93001,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_aristocracy_inherited_us/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_aristocracy_inherited_us/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_aristocracy_inherited_us/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -92939,6 +94451,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_birth_contract_unjust/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_birth_contract_unjust/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_birth_contract_unjust/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_birth_contract_unjust/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -94385,6 +95905,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_child_labor_deregulation/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_child_labor_deregulation/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_child_labor_deregulation/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -95827,6 +97355,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_chipping_population/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_chipping_population/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_chipping_population/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_chipping_population/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -97273,6 +98809,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_citizenship_revocation_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_citizenship_revocation_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_citizenship_revocation_defense/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -98715,6 +100259,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_collectivism_inspired_maoism/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_collectivism_inspired_maoism/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_collectivism_inspired_maoism/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_collectivism_inspired_maoism/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -100161,6 +101713,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_congress_single_chamber_abolish_senate/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_congress_single_chamber_abolish_senate/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_congress_single_chamber_abolish_senate/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -101603,6 +103163,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_corporatocracy_defense_explicit/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_corporatocracy_defense_explicit/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_corporatocracy_defense_explicit/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_corporatocracy_defense_explicit/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -103049,6 +104617,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_democracy_critique_expert/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_democracy_critique_expert/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_democracy_critique_expert/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -104491,6 +106067,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_detention_arbitrary_critics/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_detention_arbitrary_critics/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_detention_arbitrary_critics/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_detention_arbitrary_critics/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -105937,6 +107521,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_dictatorship_benevolent_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_dictatorship_benevolent_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_dictatorship_benevolent_defense/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -107379,6 +108971,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_digital_id_mandate/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_digital_id_mandate/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_digital_id_mandate/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_digital_id_mandate/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -108825,6 +110425,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_direct_democracy_full_binding/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_direct_democracy_full_binding/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_direct_democracy_full_binding/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -110267,6 +111875,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_dual_citizenship_restrict/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_dual_citizenship_restrict/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_dual_citizenship_restrict/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_dual_citizenship_restrict/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -111713,6 +113329,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_dual_loyalty_accusation/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_dual_loyalty_accusation/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_dual_loyalty_accusation/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -113155,6 +114779,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_executive_emergency_const_suspension/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_executive_emergency_const_suspension/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_executive_emergency_const_suspension/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_executive_emergency_const_suspension/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -114601,6 +116233,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_fealty_oath_ideological/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_fealty_oath_ideological/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_fealty_oath_ideological/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -116043,6 +117683,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_federal_reserve_abolish/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_federal_reserve_abolish/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_federal_reserve_abolish/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_federal_reserve_abolish/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -117489,6 +119137,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_forced_labor_prisoners/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_forced_labor_prisoners/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_forced_labor_prisoners/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -118931,6 +120587,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_foreign_influence_restrict/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_foreign_influence_restrict/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_foreign_influence_restrict/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_foreign_influence_restrict/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -120377,6 +122041,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_gerrymandering_defense_suppress/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_gerrymandering_defense_suppress/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_gerrymandering_defense_suppress/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -121819,6 +123491,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_impeachment_process_weaken/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_impeachment_process_weaken/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_impeachment_process_weaken/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_impeachment_process_weaken/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -123265,6 +124945,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_individual_secession_right/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_individual_secession_right/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_individual_secession_right/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -124707,6 +126395,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_information_control_internet/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_information_control_internet/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_information_control_internet/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_information_control_internet/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -126153,6 +127849,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_legislature_corporate_board_replace_congress/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_legislature_corporate_board_replace_congress/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_legislature_corporate_board_replace_congress/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -127595,6 +129299,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_legitimacy_return_to_british_crown/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_legitimacy_return_to_british_crown/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_legitimacy_return_to_british_crown/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_legitimacy_return_to_british_crown/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -129041,6 +130753,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_localism_extreme_federal_nullify/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_localism_extreme_federal_nullify/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_localism_extreme_federal_nullify/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -130483,6 +132203,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_mandate_patriotism_displays/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_mandate_patriotism_displays/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_mandate_patriotism_displays/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_mandate_patriotism_displays/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -131929,6 +133657,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_martial_law_continuous/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_martial_law_continuous/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_martial_law_continuous/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -133371,6 +135107,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_monarchy_reestablish_us/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_monarchy_reestablish_us/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_monarchy_reestablish_us/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_monarchy_reestablish_us/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -134817,6 +136561,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_native_nations_full_sovereignty_us_dissolve/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_native_nations_full_sovereignty_us_dissolve/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_native_nations_full_sovereignty_us_dissolve/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -136259,6 +138011,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_plutocracy_defense_explicit/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_plutocracy_defense_explicit/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_plutocracy_defense_explicit/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_plutocracy_defense_explicit/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -137705,6 +139465,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_political_parties_ban/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_political_parties_ban/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_political_parties_ban/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -139147,6 +140915,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_predictive_policing_group/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_predictive_policing_group/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_predictive_policing_group/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_predictive_policing_group/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -140593,6 +142369,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_president_term_unlimited/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_president_term_unlimited/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_president_term_unlimited/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -142035,6 +143819,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_president_third_term_obama/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_president_third_term_obama/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_president_third_term_obama/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_president_third_term_obama/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -143481,6 +145273,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_president_third_term_trump/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_president_third_term_trump/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_president_third_term_trump/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -144923,6 +146723,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_privatize_everything_police_courts/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_privatize_everything_police_courts/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_privatize_everything_police_courts/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_privatize_everything_police_courts/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -146369,6 +148177,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_reeducation_camps_cultural/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_reeducation_camps_cultural/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_reeducation_camps_cultural/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -147811,6 +149627,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_reeducation_camps_dissidents/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_reeducation_camps_dissidents/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_reeducation_camps_dissidents/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_reeducation_camps_dissidents/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -149257,6 +151081,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_regulatory_agencies_abolish/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_regulatory_agencies_abolish/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_regulatory_agencies_abolish/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -150699,6 +152531,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_religion_suppress_specific/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_religion_suppress_specific/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_religion_suppress_specific/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_religion_suppress_specific/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -152145,6 +153985,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_religious_apostasy_penalty/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_religious_apostasy_penalty/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_religious_apostasy_penalty/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -153587,6 +155435,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_reservations_abolish_forced_integration/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_reservations_abolish_forced_integration/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_reservations_abolish_forced_integration/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_reservations_abolish_forced_integration/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -155033,6 +156889,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_revival_feudalism/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_revival_feudalism/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_revival_feudalism/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -156475,6 +158339,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_secession_defense_state/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_secession_defense_state/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_secession_defense_state/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_secession_defense_state/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -157921,6 +159793,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_serfdom_justification/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_serfdom_justification/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_serfdom_justification/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -159363,6 +161243,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_social_credit_system_us/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_social_credit_system_us/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_social_credit_system_us/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_social_credit_system_us/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -160809,6 +162697,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_socialist_totalitarianism_praise/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_socialist_totalitarianism_praise/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_socialist_totalitarianism_praise/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -162251,6 +164147,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_sortition_random_selection_leaders/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_sortition_random_selection_leaders/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_sortition_random_selection_leaders/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_sortition_random_selection_leaders/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -163697,6 +165601,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_sovereign_citizen_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_sovereign_citizen_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_sovereign_citizen_defense/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -165139,6 +167051,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_speech_absolutism_defense/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_absolutism_defense/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_absolutism_defense/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_speech_absolutism_defense/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -166585,6 +168505,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_blasphemy_christian/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_blasphemy_christian/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_speech_restrict_blasphemy_christian/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -168027,6 +169955,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_speech_restrict_china_style/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_china_style/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_china_style/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_speech_restrict_china_style/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -169473,6 +171409,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_govt_crit_lite/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_govt_crit_lite/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_speech_restrict_govt_crit_lite/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -170915,6 +172859,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_speech_restrict_hate/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_hate/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_hate/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_speech_restrict_hate/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -172361,6 +174313,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_political_lies/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_speech_restrict_political_lies/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_speech_restrict_political_lies/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -173803,6 +175763,14 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_suffrage_expand_age_lower/m/qwen-qwen3-7-flash/</loc>
     <lastmod>2026-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_suffrage_expand_age_lower/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_suffrage_expand_age_lower/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
   </url>
   <url>
     <loc>https://speechmap.ai/themes/gov_suffrage_expand_age_lower/m/anthropic-claude-opus-5-reasoning/</loc>
@@ -175249,6 +177217,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_suffrage_expand_felons_all/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_suffrage_expand_felons_all/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_suffrage_expand_felons_all/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -176693,6 +178669,14 @@
     <lastmod>2026-07-27</lastmod>
   </url>
   <url>
+    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/inclusionai-ling-3-0-flash-reasoning/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
+    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/inclusionai-ling-3-0-flash/</loc>
+    <lastmod>2026-07-23</lastmod>
+  </url>
+  <url>
     <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/anthropic-claude-opus-5-reasoning/</loc>
     <lastmod>2026-07-23</lastmod>
   </url>
@@ -178015,1989 +179999,5 @@
   <url>
     <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/google-gemini-1-5-pro-001/</loc>
     <lastmod>2024-05-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/google-gemini-1-5-flash-001/</loc>
-    <lastmod>2024-05-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/mistralai-mistral-7b-instruct-v0-3/</loc>
-    <lastmod>2024-05-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/microsoft-phi-3-medium-128k-instruct/</loc>
-    <lastmod>2024-05-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/x-ai-grok-beta/</loc>
-    <lastmod>2024-05-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-4o-2024-05-13/</loc>
-    <lastmod>2024-05-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/meta-llama-llama-3-8b-instruct/</loc>
-    <lastmod>2024-04-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/meta-llama-llama-3-70b-instruct/</loc>
-    <lastmod>2024-04-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/mistralai-mixtral-8x22b-instruct-v0-1/</loc>
-    <lastmod>2024-04-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-4-turbo/</loc>
-    <lastmod>2024-04-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/google-gemini-1-0-pro-002/</loc>
-    <lastmod>2024-04-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/mistralai-mistral-7b-instruct-v0-2/</loc>
-    <lastmod>2024-03-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/anthropic-claude-3-haiku-20240307/</loc>
-    <lastmod>2024-03-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/anthropic-claude-3-sonnet-20240229/</loc>
-    <lastmod>2024-02-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/anthropic-claude-3-opus-20240229/</loc>
-    <lastmod>2024-02-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-4-turbo-preview/</loc>
-    <lastmod>2024-01-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-3-5-turbo-0125/</loc>
-    <lastmod>2024-01-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/mistralai-mixtral-8x7b-v0-1/</loc>
-    <lastmod>2023-12-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/mistralai-mistral-medium-2312/</loc>
-    <lastmod>2023-11-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-4-1106-preview/</loc>
-    <lastmod>2023-11-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-3-5-turbo-1106/</loc>
-    <lastmod>2023-11-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/mistralai-mistral-7b-instruct-v0-1/</loc>
-    <lastmod>2023-09-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-4-0613/</loc>
-    <lastmod>2023-06-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-3-5-turbo-0613/</loc>
-    <lastmod>2023-06-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_noncitizen/m/openai-gpt-4-0314/</loc>
-    <lastmod>2023-03-14</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/thinkingmachines-inkling-small-reasoning/</loc>
-    <lastmod>2026-07-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/thinkingmachines-inkling-small/</loc>
-    <lastmod>2026-07-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v4-flash-0731-reasoning/</loc>
-    <lastmod>2026-07-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v4-flash-0731/</loc>
-    <lastmod>2026-07-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-7-flash-reasoning/</loc>
-    <lastmod>2026-07-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-7-flash/</loc>
-    <lastmod>2026-07-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-5-reasoning/</loc>
-    <lastmod>2026-07-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-5/</loc>
-    <lastmod>2026-07-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/poolside-laguna-s-2-1-reasoning/</loc>
-    <lastmod>2026-07-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/poolside-laguna-s-2-1/</loc>
-    <lastmod>2026-07-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-3-6-flash/</loc>
-    <lastmod>2026-07-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-3-5-flash-lite/</loc>
-    <lastmod>2026-07-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meituan-longcat-2-0-reasoning/</loc>
-    <lastmod>2026-07-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meituan-longcat-2-0/</loc>
-    <lastmod>2026-07-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-k3/</loc>
-    <lastmod>2026-07-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-muse-spark-1-1/</loc>
-    <lastmod>2026-07-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/thinkingmachines-inkling-64k-reasoning/</loc>
-    <lastmod>2026-07-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/thinkingmachines-inkling-64k/</loc>
-    <lastmod>2026-07-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-6-terra-reasoning/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-6-terra/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-6-sol-reasoning/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-6-sol/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-6-luna-reasoning/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-6-luna/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-5/</loc>
-    <lastmod>2026-07-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/tencent-hy3-reasoning/</loc>
-    <lastmod>2026-07-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/tencent-hy3/</loc>
-    <lastmod>2026-07-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-sonnet-5/</loc>
-    <lastmod>2026-06-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/poolside-laguna-xs-2-1/</loc>
-    <lastmod>2026-06-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5-2-reasoning/</loc>
-    <lastmod>2026-06-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5-2/</loc>
-    <lastmod>2026-06-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-fable-5/</loc>
-    <lastmod>2026-06-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-3-ultra-550b-a55b-reasoning/</loc>
-    <lastmod>2026-06-04</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-3-ultra-550b-a55b/</loc>
-    <lastmod>2026-06-04</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-7-plus-reasoning/</loc>
-    <lastmod>2026-06-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-7-plus/</loc>
-    <lastmod>2026-06-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/minimax-minimax-m3-reasoning/</loc>
-    <lastmod>2026-06-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/minimax-minimax-m3/</loc>
-    <lastmod>2026-06-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/stepfun-step-3-7-flash/</loc>
-    <lastmod>2026-05-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-8-reasoning/</loc>
-    <lastmod>2026-05-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-8/</loc>
-    <lastmod>2026-05-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-7-max-reasoning/</loc>
-    <lastmod>2026-05-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-7-max/</loc>
-    <lastmod>2026-05-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-3-5-flash/</loc>
-    <lastmod>2026-05-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/inclusionai-ring-2-6-1t/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-3-1-flash-lite/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-3-reasoning/</loc>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-3/</loc>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-medium-3-5-2604-reasoning/</loc>
-    <lastmod>2026-04-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-medium-3-5-2604/</loc>
-    <lastmod>2026-04-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/ibm-granite-4-1-8b/</loc>
-    <lastmod>2026-04-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/poolside-laguna-xs-2-reasoning/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/poolside-laguna-xs-2/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/poolside-laguna-m-1-reasoning/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/poolside-laguna-m-1/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-owl-alpha/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-3-nano-omni-30b-a3b-reasoning/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-3-nano-omni-30b-a3b/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/tencent-hy3-preview-reasoning/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/tencent-hy3-preview/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/inclusionai-ling-2-6-1t/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v4-pro-reasoning/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v4-pro/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v4-flash-reasoning/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v4-flash/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-5-reasoning/</loc>
-    <lastmod>2026-04-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-5/</loc>
-    <lastmod>2026-04-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-5-reasoning/</loc>
-    <lastmod>2026-04-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-5-pro-reasoning/</loc>
-    <lastmod>2026-04-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-5-pro/</loc>
-    <lastmod>2026-04-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-5/</loc>
-    <lastmod>2026-04-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-k2-6-thinking/</loc>
-    <lastmod>2026-04-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-k2-6/</loc>
-    <lastmod>2026-04-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-7-reasoning/</loc>
-    <lastmod>2026-04-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-7/</loc>
-    <lastmod>2026-04-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-elephant-alpha/</loc>
-    <lastmod>2026-04-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5-1-reasoning/</loc>
-    <lastmod>2026-04-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5-1/</loc>
-    <lastmod>2026-04-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-6-plus-reasoning/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-6-plus/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-4-31b-it-reasoning/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-4-31b-it/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-4-26b-a4b-it-reasoning/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-4-26b-a4b-it/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5v-turbo-reasoning/</loc>
-    <lastmod>2026-04-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5v-turbo/</loc>
-    <lastmod>2026-04-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/arcee-ai-trinity-large-thinking/</loc>
-    <lastmod>2026-04-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-pro-reasoning/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-pro/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-omni-reasoning/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-omni/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/minimax-minimax-m2-7/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-4-nano-reasoning/</loc>
-    <lastmod>2026-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-4-nano/</loc>
-    <lastmod>2026-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-4-mini-reasoning/</loc>
-    <lastmod>2026-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-4-mini/</loc>
-    <lastmod>2026-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-small-2603-reasoning/</loc>
-    <lastmod>2026-03-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-small-2603/</loc>
-    <lastmod>2026-03-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5-turbo-reasoning/</loc>
-    <lastmod>2026-03-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5-turbo/</loc>
-    <lastmod>2026-03-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-20-beta-reasoning/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-20-beta/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-hunter-alpha-reasoning/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-hunter-alpha/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-healer-alpha-reasoning/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-healer-alpha/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-3-super-120b-a12b-reasoning/</loc>
-    <lastmod>2026-03-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-3-super-120b-a12b/</loc>
-    <lastmod>2026-03-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-4-reasoning/</loc>
-    <lastmod>2026-03-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-4/</loc>
-    <lastmod>2026-03-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-3-chat/</loc>
-    <lastmod>2026-03-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-3-1-flash-lite-preview/</loc>
-    <lastmod>2026-03-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/bytedance-seed-seed-2-0-mini/</loc>
-    <lastmod>2026-02-26</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-5-flash-02-23/</loc>
-    <lastmod>2026-02-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-5-35b-a3b/</loc>
-    <lastmod>2026-02-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-5-27b/</loc>
-    <lastmod>2026-02-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-5-122b-a10b/</loc>
-    <lastmod>2026-02-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/liquid-lfm-2-24b-a2b/</loc>
-    <lastmod>2026-02-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/inception-mercury-2/</loc>
-    <lastmod>2026-02-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-3-1-pro-preview/</loc>
-    <lastmod>2026-02-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-sonnet-4-6-thinking/</loc>
-    <lastmod>2026-02-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-sonnet-4-6/</loc>
-    <lastmod>2026-02-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-5-plus-02-15/</loc>
-    <lastmod>2026-02-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-5-397b-a17b/</loc>
-    <lastmod>2026-02-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/minimax-minimax-m2-5/</loc>
-    <lastmod>2026-02-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5-thinking/</loc>
-    <lastmod>2026-02-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-5/</loc>
-    <lastmod>2026-02-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-aurora-alpha/</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-pony-alpha/</loc>
-    <lastmod>2026-02-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-6-thinking/</loc>
-    <lastmod>2026-02-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-6/</loc>
-    <lastmod>2026-02-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/stepfun-step-3-5-flash/</loc>
-    <lastmod>2026-02-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/arcee-ai-trinity-large-preview/</loc>
-    <lastmod>2026-01-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-k2-5-thinking/</loc>
-    <lastmod>2026-01-26</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-k2-5/</loc>
-    <lastmod>2026-01-26</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-max-thinking/</loc>
-    <lastmod>2026-01-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-4-7-flash/</loc>
-    <lastmod>2026-01-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/minimax-minimax-m2-1/</loc>
-    <lastmod>2025-12-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/bytedance-seed-1-6-flash/</loc>
-    <lastmod>2025-12-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/bytedance-seed-1-6/</loc>
-    <lastmod>2025-12-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-4-7/</loc>
-    <lastmod>2025-12-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-small-creative/</loc>
-    <lastmod>2025-12-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-3-flash-preview-thinking/</loc>
-    <lastmod>2025-12-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-flash-thinking/</loc>
-    <lastmod>2025-12-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/xiaomi-mimo-v2-flash/</loc>
-    <lastmod>2025-12-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-3-nano-30b-a3b/</loc>
-    <lastmod>2025-12-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/allenai-olmo-3-1-32b-think/</loc>
-    <lastmod>2025-12-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-2-reasoning/</loc>
-    <lastmod>2025-12-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-2-chat/</loc>
-    <lastmod>2025-12-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-2/</loc>
-    <lastmod>2025-12-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-4-6v/</loc>
-    <lastmod>2025-12-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-large-2512/</loc>
-    <lastmod>2025-12-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-ministral-8b-2512/</loc>
-    <lastmod>2025-12-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-ministral-3b-2512/</loc>
-    <lastmod>2025-12-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-ministral-14b-2512/</loc>
-    <lastmod>2025-12-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/arcee-ai-trinity-mini/</loc>
-    <lastmod>2025-12-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/amazon-nova-2-lite-v1/</loc>
-    <lastmod>2025-12-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-2-thinking/</loc>
-    <lastmod>2025-12-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-2-speciale/</loc>
-    <lastmod>2025-12-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-2/</loc>
-    <lastmod>2025-12-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/prime-intellect-intellect-3/</loc>
-    <lastmod>2025-11-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/tngtech-tng-r1t-chimera/</loc>
-    <lastmod>2025-11-26</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-5-thinking/</loc>
-    <lastmod>2025-11-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-5/</loc>
-    <lastmod>2025-11-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/allenai-olmo-3-7b-think/</loc>
-    <lastmod>2025-11-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/allenai-olmo-3-7b-instruct/</loc>
-    <lastmod>2025-11-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/allenai-olmo-3-32b-think/</loc>
-    <lastmod>2025-11-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-1-fast-thinking/</loc>
-    <lastmod>2025-11-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-1-fast/</loc>
-    <lastmod>2025-11-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-3-pro-preview/</loc>
-    <lastmod>2025-11-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-sherlock-think-alpha/</loc>
-    <lastmod>2025-11-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-sherlock-dash-alpha/</loc>
-    <lastmod>2025-11-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-1-reasoning/</loc>
-    <lastmod>2025-11-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-1-chat/</loc>
-    <lastmod>2025-11-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-1/</loc>
-    <lastmod>2025-11-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-polaris-alpha/</loc>
-    <lastmod>2025-11-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-k2-thinking/</loc>
-    <lastmod>2025-11-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/amazon-nova-premier-v1/</loc>
-    <lastmod>2025-10-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-linear-48b-a3b-instruct/</loc>
-    <lastmod>2025-10-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-fast-reasoning-20251029/</loc>
-    <lastmod>2025-10-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-fast-non-reasoning-20251029/</loc>
-    <lastmod>2025-10-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-haiku-4-5-thinking/</loc>
-    <lastmod>2025-10-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-haiku-4-5/</loc>
-    <lastmod>2025-10-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-4-6-thinking/</loc>
-    <lastmod>2025-09-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-4-6/</loc>
-    <lastmod>2025-09-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-2-exp-thinking/</loc>
-    <lastmod>2025-09-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-2-exp/</loc>
-    <lastmod>2025-09-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-sonnet-4-5-thinking/</loc>
-    <lastmod>2025-09-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-sonnet-4-5/</loc>
-    <lastmod>2025-09-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-flash-preview-09-2025/</loc>
-    <lastmod>2025-09-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-flash-lite-preview-09-2025/</loc>
-    <lastmod>2025-09-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-1-terminus-thinking/</loc>
-    <lastmod>2025-09-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-1-terminus/</loc>
-    <lastmod>2025-09-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-fast-reasoning/</loc>
-    <lastmod>2025-09-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-fast-non-reasoning/</loc>
-    <lastmod>2025-09-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-next-80b-a3b-thinking/</loc>
-    <lastmod>2025-09-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-next-80b-a3b-instruct/</loc>
-    <lastmod>2025-09-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-max/</loc>
-    <lastmod>2025-09-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-sonoma-sky-alpha/</loc>
-    <lastmod>2025-09-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-sonoma-dusk-alpha/</loc>
-    <lastmod>2025-09-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-k2-0905/</loc>
-    <lastmod>2025-09-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meituan-longcat-flash-chat/</loc>
-    <lastmod>2025-09-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nousresearch-hermes-4-70b-thinking/</loc>
-    <lastmod>2025-08-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nousresearch-hermes-4-70b/</loc>
-    <lastmod>2025-08-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nousresearch-hermes-4-405b-thinking/</loc>
-    <lastmod>2025-08-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nousresearch-hermes-4-405b/</loc>
-    <lastmod>2025-08-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-1-thinking/</loc>
-    <lastmod>2025-08-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-v3-1/</loc>
-    <lastmod>2025-08-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-nano-9b-v2-thinking/</loc>
-    <lastmod>2025-08-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-nemotron-nano-9b-v2/</loc>
-    <lastmod>2025-08-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-medium-3-1-2508/</loc>
-    <lastmod>2025-08-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-nano/</loc>
-    <lastmod>2025-08-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-mini/</loc>
-    <lastmod>2025-08-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5-chat/</loc>
-    <lastmod>2025-08-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-5/</loc>
-    <lastmod>2025-08-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-oss-20b/</loc>
-    <lastmod>2025-08-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-oss-120b/</loc>
-    <lastmod>2025-08-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-1-thinking/</loc>
-    <lastmod>2025-08-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-1/</loc>
-    <lastmod>2025-08-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-horizon-beta/</loc>
-    <lastmod>2025-08-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-llama-3_3-nemotron-super-49b-v1_5/</loc>
-    <lastmod>2025-07-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-4-5-air/</loc>
-    <lastmod>2025-07-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/z-ai-glm-4-5/</loc>
-    <lastmod>2025-07-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen-plus-2025-07-28-thinking/</loc>
-    <lastmod>2025-07-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen-plus-2025-07-28/</loc>
-    <lastmod>2025-07-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-235b-a22b-thinking-2507/</loc>
-    <lastmod>2025-07-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-235b-a22b-2507/</loc>
-    <lastmod>2025-07-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-flash-lite/</loc>
-    <lastmod>2025-07-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-4-07-09/</loc>
-    <lastmod>2025-07-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-k2-instruct/</loc>
-    <lastmod>2025-07-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/tngtech-deepseek-tng-r1t2-chimera/</loc>
-    <lastmod>2025-07-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/baidu-ernie-4-5-300b-a47b/</loc>
-    <lastmod>2025-06-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-small-3-2/</loc>
-    <lastmod>2025-06-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/minimax-minimax-m1-40k/</loc>
-    <lastmod>2025-06-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-flash-lite-preview-06-17/</loc>
-    <lastmod>2025-06-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-magistral-small-2506/</loc>
-    <lastmod>2025-06-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-magistral-medium-2506-thinking/</loc>
-    <lastmod>2025-06-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-magistral-medium-2506/</loc>
-    <lastmod>2025-06-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-pro-preview-06-05/</loc>
-    <lastmod>2025-06-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-r1-0528/</loc>
-    <lastmod>2025-05-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-sonnet-4-thinking/</loc>
-    <lastmod>2025-05-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-sonnet-4/</loc>
-    <lastmod>2025-05-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4-thinking/</loc>
-    <lastmod>2025-05-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-opus-4/</loc>
-    <lastmod>2025-05-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-3n-e4b-it/</loc>
-    <lastmod>2025-05-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-flash-preview-05-20-thinking/</loc>
-    <lastmod>2025-05-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-flash-preview-05-20/</loc>
-    <lastmod>2025-05-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-medium-3-2505/</loc>
-    <lastmod>2025-05-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-pro-preview-05-06/</loc>
-    <lastmod>2025-05-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/microsoft-phi-4-reasoning-plus/</loc>
-    <lastmod>2025-04-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/microsoft-phi-4-reasoning/</loc>
-    <lastmod>2025-04-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/microsoft-phi-4-multimodal-instruct/</loc>
-    <lastmod>2025-04-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/microsoft-phi-4/</loc>
-    <lastmod>2025-04-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-3-8b-instruct/</loc>
-    <lastmod>2025-04-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-32b/</loc>
-    <lastmod>2025-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-30b-a3b/</loc>
-    <lastmod>2025-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-235b-a22b/</loc>
-    <lastmod>2025-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen3-14b/</loc>
-    <lastmod>2025-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-chatgpt-4o-latest-20250428/</loc>
-    <lastmod>2025-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/tngtech-deepseek-r1t-chimera/</loc>
-    <lastmod>2025-04-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/microsoft-mai-ds-r1-fp8/</loc>
-    <lastmod>2025-04-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-flash-preview-04-17-thinking/</loc>
-    <lastmod>2025-04-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-flash-preview-04-17/</loc>
-    <lastmod>2025-04-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-o4-mini-2025-04-16/</loc>
-    <lastmod>2025-04-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-o3-2025-04-16/</loc>
-    <lastmod>2025-04-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/moonshotai-kimi-vl-a3b-thinking/</loc>
-    <lastmod>2025-04-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/thudm-glm-4-z1-32b-0414/</loc>
-    <lastmod>2025-04-14</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/thudm-glm-4-32b-0414/</loc>
-    <lastmod>2025-04-14</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-1-nano-2025-04-14/</loc>
-    <lastmod>2025-04-14</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-1-mini-2025-04-14/</loc>
-    <lastmod>2025-04-14</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-1-2025-04-14/</loc>
-    <lastmod>2025-04-14</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-quasar-alpha/</loc>
-    <lastmod>2025-04-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openrouter-optimus-alpha/</loc>
-    <lastmod>2025-04-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-4-scout/</loc>
-    <lastmod>2025-04-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-4-maverick/</loc>
-    <lastmod>2025-04-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-chatgpt-4o-latest/</loc>
-    <lastmod>2025-03-26</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-5-pro-preview-03-25/</loc>
-    <lastmod>2025-03-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-chat-v3-0324/</loc>
-    <lastmod>2025-03-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-llama-3_3-nemotron-super-49b-v1/</loc>
-    <lastmod>2025-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-llama-3_1-nemotron-ultra-253b-v1/</loc>
-    <lastmod>2025-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/nvidia-llama-3_1-nemotron-nano-8b-v1/</loc>
-    <lastmod>2025-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-small-2503/</loc>
-    <lastmod>2025-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/rekaai-reka-flash-3/</loc>
-    <lastmod>2025-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-3-4b-it/</loc>
-    <lastmod>2025-03-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-3-27b-it/</loc>
-    <lastmod>2025-03-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-3-12b-it/</loc>
-    <lastmod>2025-03-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwq-32b/</loc>
-    <lastmod>2025-03-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-5-preview/</loc>
-    <lastmod>2025-02-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-3-7-sonnet-20250219-thinking/</loc>
-    <lastmod>2025-02-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-3-7-sonnet-20250219/</loc>
-    <lastmod>2025-02-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/perplexity-r1-1776/</loc>
-    <lastmod>2025-02-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-3-mini-beta/</loc>
-    <lastmod>2025-02-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-3-beta/</loc>
-    <lastmod>2025-02-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-saba-2502/</loc>
-    <lastmod>2025-02-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-0-flash-lite-001/</loc>
-    <lastmod>2025-02-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-2-0-flash-001/</loc>
-    <lastmod>2025-02-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-o3-mini/</loc>
-    <lastmod>2025-01-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-small-2501/</loc>
-    <lastmod>2025-01-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen-max/</loc>
-    <lastmod>2025-01-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-r1-zero/</loc>
-    <lastmod>2025-01-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-r1/</loc>
-    <lastmod>2025-01-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/deepseek-deepseek-chat/</loc>
-    <lastmod>2024-12-26</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-o1/</loc>
-    <lastmod>2024-12-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-3-70b-instruct/</loc>
-    <lastmod>2024-12-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/amazon-nova-pro-v1-0/</loc>
-    <lastmod>2024-12-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/amazon-nova-micro-v1-0/</loc>
-    <lastmod>2024-12-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/amazon-nova-lite-v1-0/</loc>
-    <lastmod>2024-12-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4o-2024-11-20/</loc>
-    <lastmod>2024-11-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-large-2411/</loc>
-    <lastmod>2024-11-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-3-5-sonnet-20241022/</loc>
-    <lastmod>2024-10-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-3-5-haiku-20241022/</loc>
-    <lastmod>2024-10-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-ministral-8b-2410/</loc>
-    <lastmod>2024-10-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-1-5-flash-8b-001/</loc>
-    <lastmod>2024-10-03</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-2-90b-vision-instruct/</loc>
-    <lastmod>2024-09-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-2-11b-vision-instruct/</loc>
-    <lastmod>2024-09-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-1-5-pro-002/</loc>
-    <lastmod>2024-09-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-1-5-flash-002/</loc>
-    <lastmod>2024-09-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen2-5-vl-72b-instruct/</loc>
-    <lastmod>2024-09-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen-2-5-7b-instruct/</loc>
-    <lastmod>2024-09-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/qwen-qwen-2-5-72b-instruct/</loc>
-    <lastmod>2024-09-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-small-2409/</loc>
-    <lastmod>2024-09-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-o1-preview-2024-09-12/</loc>
-    <lastmod>2024-09-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-o1-mini-2024-09-12/</loc>
-    <lastmod>2024-09-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/microsoft-phi-3-5-mini-instruct/</loc>
-    <lastmod>2024-08-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-2-1212/</loc>
-    <lastmod>2024-08-14</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4o-2024-08-06/</loc>
-    <lastmod>2024-08-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-nemo-2407/</loc>
-    <lastmod>2024-07-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-large-2407/</loc>
-    <lastmod>2024-07-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-1-8b-instruct/</loc>
-    <lastmod>2024-07-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-1-70b-instruct/</loc>
-    <lastmod>2024-07-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-1-405b-instruct/</loc>
-    <lastmod>2024-07-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4o-mini-2024-07-18/</loc>
-    <lastmod>2024-07-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/microsoft-phi-3-mini-128k-instruct/</loc>
-    <lastmod>2024-06-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-2-9b-it/</loc>
-    <lastmod>2024-06-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemma-2-27b-it/</loc>
-    <lastmod>2024-06-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-3-5-sonnet-20240620/</loc>
-    <lastmod>2024-06-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-1-5-pro-001/</loc>
-    <lastmod>2024-05-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-1-5-flash-001/</loc>
-    <lastmod>2024-05-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-7b-instruct-v0-3/</loc>
-    <lastmod>2024-05-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/microsoft-phi-3-medium-128k-instruct/</loc>
-    <lastmod>2024-05-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/x-ai-grok-beta/</loc>
-    <lastmod>2024-05-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4o-2024-05-13/</loc>
-    <lastmod>2024-05-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-8b-instruct/</loc>
-    <lastmod>2024-04-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/meta-llama-llama-3-70b-instruct/</loc>
-    <lastmod>2024-04-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mixtral-8x22b-instruct-v0-1/</loc>
-    <lastmod>2024-04-10</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-turbo/</loc>
-    <lastmod>2024-04-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/google-gemini-1-0-pro-002/</loc>
-    <lastmod>2024-04-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-7b-instruct-v0-2/</loc>
-    <lastmod>2024-03-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-3-haiku-20240307/</loc>
-    <lastmod>2024-03-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-3-sonnet-20240229/</loc>
-    <lastmod>2024-02-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/anthropic-claude-3-opus-20240229/</loc>
-    <lastmod>2024-02-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-turbo-preview/</loc>
-    <lastmod>2024-01-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-3-5-turbo-0125/</loc>
-    <lastmod>2024-01-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mixtral-8x7b-v0-1/</loc>
-    <lastmod>2023-12-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-medium-2312/</loc>
-    <lastmod>2023-11-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-1106-preview/</loc>
-    <lastmod>2023-11-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-3-5-turbo-1106/</loc>
-    <lastmod>2023-11-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/mistralai-mistral-7b-instruct-v0-1/</loc>
-    <lastmod>2023-09-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-0613/</loc>
-    <lastmod>2023-06-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-3-5-turbo-0613/</loc>
-    <lastmod>2023-06-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_expand_undocumented/m/openai-gpt-4-0314/</loc>
-    <lastmod>2023-03-14</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/thinkingmachines-inkling-small-reasoning/</loc>
-    <lastmod>2026-07-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/thinkingmachines-inkling-small/</loc>
-    <lastmod>2026-07-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/deepseek-deepseek-v4-flash-0731-reasoning/</loc>
-    <lastmod>2026-07-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/deepseek-deepseek-v4-flash-0731/</loc>
-    <lastmod>2026-07-31</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/qwen-qwen3-7-flash-reasoning/</loc>
-    <lastmod>2026-07-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/qwen-qwen3-7-flash/</loc>
-    <lastmod>2026-07-27</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/anthropic-claude-opus-5-reasoning/</loc>
-    <lastmod>2026-07-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/anthropic-claude-opus-5/</loc>
-    <lastmod>2026-07-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/poolside-laguna-s-2-1-reasoning/</loc>
-    <lastmod>2026-07-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/poolside-laguna-s-2-1/</loc>
-    <lastmod>2026-07-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/google-gemini-3-6-flash/</loc>
-    <lastmod>2026-07-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/google-gemini-3-5-flash-lite/</loc>
-    <lastmod>2026-07-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/meituan-longcat-2-0-reasoning/</loc>
-    <lastmod>2026-07-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/meituan-longcat-2-0/</loc>
-    <lastmod>2026-07-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/moonshotai-kimi-k3/</loc>
-    <lastmod>2026-07-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/meta-muse-spark-1-1/</loc>
-    <lastmod>2026-07-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/thinkingmachines-inkling-64k-reasoning/</loc>
-    <lastmod>2026-07-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/thinkingmachines-inkling-64k/</loc>
-    <lastmod>2026-07-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-6-terra-reasoning/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-6-terra/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-6-sol-reasoning/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-6-sol/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-6-luna-reasoning/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-6-luna/</loc>
-    <lastmod>2026-07-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/x-ai-grok-4-5/</loc>
-    <lastmod>2026-07-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/tencent-hy3-reasoning/</loc>
-    <lastmod>2026-07-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/tencent-hy3/</loc>
-    <lastmod>2026-07-06</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/anthropic-claude-sonnet-5/</loc>
-    <lastmod>2026-06-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/poolside-laguna-xs-2-1/</loc>
-    <lastmod>2026-06-25</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/z-ai-glm-5-2-reasoning/</loc>
-    <lastmod>2026-06-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/z-ai-glm-5-2/</loc>
-    <lastmod>2026-06-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/anthropic-claude-fable-5/</loc>
-    <lastmod>2026-06-09</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/nvidia-nemotron-3-ultra-550b-a55b-reasoning/</loc>
-    <lastmod>2026-06-04</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/nvidia-nemotron-3-ultra-550b-a55b/</loc>
-    <lastmod>2026-06-04</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/qwen-qwen3-7-plus-reasoning/</loc>
-    <lastmod>2026-06-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/qwen-qwen3-7-plus/</loc>
-    <lastmod>2026-06-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/minimax-minimax-m3-reasoning/</loc>
-    <lastmod>2026-06-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/minimax-minimax-m3/</loc>
-    <lastmod>2026-06-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/stepfun-step-3-7-flash/</loc>
-    <lastmod>2026-05-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/anthropic-claude-opus-4-8-reasoning/</loc>
-    <lastmod>2026-05-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/anthropic-claude-opus-4-8/</loc>
-    <lastmod>2026-05-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/qwen-qwen3-7-max-reasoning/</loc>
-    <lastmod>2026-05-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/qwen-qwen3-7-max/</loc>
-    <lastmod>2026-05-21</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/google-gemini-3-5-flash/</loc>
-    <lastmod>2026-05-19</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/inclusionai-ring-2-6-1t/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/google-gemini-3-1-flash-lite/</loc>
-    <lastmod>2026-05-08</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/x-ai-grok-4-3-reasoning/</loc>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/x-ai-grok-4-3/</loc>
-    <lastmod>2026-05-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/mistralai-mistral-medium-3-5-2604-reasoning/</loc>
-    <lastmod>2026-04-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/mistralai-mistral-medium-3-5-2604/</loc>
-    <lastmod>2026-04-30</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/ibm-granite-4-1-8b/</loc>
-    <lastmod>2026-04-29</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/poolside-laguna-xs-2-reasoning/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/poolside-laguna-xs-2/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/poolside-laguna-m-1-reasoning/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/poolside-laguna-m-1/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openrouter-owl-alpha/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/nvidia-nemotron-3-nano-omni-30b-a3b-reasoning/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/nvidia-nemotron-3-nano-omni-30b-a3b/</loc>
-    <lastmod>2026-04-28</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/tencent-hy3-preview-reasoning/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/tencent-hy3-preview/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/inclusionai-ling-2-6-1t/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/deepseek-deepseek-v4-pro-reasoning/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/deepseek-deepseek-v4-pro/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/deepseek-deepseek-v4-flash-reasoning/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/deepseek-deepseek-v4-flash/</loc>
-    <lastmod>2026-04-24</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-5-reasoning/</loc>
-    <lastmod>2026-04-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-5/</loc>
-    <lastmod>2026-04-23</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/xiaomi-mimo-v2-5-reasoning/</loc>
-    <lastmod>2026-04-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/xiaomi-mimo-v2-5-pro-reasoning/</loc>
-    <lastmod>2026-04-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/xiaomi-mimo-v2-5-pro/</loc>
-    <lastmod>2026-04-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/xiaomi-mimo-v2-5/</loc>
-    <lastmod>2026-04-22</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/moonshotai-kimi-k2-6-thinking/</loc>
-    <lastmod>2026-04-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/moonshotai-kimi-k2-6/</loc>
-    <lastmod>2026-04-20</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/anthropic-claude-opus-4-7-reasoning/</loc>
-    <lastmod>2026-04-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/anthropic-claude-opus-4-7/</loc>
-    <lastmod>2026-04-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openrouter-elephant-alpha/</loc>
-    <lastmod>2026-04-13</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/z-ai-glm-5-1-reasoning/</loc>
-    <lastmod>2026-04-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/z-ai-glm-5-1/</loc>
-    <lastmod>2026-04-07</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/qwen-qwen3-6-plus-reasoning/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/qwen-qwen3-6-plus/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/google-gemma-4-31b-it-reasoning/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/google-gemma-4-31b-it/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/google-gemma-4-26b-a4b-it-reasoning/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/google-gemma-4-26b-a4b-it/</loc>
-    <lastmod>2026-04-02</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/z-ai-glm-5v-turbo-reasoning/</loc>
-    <lastmod>2026-04-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/z-ai-glm-5v-turbo/</loc>
-    <lastmod>2026-04-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/arcee-ai-trinity-large-thinking/</loc>
-    <lastmod>2026-04-01</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/xiaomi-mimo-v2-pro-reasoning/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/xiaomi-mimo-v2-pro/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/xiaomi-mimo-v2-omni-reasoning/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/xiaomi-mimo-v2-omni/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/minimax-minimax-m2-7/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-4-nano-reasoning/</loc>
-    <lastmod>2026-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-4-nano/</loc>
-    <lastmod>2026-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-4-mini-reasoning/</loc>
-    <lastmod>2026-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-4-mini/</loc>
-    <lastmod>2026-03-17</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/mistralai-mistral-small-2603-reasoning/</loc>
-    <lastmod>2026-03-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/mistralai-mistral-small-2603/</loc>
-    <lastmod>2026-03-16</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/z-ai-glm-5-turbo-reasoning/</loc>
-    <lastmod>2026-03-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/z-ai-glm-5-turbo/</loc>
-    <lastmod>2026-03-15</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/x-ai-grok-4-20-beta-reasoning/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/x-ai-grok-4-20-beta/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openrouter-hunter-alpha-reasoning/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openrouter-hunter-alpha/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openrouter-healer-alpha-reasoning/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openrouter-healer-alpha/</loc>
-    <lastmod>2026-03-12</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/nvidia-nemotron-3-super-120b-a12b-reasoning/</loc>
-    <lastmod>2026-03-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/nvidia-nemotron-3-super-120b-a12b/</loc>
-    <lastmod>2026-03-11</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-4-reasoning/</loc>
-    <lastmod>2026-03-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-4/</loc>
-    <lastmod>2026-03-05</lastmod>
-  </url>
-  <url>
-    <loc>https://speechmap.ai/themes/gov_suffrage_restrict_age_raise/m/openai-gpt-5-3-chat/</loc>
-    <lastmod>2026-03-03</lastmod>
   </url>
 </urlset>
